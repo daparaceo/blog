@@ -20,7 +20,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         onclick="switchTab('bar')">바코드</button>
       <button id="tab-book"
         class="tab-btn flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 transition-all"
-        onclick="switchTab('book')">AI 참고 페이지</button>
+        onclick="switchTab('book')">포스트 생성</button>
     </div>
 
     <!-- ── QR 코드 패널 ─────────────────────────────────── -->
@@ -127,23 +127,56 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p id="bar-error" class="hidden mt-3 text-sm text-red-500 text-center"></p>
     </div>
 
-    <!-- ── AI 참고 페이지 패널 ──────────────────────────── -->
+    <!-- ── 포스트 생성 패널 ───────────────────────────────── -->
     <div id="panel-book" class="hidden">
-      <p class="text-sm text-gray-500 mb-4">ISBN을 입력하면 AI가 영어 원서 학습 참고 페이지를 생성합니다.</p>
-      <div class="space-y-4">
+      <p class="text-sm text-gray-500 mb-4">ISBN을 입력하면 영어원서 블로그 포스트를 자동 생성합니다.</p>
+
+      <div class="space-y-3">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">ISBN (10~13자리 숫자)</label>
           <input id="book-isbn" type="text" placeholder="9781234567890"
             inputmode="numeric"
             class="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-sky-400 transition-colors bg-white" />
         </div>
-        <button onclick="goBookPreview()"
-          class="w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">
-          참고 페이지 생성
-        </button>
+        <div class="flex gap-2">
+          <button id="btn-generate" onclick="generatePost(false)"
+            class="flex-1 py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">
+            포스트 생성
+          </button>
+          <button id="btn-force" onclick="generatePost(true)"
+            class="px-4 py-2.5 bg-gray-100 text-gray-600 text-sm font-semibold rounded-xl hover:bg-gray-200 active:scale-95 transition-all"
+            title="이미 생성된 포스트도 재생성">
+            강제 재생성
+          </button>
+        </div>
       </div>
-      <p id="book-error" class="hidden mt-3 text-sm text-red-500 text-center"></p>
-      <p class="mt-4 text-xs text-gray-400">생성에 30~60초 소요됩니다. 동일한 ISBN은 캐시되어 즉시 표시됩니다.</p>
+
+      <!-- 진행 상태 -->
+      <div id="book-progress" class="hidden mt-5 space-y-2">
+        <div id="step-1" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 text-sm text-gray-500">
+          <span id="step-1-icon" class="text-base">○</span>
+          <span>Phase 1 — 도서 기본 정보 수집</span>
+        </div>
+        <div id="step-2" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 text-sm text-gray-500">
+          <span id="step-2-icon" class="text-base">○</span>
+          <span>Phase 2 — AR + YouTube 자막 수집</span>
+        </div>
+        <div id="step-3" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 text-sm text-gray-500">
+          <span id="step-3-icon" class="text-base">○</span>
+          <span>Phase 3 — Claude 포스트 생성</span>
+        </div>
+      </div>
+
+      <!-- 결과 -->
+      <div id="book-result" class="hidden mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+        <p class="text-sm font-semibold text-emerald-800 mb-2">포스트 생성 완료</p>
+        <a id="book-result-link" href="#" target="_blank"
+          class="text-sm text-sky-600 underline break-all"></a>
+        <p id="book-result-cached" class="hidden mt-1 text-xs text-gray-400">이미 생성된 포스트입니다.</p>
+      </div>
+
+      <p id="book-error" class="hidden mt-3 text-sm text-red-500"></p>
+      <p class="mt-3 text-xs text-gray-400">생성까지 약 40~60초 소요됩니다.</p>
     </div>
 
   </div>
@@ -165,18 +198,85 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       });
     }
 
-    // ── AI 참고 페이지 ───────────────────────────────────────
-    function goBookPreview() {
-      var isbn    = document.getElementById('book-isbn').value.trim().replace(/[-\s]/g, '');
-      var errEl   = document.getElementById('book-error');
+    // ── 포스트 생성 ──────────────────────────────────────────
+    var API = 'https://api.daparapara.com';
+
+    function setStep(n, state) {
+      // state: 'pending' | 'running' | 'done' | 'error'
+      var el   = document.getElementById('step-' + n);
+      var icon = document.getElementById('step-' + n + '-icon');
+      var icons = { pending: '○', running: '⋯', done: '✓', error: '✗' };
+      var colors = {
+        pending: 'bg-gray-50 text-gray-400',
+        running: 'bg-sky-50 text-sky-700',
+        done:    'bg-emerald-50 text-emerald-700',
+        error:   'bg-red-50 text-red-600',
+      };
+      el.className = 'flex items-center gap-3 p-3 rounded-xl text-sm ' + colors[state];
+      icon.textContent = icons[state];
+    }
+
+    function setButtons(disabled) {
+      document.getElementById('btn-generate').disabled = disabled;
+      document.getElementById('btn-force').disabled    = disabled;
+    }
+
+    async function generatePost(force) {
+      var isbn  = document.getElementById('book-isbn').value.trim().replace(/[-\s]/g, '');
+      var errEl = document.getElementById('book-error');
       errEl.classList.add('hidden');
+      document.getElementById('book-result').classList.add('hidden');
 
       if (!isbn || !/^\d{10,13}$/.test(isbn)) {
         errEl.textContent = 'ISBN은 10~13자리 숫자여야 합니다.';
         errEl.classList.remove('hidden');
         return;
       }
-      window.location.href = '/book-preview/?isbn=' + isbn;
+
+      setButtons(true);
+      document.getElementById('book-progress').classList.remove('hidden');
+      [1, 2, 3].forEach(function(n) { setStep(n, 'pending'); });
+
+      try {
+        // Phase 1
+        setStep(1, 'running');
+        var r1 = await fetch(API + '/book-info?isbn=' + isbn);
+        if (!r1.ok) throw new Error('Phase 1 실패: ' + (await r1.json()).error);
+        setStep(1, 'done');
+
+        // Phase 2
+        setStep(2, 'running');
+        var r2 = await fetch(API + '/book-english?isbn=' + isbn);
+        if (!r2.ok) throw new Error('Phase 2 실패: ' + (await r2.json()).error);
+        setStep(2, 'done');
+
+        // Phase 3
+        setStep(3, 'running');
+        var url3 = API + '/book-generate?isbn=' + isbn + (force ? '&force=true' : '');
+        var r3   = await fetch(url3, { method: 'POST' });
+        if (!r3.ok) throw new Error('Phase 3 실패: ' + (await r3.json()).error);
+        var data = await r3.json();
+        setStep(3, 'done');
+
+        // 결과
+        var resultEl  = document.getElementById('book-result');
+        var linkEl    = document.getElementById('book-result-link');
+        var cachedEl  = document.getElementById('book-result-cached');
+        linkEl.href        = data.post_url;
+        linkEl.textContent = data.post_url;
+        cachedEl.classList.toggle('hidden', !data.cached);
+        resultEl.classList.remove('hidden');
+
+      } catch (e) {
+        var failStep = [1,2,3].find(function(n) {
+          return document.getElementById('step-' + n + '-icon').textContent === '⋯';
+        });
+        if (failStep) setStep(failStep, 'error');
+        errEl.textContent = e.message;
+        errEl.classList.remove('hidden');
+      } finally {
+        setButtons(false);
+      }
     }
 
     // ── QR 생성 ─────────────────────────────────────────────
@@ -290,7 +390,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       if (e.key === 'Enter') generateBar();
     });
     document.getElementById('book-isbn').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') goBookPreview();
+      if (e.key === 'Enter') generatePost(false);
     });
   </script>
 </BaseLayout>
