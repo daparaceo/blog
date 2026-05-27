@@ -161,6 +161,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <span id="step-2-icon" class="text-base">○</span>
           <span>Phase 2 — AR + YouTube 자막 수집</span>
         </div>
+        <div id="step-yt" class="hidden flex items-center gap-3 p-3 rounded-xl bg-gray-50 text-sm text-gray-500">
+          <span id="step-yt-icon" class="text-base">○</span>
+          <span id="step-yt-label">Phase 2.5 — YouTube 자막 수집 (브라우저)</span>
+        </div>
         <div id="step-3" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 text-sm text-gray-500">
           <span id="step-3-icon" class="text-base">○</span>
           <span>Phase 3 — Claude 포스트 생성</span>
@@ -201,7 +205,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     // ── 포스트 생성 ──────────────────────────────────────────
     var API = 'https://api.daparapara.com';
 
-    function setStep(n, state) {
+    function setStep(n, state, label) {
       // state: 'pending' | 'running' | 'done' | 'error'
       var el   = document.getElementById('step-' + n);
       var icon = document.getElementById('step-' + n + '-icon');
@@ -212,8 +216,47 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         done:    'bg-emerald-50 text-emerald-700',
         error:   'bg-red-50 text-red-600',
       };
+      el.classList.remove('hidden');
       el.className = 'flex items-center gap-3 p-3 rounded-xl text-sm ' + colors[state];
       icon.textContent = icons[state];
+      if (label) document.getElementById('step-' + n + '-label').textContent = label;
+    }
+
+    // ── YouTube 자막 브라우저 직접 수집 ──────────────────────────
+    // 브라우저는 실제 사용자 IP + YouTube 쿠키 → 서버 봇 감지 우회
+    async function fetchTranscriptBrowser(videoId) {
+      var endpoints = [
+        'https://www.youtube.com/api/timedtext?v=' + videoId + '&lang=en&kind=asr&fmt=json3',
+        'https://www.youtube.com/api/timedtext?v=' + videoId + '&lang=en&fmt=json3',
+        'https://www.youtube.com/api/timedtext?v=' + videoId + '&lang=en&kind=asr',
+        'https://www.youtube.com/api/timedtext?v=' + videoId + '&lang=en',
+      ];
+      for (var i = 0; i < endpoints.length; i++) {
+        try {
+          var res = await fetch(endpoints[i], { credentials: 'include' });
+          if (!res.ok) continue;
+          var text = await res.text();
+          if (!text || text.length < 20) continue;
+
+          var transcript = '';
+          // JSON3 포맷
+          if (text.trim().startsWith('{')) {
+            var data = JSON.parse(text);
+            transcript = (data.events || [])
+              .filter(function(e) { return e.segs; })
+              .map(function(e) { return e.segs.map(function(s) { return s.utf8 || ''; }).join(''); })
+              .join(' ').trim();
+          // XML 포맷
+          } else if (text.includes('<text')) {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(text, 'text/xml');
+            transcript = Array.from(doc.querySelectorAll('text'))
+              .map(function(n) { return n.textContent; }).join(' ').trim();
+          }
+          if (transcript.length > 20) return transcript.slice(0, 10000);
+        } catch (e) { /* 다음 시도 */ }
+      }
+      return null;
     }
 
     function setButtons(disabled) {
@@ -236,6 +279,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       setButtons(true);
       document.getElementById('book-progress').classList.remove('hidden');
       [1, 2, 3].forEach(function(n) { setStep(n, 'pending'); });
+      document.getElementById('step-yt').classList.add('hidden');
 
       try {
         // Phase 1
@@ -248,7 +292,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         setStep(2, 'running');
         var r2 = await fetch(API + '/book-english?isbn=' + isbn);
         if (!r2.ok) throw new Error('Phase 2 실패: ' + (await r2.json()).error);
+        var p2 = await r2.json();
         setStep(2, 'done');
+
+        // Phase 2.5 — transcript 없으면 브라우저에서 직접 수집
+        if (!p2.youtube_transcript && p2.youtube_video_id) {
+          setStep('yt', 'running', 'Phase 2.5 — YouTube 자막 수집 (브라우저)');
+          var transcript = await fetchTranscriptBrowser(p2.youtube_video_id);
+          if (transcript) {
+            await fetch(API + '/book-english?isbn=' + isbn, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                youtube_video_id:  p2.youtube_video_id,
+                youtube_transcript: transcript,
+              }),
+            });
+            setStep('yt', 'done', 'Phase 2.5 — YouTube 자막 수집 완료 (' + transcript.length + '자)');
+          } else {
+            setStep('yt', 'error', 'Phase 2.5 — 자막 없음 (영상에 CC 자막이 없거나 접근 불가)');
+            // T2/T3는 Phase 3에서 차단되지만, T1은 계속 진행 가능
+          }
+        }
 
         // Phase 3
         setStep(3, 'running');
