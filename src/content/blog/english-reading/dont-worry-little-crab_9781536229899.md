@@ -1,180 +1,127 @@
 ---
-title: "Don't Worry, Little Crab: 용기를 배우는 아름다운 성장 이야기"
-slug: dont-worry-little-crab
-date: 2026-05-27
-publishedAt: 2026-05-27
-ogImage: https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/422aad944d70050092ed1c97.jpg
-keywords:
-  - Don't Worry Little Crab
-  - Chris Haughton
-  - 영어그림책
-  - AR 2.0
-  - 용기 그림책
-  - 초등 저학년 영어원서
-  - 감정표현 영어책
-description: Chris Haughton의 'Don't Worry, Little Crab'은 처음 바다에 도전하는 작은 게의 이야기를 통해 용기와 격려의 힘을 보여주는 아름다운 그림책입니다. 348단어, AR 2.0 레벨.
-categories:
-  - Fiction
-  - Picture Books
-  - Character Education
-featured: true
+title: "[AR 2.0] Don't Worry, Little Crab - 泥섏쓬 諛붾떎瑜� 留뚮궃 �옉��� 寃뚯쓽 �슜媛먰븳 �룄�쟾"
+description: "諛붾떎媛� 臾댁꽌�썙 留앹꽕�씠�뒗 �옉��� 寃뚭�� �븘二� �겙 寃뚯쓽 �쓳�썝 �뜒遺꾩뿉 �슜湲곕�� �궡�뼱 �뙆�룄 �냽�쑝濡� �쎇�뼱�뱶�뒗 �뵲�쑜�븳 洹몃┝梨낆엯�땲�떎."
+publishedAt: 2026-05-20
+category: "english-reading"
+tags: [�쁺�뼱�썝�꽌, �쁺�뼱�븰�뒿, 珥덈벑�쁺�뼱, AR�젅踰�, Don't Worry Little Crab, Chris Haughton, �슜湲�, 洹몃┝梨�, �쓽�꽦�뼱, 諛붾떎]
+en_title: "Don't Worry, Little Crab"
+author: "Chris Haughton"
+ar_level: 2.0
+isbn: "9781536229899"
+ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/422aad944d70050092ed1c97.jpg"
 ---
 
-## 책 소개
+<div class="book-container" translate="no">
+<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/422aad944d70050092ed1c97.jpg" alt="Don't Worry, Little Crab (cover)" />
+<table class="book-table">
+  <tr><td class="label">Title</td><td>Don't Worry, Little Crab</td></tr>
+  <tr><td class="label">Author / Illustrator</td><td>Chris Haughton</td></tr>
+  <tr><td class="label">ISBN</td><td>9781536229899</td></tr>
+  <tr><td class="label">AR Level</td><td>2.0</td></tr>
+  <tr><td class="label">AR Points</td><td>0.5</td></tr>
+  <tr><td class="label">Word Count</td><td>348</td></tr>
+  <tr><td class="label">Interest Level</td><td>Lower Grades (K���3)</td></tr>
+</table>
+</div>
 
-**"Don't Worry, Little Crab"**은 『Shh! We Have a Plan』으로 유명한 Chris Haughton의 따뜻한 성장 이야기입니다. 작은 바위 웅덩이에서 사는 작은 게가 처음으로 큰 바다에 도전하면서 겪는 두려움과 용기를 그린 이 책은, 새로운 시도 앞에서 망설이는 모든 아이들에게 큰 위로가 됩니다.
+�씠 梨낆�� 諛붾떎瑜� 泥섏쓬 蹂닿퀬 寃곷㉨��� �옉��� 寃뚭�� �겙 寃뚯쓽 �쓳�썝�쓣 諛쏆쑝硫� �슜湲곕�� �궡�뒗 �씠�빞湲곕줈, �뭾遺��븳 �쓽�꽦�뼱��� 諛섎났 臾몄옣�쓣 �넻�빐 �쁺�뼱 �냼由ъ�� 媛먯젙 �몴�쁽�쓣 �옄�뿰�뒪�읇寃� �씡�옄 �닔 �엳�뒗 洹몃┝梨낆엯�땲�떎.
 
-## 기본 정보
+<div class="tip-box">
+  <h3>�씠�젃寃� �솢�슜�븯�꽭�슂</h3>
+  <ul>
+    <li><b>洹몃┝ 癒쇱�� 蹂닿린:</b> 湲��옄瑜� �씫湲� �쟾�뿉 洹몃┝留� 蹂대ŉ �옉��� 寃뚭�� �뼱�뼡 �몴�젙怨� 紐몄쭞�쓣 �븯�뒗吏� 愿�李고빐 蹂댁꽭�슂.</li>
+    <li><b>�냼由щ줈 李얘린:</b> TIC-A-TIC, SPLISH SPLASH, SQUELCH, WHOOSH 媛숈�� �쓽�꽦�뼱瑜� 吏곸젒 �뵲�씪 留먰븯硫� �냼由ъ�� �옣硫댁쓣 �뿰寃고빐 蹂댁꽭�슂.</li>
+    <li><b>�떎�깮�솢�뿉�꽌 李얘린:</b> �뙆�룄, �빐珥�, 諛붿쐞 �썒�뜦�씠 �벑 諛붾떎�뿉 愿��젴�맂 �떒�뼱瑜� �궗吏꾩씠�굹 �쁺�긽�뿉�꽌 李얠븘 �뿰寃고빐 蹂댁꽭�슂.</li>
+    <li><b>諛섎났 臾몄옣 �븫湲�:</b> "Don't worry. It will be ok."泥섎읆 吏㏐퀬 諛섎났�릺�뒗 臾몄옣�쓣 �쇅�썙 �씪�긽�뿉�꽌 �뜥 蹂댁꽭�슂.</li>
+  </ul>
+  <p>AR 2.0 �떒怨� 梨낆쑝濡�, 吏㏃�� 臾몄옣怨� �쓽�꽦�뼱媛� 留롮븘 �냼由� �궡�뼱 �씫湲� �뿰�뒿�뿉 �듅�엳 醫뗭뒿�땲�떎.</p>
+</div>
 
-- **저자**: Chris Haughton
-- **AR 레벨**: 2.0
-- **AR 포인트**: 0.5
-- **단어 수**: 348 words
-- **관심 레벨**: Lower Grades (K-3)
-- **장르**: Fiction
-- **ISBN**: 9781536229899
-- **출판사**: National Geographic Books
+<div class="section">
+<h3>�빑�떖 �뼱�쐶</h3>
 
-## 줄거리
+<div class="vocab-item" data-word="rockpool" data-lang="en-US">
+  <div class="vocab-text" translate="no">rockpool</div>
+  <div class="vocab-meaning">諛붿쐞 �썒�뜦�씠 (諛붾떣媛� 諛붿쐞 �궗�씠�뿉 怨좎씤 臾쇱썒�뜦�씠)</div>
+  <div class="vocab-example" translate="no">"Little Crab and Very Big Crab live in a tiny rockpool."</div>
+  <div class="vocab-note">rock(諛붿쐞) + pool(�썒�뜦�씠)�쓣 �빀移� �떒�뼱�삁�슂. 諛붾떣媛��뿉�꽌 �떎�젣濡� 李얠븘蹂� �닔 �엳�뼱�슂.</div>
+</div>
 
-작은 게(Little Crab)와 아주 큰 게(Very Big Crab)는 바다 근처의 작은 바위 웅덩이에서 살고 있습니다. 오늘은 드디어 큰 바다에 가는 날!
+<div class="vocab-item" data-word="seaweed" data-lang="en-US">
+  <div class="vocab-text" translate="no">seaweed</div>
+  <div class="vocab-meaning">�빐珥�, 諛붾떣留�</div>
+  <div class="vocab-example" translate="no">"SQUELCH SQUELCH SQUELCH through the slimy slippery seaweed."</div>
+  <div class="vocab-note">sea(諛붾떎) + weed(�옟珥�)媛� �빀爾먯쭊 �떒�뼱�삁�슂. 諛붾떣�냽 �떇臾쇱쓣 媛�由ъ폒�슂.</div>
+</div>
 
-"정말 멋질 거야!" 작은 게는 신이 나서 첨벙첨벙(splish-splashing), 쿨럭쿨럭(squelch-squelching) 바다 가장자리까지 걸어갑니다.
+<div class="vocab-item" data-word="slimy" data-lang="en-US">
+  <div class="vocab-text" translate="no">slimy</div>
+  <div class="vocab-meaning">�걟�쟻�걟�쟻�븳, 誘몃걣誘몃걣�븳</div>
+  <div class="vocab-example" translate="no">"��쫡hrough the slimy slippery seaweed."</div>
+  <div class="vocab-note">slime(�걟�쟻�븳 �븸泥�)�뿉�꽌 �삩 �삎�슜�궗�삁�슂. slippery(誘몃걚�윭�슫)��� �븿猿� �벐�뿬 �뜑 �떎媛� �굹�뒗 �몴�쁽�씠 �뤌�슂.</div>
+</div>
 
-그런데 파도를 처음 보는 순간... WHOOSH! 
+<div class="vocab-item" data-word="slippery" data-lang="en-US">
+  <div class="vocab-text" translate="no">slippery</div>
+  <div class="vocab-meaning">誘몃걚�윭�슫</div>
+  <div class="vocab-example" translate="no">"��쫡he slimy slippery seaweed."</div>
+  <div class="vocab-note">slip(誘몃걚�윭吏��떎)�뿉�꽌 �삩 �떒�뼱�삁�슂. �젚��� 諛붾떏�씠�굹 �빐珥덈�� 臾섏궗�븷 �븣 �옄二� �뜥�슂.</div>
+</div>
 
-엄청나게 큰 파도가 밀려옵니다. 어쩌면 들어가지 않는 게 나을까요?
+<div class="vocab-item" data-word="edge" data-lang="en-US">
+  <div class="vocab-text" translate="no">edge</div>
+  <div class="vocab-meaning">�걹, 媛��옣�옄由�</div>
+  <div class="vocab-example" translate="no">"Finally they get to the very edge."</div>
+  <div class="vocab-note">"the very edge"�뒗 '諛붾줈 洹� �걹�옄�씫'�씠�씪�뒗 �쑜�쑝濡�, very媛� 媛뺤“ �뿭�븷�쓣 �빐�슂.</div>
+</div>
 
-하지만 큰 게의 부드러운 격려 "걱정하지 마, 내가 여기 있어"와 함께, 작은 게는 용기를 내어 한 걸음 한 걸음 앞으로 나아갑니다. 그리고 마침내 발견하게 됩니다 — 용기를 내어 뛰어들었을 때만 만날 수 있는 놀라운 세계를!
+<div class="vocab-item" data-word="wave" data-lang="en-US">
+  <div class="vocab-text" translate="no">wave</div>
+  <div class="vocab-meaning">�뙆�룄</div>
+  <div class="vocab-example" translate="no">"But the waves are getting bigger���"</div>
+  <div class="vocab-note">�뙆�룄瑜� �쑜�븯湲곕룄 �븯怨�, '�넀�쓣 �쓷�뱾�떎'�뒗 �룞�궗濡쒕룄 �벐�뿬�슂. �뿬湲곗꽌�뒗 紐낆궗�삁�슂.</div>
+</div>
 
-## 이 책의 매력 포인트
+<div class="vocab-item" data-word="enormous" data-lang="en-US">
+  <div class="vocab-text" translate="no">enormous</div>
+  <div class="vocab-meaning">�뾼泥��굹寃� �겙, 嫄곕���븳</div>
+  <div class="vocab-example" translate="no">"But then they see an ENORMOUS wave."</div>
+  <div class="vocab-note">big �넂 huge �넂 enormous �닚�꽌濡� �젏�젏 �뜑 而ㅼ슂. �뙆�룄媛� �뼹留덈굹 臾댁꽌�슫吏� 媛뺤“�븷 �븣 �궗�슜�뤌�슂.</div>
+</div>
 
-### 1. **Chris Haughton의 시그니처 스타일**
-- 선명한 색상(vivid colors)과 대담한 형태(bold shapes)
-- 최소한의 텍스트로 최대의 감정 전달
-- 유머러스하면서도 따뜻한 시각적 스토리텔링
+<div class="vocab-item" data-word="take a deep breath" data-lang="en-US">
+  <div class="vocab-text" translate="no">take a deep breath</div>
+  <div class="vocab-meaning">源딄쾶 �닲�쓣 �뱾�씠�돩�떎</div>
+  <div class="vocab-example" translate="no">"They take a deep breath."</div>
+  <div class="vocab-note">臾댁꽌�슫 �닚媛� �쟾�뿉 �슜湲곕�� �궡�뒗 �뻾�룞�씠�뿉�슂. 湲댁옣�맆 �븣 �떎�깮�솢�뿉�꽌�룄 �벝 �닔 �엳�뒗 �몴�쁽�씠�뿉�슂.</div>
+</div>
 
-### 2. **보편적인 성장 테마**
-- 새로운 것에 대한 두려움
-- 용기를 내는 과정
-- 안전기지(secure base)로서의 보호자 역할
-- 도전 후의 성취감
+<div class="vocab-item" data-word="hide and seek" data-lang="en-US">
+  <div class="vocab-text" translate="no">hide and seek</div>
+  <div class="vocab-meaning">�닲諛붽서吏�</div>
+  <div class="vocab-example" translate="no">"��쫡hey have a giant game of hide and seek."</div>
+  <div class="vocab-note">hide(�닲�떎) + seek(李얜떎)媛� �빀爾먯쭊 �몴�쁽�씠�뿉�슂. �쁺�뼱沅� �븘�씠�뱾�씠 利먭린�뒗 ����몴�쟻�씤 ����씠 �씠由꾩씠�뿉�슂.</div>
+</div>
 
-### 3. **읽기 좋은 구성**
-- 348단어의 적절한 분량
-- AR 2.0의 초급 리더 수준
-- 반복적이고 리듬감 있는 표현들
+<div class="vocab-item" data-word="Don't worry" data-lang="en-US">
+  <div class="vocab-text" translate="no">Don't worry</div>
+  <div class="vocab-meaning">嫄깆젙 留�</div>
+  <div class="vocab-example" translate="no">"Don't worry, Little Crab. I'm here."</div>
+  <div class="vocab-note">梨� �젣紐⑹씠�옄 媛��옣 留롮씠 諛섎났�릺�뒗 臾몄옣�씠�뿉�슂. 移쒓뎄�굹 媛�議깆쓣 �븞�떖�떆�궗 �븣 諛붾줈 �벝 �닔 �엳�뼱�슂.</div>
+</div>
 
-## 영어 학습 포인트
+<div class="vocab-item" data-word="further" data-lang="en-US">
+  <div class="vocab-text" translate="no">further</div>
+  <div class="vocab-meaning">�뜑 硫�由�, 議곌툑 �뜑</div>
+  <div class="vocab-example" translate="no">"Let's just go a little bit further."</div>
+  <div class="vocab-note">far(硫�由�)�쓽 鍮꾧탳湲됱씠�뿉�슂. "a little bit further"�뒗 '議곌툑留� �뜑'�씪�뒗 遺��뱶�윭�슫 寃⑸젮 �몴�쁽�씠�뿉�슂.</div>
+</div>
 
-### 핵심 어휘 & 표현
+<div class="vocab-item" data-word="nod" data-lang="en-US">
+  <div class="vocab-text" translate="no">nod</div>
+  <div class="vocab-meaning">怨좉컻瑜� �걚�뜒�씠�떎</div>
+  <div class="vocab-example" translate="no">"Little Crab nods."</div>
+  <div class="vocab-note">留� �뾾�씠 怨좉컻瑜� �걚�뜒�뿬 �룞�쓽瑜� �몴�쁽�븯�뒗 �룞�옉�씠�뿉�슂. shake(�쓷�뱾�떎)��� 諛섎�� �몴�쁽�씠�뿉�슂.</div>
+</div>
 
-**의성어·의태어**
-- splish-splashing: 첨벙첨벙
-- squelch-squelching: 질척질척
-- WHOOSH!: 쏴아아 (파도 소리)
-
-**감정 표현**
-- "This is going to be so great": 정말 멋질 거야
-- "Don't worry": 걱정하지 마
-- "I'm here": 내가 여기 있어
-
-**장소 관련 표현**
-- tiny rock pool: 작은 바위 웅덩이
-- near the sea: 바다 근처
-- the big ocean: 큰 바다
-- the very edge: 바로 가장자리
-
-### 문장 패턴 연습
-
-```
-"This is going to be ___."
-→ "This is going to be fun!"
-→ "This is going to be exciting!"
-
-"Maybe it's better if ___?"
-→ "Maybe it's better if we wait?"
-→ "Maybe it's better if we go slowly?"
-```
-
-## 교육적 활용법
-
-### 1. **감정 코칭 (Emotional Coaching)**
-- 두려움을 인정하고 표현하기
-- "무섭다"는 것이 잘못된 게 아님을 이해하기
-- 격려의 말이 주는 힘 배우기
-
-### 2. **토론 질문**
-- "What makes Little Crab scared?" (작은 게가 무서워하는 이유는?)
-- "How does Very Big Crab help?" (큰 게는 어떻게 도와주나요?)
-- "What new things have you tried?" (여러분이 도전해본 새로운 것들은?)
-- "Who helps you feel brave?" (누가 여러분을 용감하게 만들어주나요?)
-
-### 3. **확장 활동**
-- **역할놀이**: 작은 게와 큰 게 되어보기
-- **그림 그리기**: 내가 처음 도전했던 것 그리기
-- **글쓰기**: "Don't worry, ___" 격려 메시지 쓰기
-- **과학 연계**: 바다 생물, 조수 웅덩이(tide pool) 탐구
-
-## 함께 읽으면 좋은 책
-
-- **"Shh! We Have a Plan"** (같은 작가)
-- **"A Bit Lost"** by Chris Haughton
-- **"The Pout-Pout Fish"** by Deborah Diesen
-- **"Jabari Jumps"** by Gaia Cornwall
-- **"Courage"** by Bernard Waber
-
-## 학부모·교사 가이드
-
-### 읽기 전 (Pre-Reading)
-- 바다, 파도, 게 사진 보여주기
-- "무서웠던 경험" 이야기 나누기
-- 표지 보고 예측하기
-
-### 읽기 중 (During Reading)
-- 의성어·의태어 함께 소리내기
-- 작은 게의 표정 변화 관찰하기
-- "걱정하지 마" 문장에서 잠시 멈추고 이야기 나누기
-
-### 읽기 후 (Post-Reading)
-- 가장 좋아하는 장면 선택하고 이유 말하기
-- 용기 배지(Courage Badge) 만들기
-- 가족에게 격려 카드 만들어주기
-
-## 실제 독자 반응
-
-**유치원 교사 리뷰**:
-> "단순하지만 강력한 메시지! 아이들이 새 학기, 새 활동을 시작할 때마다 읽어줍니다. '걱정하지 마, 선생님이 여기 있어'라고 말해주면 아이들 표정이 달라져요."
-
-**엄마 독자**:
-> "5살 딸이 수영을 두려워했는데, 이 책을 읽고 나서 '나도 작은 게처럼 할 수 있어!'라고 하더라고요. Chris Haughton의 그림은 항상 아이 마음을 사로잡습니다."
-
-## 작가 소개: Chris Haughton
-
-아일랜드 출신의 일러스트레이터이자 작가인 Chris Haughton은:
-- 독특한 색감과 기하학적 디자인으로 유명
-- 『A Bit Lost』, 『Shh! We Have a Plan』 등 여러 베스트셀러 출간
-- 전 세계 30개 이상 언어로 번역
-- 단순하지만 감정이 풍부한 스토리텔링의 대가
-
-## 총평
-
-**"Don't Worry, Little Crab"**은 348단어라는 짧은 분량 안에 성장의 본질을 담아낸 수작입니다. 
-
-새로운 시도 앞에서 느끼는 두려움, 그것을 극복하게 하는 따뜻한 격려, 그리고 용기를 냈을 때의 보람 — 이 모든 것이 Chris Haughton의 생생한 일러스트와 함께 아이들의 마음에 깊이 새겨집니다.
-
-특히 "Don't worry, I'm here"라는 간단한 문장이 주는 안정감은, 영어를 배우는 아이들에게도, 새로운 도전 앞에 선 모든 아이들에게도 큰 힘이 됩니다.
-
-**AR 2.0 레벨**로 초급 리더들도 쉽게 읽을 수 있고, 감정 교육과 용기 키우기라는 중요한 가치를 자연스럽게 배울 수 있는 완벽한 그림책입니다.
-
----
-
-**추천 대상**: 
-- 새로운 환경이 두려운 아이들
-- 자신감을 키워주고 싶은 부모님
-- 용기와 감정을 주제로 수업하는 교사
-- Chris Haughton 작품을 좋아하는 독자
-- AR 2.0~3.0 수준의 영어 리더
-
-**이 책으로 배우는 가장 중요한 것**: 
-두려워도 괜찮아요. 옆에 누군가 함께 있다면, 우리는 용기를 낼 수 있습니다. 🦀💙🌊
+</div>
