@@ -8,11 +8,11 @@ en_title: "Don't Worry, Little Crab"
 author: "Chris Haughton"
 ar_level: 2.0
 isbn: "9781536229899"
-ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/422aad944d70050092ed1c97.jpg"
+ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/2fbd8e9f531d7e4d2cb69690.jpg"
 ---
 
 <div class="book-container" translate="no">
-<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/422aad944d70050092ed1c97.jpg" alt="Don't Worry, Little Crab (cover)" />
+<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/2fbd8e9f531d7e4d2cb69690.jpg" alt="Don't Worry, Little Crab (cover)" />
 <table class="book-table">
   <tr><td class="label">Title</td><td>Don't Worry, Little Crab</td></tr>
   <tr><td class="label">Author / Illustrator</td><td>Chris Haughton</td></tr>
