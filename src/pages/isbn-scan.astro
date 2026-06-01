@@ -317,39 +317,13 @@ const BOOK_INFO_URL = 'https://api.daparapara.com/book-info';
       );
     }
 
-    // ── 결과 카드: 리뷰 없음, 정보 있음 ─────────────────────
+    // ── 결과 카드: 리뷰 없음 ────────────────────────────────
+    // 메타(제목·저자·AR·시리즈·표지)와 도서관 정보는 노출하지 않는다.
     function buildInfoCard(isbn, info) {
-      var coverUrl  = info.cover || '';
-      var arHtml    = arBadgesHtml(info);
-      var seriesHtml = info.series
-        ? '<p class="text-xs text-gray-400 mt-1">시리즈: ' + info.series + '</p>'
-        : '';
-      var descHtml = info.description
-        ? '<p class="text-xs text-gray-500 mt-1.5 line-clamp-3">' + info.description + '</p>'
-        : '';
-      var libHtml = librariesHtml(info.libraries);
       return (
         '<div class="bg-gray-50 border border-gray-200 rounded-2xl p-4">' +
-          '<div class="flex gap-3">' +
-            (coverUrl
-              ? '<img src="' + coverUrl + '" alt="표지" ' +
-                'class="w-14 h-20 object-cover rounded-lg shadow-sm flex-shrink-0" ' +
-                'onerror="this.style.display=\'none\'">'
-              : '') +
-            '<div class="flex-1 min-w-0">' +
-              '<p class="text-xs font-semibold text-gray-500 mb-0.5">아직 리뷰가 없어요</p>' +
-              (info.title
-                ? '<p class="font-semibold text-gray-900 text-sm leading-snug line-clamp-2">' + info.title + '</p>'
-                : '<p class="text-sm text-gray-500">ISBN ' + isbn + '</p>') +
-              (info.author
-                ? '<p class="text-xs text-gray-500 mt-0.5">' + info.author + '</p>'
-                : '') +
-              arHtml +
-              seriesHtml +
-            '</div>' +
-          '</div>' +
-          descHtml +
-          libHtml +
+          '<p class="text-xs font-semibold text-gray-500 mb-1">아직 리뷰가 없어요</p>' +
+          '<p class="text-sm text-gray-500">ISBN ' + isbn + '</p>' +
         '</div>'
       );
     }
