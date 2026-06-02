@@ -297,6 +297,7 @@
       "레지스트리 백업 및 복구는 shell.exe를 구동하여 행한다."
     ],
     "answer": 3,
+    "answers": [3, 4],
     "explanation": "출제 오류 문제(3, 4번 복수 정답). ③ HKEY_CLASS_ROOT가 아닌 HKEY_CLASSES_ROOT가 정확한 명칭이다. ④ 레지스트리 백업·복구는 regedit.exe를 사용하며 shell.exe로는 불가능하다. ② regedit 외에도 reg.exe 명령행 도구나 API를 통해 편집 가능하다.",
     "hasImage": false,
     "tags": ["보안기사", "시스템보안", "레지스트리", "윈도우", "HKEY", "2022"]
@@ -818,6 +819,7 @@
       "Radix-64"
     ],
     "answer": 2,
+    "answers": [2, 3],
     "explanation": "출제 오류 문제(2, 3번 복수 정답). PGP의 디지털 서명에는 DSS/SHA(②) 또는 RSA(③)가 모두 사용될 수 있다. DSS는 서명 생성, SHA는 해시 생성에 사용한다. 3DES는 대칭키 암호화, Radix-64는 인코딩 방식이다.",
     "hasImage": false,
     "tags": ["보안기사", "어플리케이션보안", "PGP", "전자서명", "DSS", "SHA", "RSA", "2022"]
@@ -2005,4 +2007,3 @@
     "tags": ["보안기사", "정보보안관리및법규", "정보보호거버넌스", "ISO27014", "ISO표준", "2022"]
   }
 ]
-
