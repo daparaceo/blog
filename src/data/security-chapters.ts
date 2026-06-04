@@ -23,15 +23,21 @@ export const CHAPTERS: Chapter[] = [
 <h3>파일 권한 (rwx)</h3>
 <p>리눅스 파일 권한은 소유자(User)/그룹(Group)/기타(Other) 3계층, 각각 읽기(r=4)/쓰기(w=2)/실행(x=1) 3비트로 표현합니다.</p>
 <pre><code>ls -l 출력 예시:
--rwxr-xr-- 1 alice staff 1024 May 1 12:00 script.sh
-①  ②   ③  ④  ⑤    ⑥    ⑦      ⑧         ⑨</code></pre>
-<ul>
-  <li>① 파일 유형 &nbsp;&nbsp;&nbsp; <code>-</code> 일반파일 &nbsp; <code>d</code> 디렉토리 &nbsp; <code>l</code> 심볼릭 링크</li>
-  <li>② 소유자 권한 &nbsp; <code>rwx</code> = r(4)+w(2)+x(1) = <strong>7</strong></li>
-  <li>③ 그룹 권한 &nbsp;&nbsp;&nbsp; <code>r-x</code> = r(4)+w(0)+x(1) = <strong>5</strong></li>
-  <li>④ 기타 권한 &nbsp;&nbsp;&nbsp; <code>r--</code> = r(4)+w(0)+x(0) = <strong>4</strong> &nbsp;→ 8진수(octal): <strong>754</strong></li>
-  <li>⑤ 하드링크 수 &nbsp; ⑥ 소유자명 &nbsp; ⑦ 그룹명 &nbsp; ⑧ 파일 크기(bytes) &nbsp; ⑨ 파일명</li>
-</ul>
+-rwxr-xr-- 1 alice staff 1024 May 1 12:00 script.sh</code></pre>
+<table>
+  <thead><tr><th>번호</th><th>예시 값</th><th>의미</th></tr></thead>
+  <tbody>
+    <tr><td>①</td><td><code>-</code></td><td>파일 유형: <code>-</code> 일반파일, <code>d</code> 디렉토리, <code>l</code> 심볼릭 링크</td></tr>
+    <tr><td>②</td><td><code>rwx</code></td><td>소유자 권한: r(4)+w(2)+x(1) = <strong>7</strong></td></tr>
+    <tr><td>③</td><td><code>r-x</code></td><td>그룹 권한: r(4)+w(0)+x(1) = <strong>5</strong></td></tr>
+    <tr><td>④</td><td><code>r--</code></td><td>기타 권한: r(4)+w(0)+x(0) = <strong>4</strong> → 8진수(octal): <strong>754</strong></td></tr>
+    <tr><td>⑤</td><td><code>1</code></td><td>하드링크 수</td></tr>
+    <tr><td>⑥</td><td><code>alice</code></td><td>소유자명</td></tr>
+    <tr><td>⑦</td><td><code>staff</code></td><td>그룹명</td></tr>
+    <tr><td>⑧</td><td><code>1024</code></td><td>파일 크기(bytes)</td></tr>
+    <tr><td>⑨</td><td><code>script.sh</code></td><td>파일명</td></tr>
+  </tbody>
+</table>
 
 <h3>umask</h3>
 <p>umask는 파일/디렉토리 생성 시 기본 권한에서 제거할 비트를 지정합니다.<br>
