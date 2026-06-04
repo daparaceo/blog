@@ -229,10 +229,10 @@
     "type": "objective",
     "question": "루트 사용자 소유로 SUID 권한을 부여한 경우, 이러한 파일로 의심되는 파일을 검색하는 명령어로 알맞은 것은?",
     "options": [
-      "find / -user –perm –1000 -print",
-      "find / -user –perm –2000 -print",
-      "find / -user –perm –3000 -print",
-      "find / -user –perm –4000 -print"
+      "find / -user -perm -1000 -print",
+      "find / -user -perm -2000 -print",
+      "find / -user -perm -3000 -print",
+      "find / -user -perm -4000 -print"
     ],
     "answer": 4,
     "explanation": "SUID(Set User ID) 비트는 8진수로 4000이다. find 명령에서 -perm -4000은 SUID 비트가 설정된 파일을 검색한다. SGID는 2000, Sticky bit는 1000이다. SUID 설정 파일은 실행 시 파일 소유자(root)의 권한으로 실행되므로 보안 취약점이 될 수 있다.",

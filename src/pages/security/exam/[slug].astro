@@ -37,10 +37,16 @@ function getAnswerText(q: any) {
 }
 
 function formatSecurityText(value: string) {
-  return value
+  const escaped = value
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
+    .replace(/>/g, '&gt;');
+
+  if (/^(?:find|chmod|ls|cat|grep|sudo)\b|^-perm\b|^\/(?:etc|var|tmp|home|root)\/|^(?:\*|\d{1,2})\s+(?:\*|\d{1,2})\s+(?:\*|\d{1,2})/.test(escaped)) {
+    return `<code>${escaped}</code>`;
+  }
+
+  return escaped
     .replace(
       /((?:HKEY_LOCAL_MACHINE|HKEY_CURRENT_USER|HKEY_CLASSES_ROOT|HKEY_CURRENT_CONFIG|HKEY_USERS|HKLM|HKCU|HKCR|HKCC|%SystemRoot%)(?:\\[A-Za-z0-9_. -]*[A-Za-z0-9_.-])+)/g,
       '<code>$1</code>'
