@@ -182,10 +182,10 @@ ALL: ALL</code></pre>
 <table>
   <thead><tr><th>레지스트리 키</th><th>설명</th></tr></thead>
   <tbody>
-    <tr><td>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</td><td>시스템 부팅 시 자동 실행 프로그램</td></tr>
-    <tr><td>HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run</td><td>사용자 로그온 시 자동 실행</td></tr>
-    <tr><td>HKLM\SAM\SAM</td><td>계정 해시 저장 (SYSTEM 전용)</td></tr>
-    <tr><td>HKLM\SYSTEM\CurrentControlSet\Services</td><td>서비스 설정 (악성코드 지속성 확보)</td></tr>
+    <tr><td><code>HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run</code></td><td>시스템 부팅 시 자동 실행 프로그램</td></tr>
+    <tr><td><code>HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run</code></td><td>사용자 로그온 시 자동 실행</td></tr>
+    <tr><td><code>HKLM\\SAM\\SAM</code></td><td>계정 해시 저장 (SYSTEM 전용)</td></tr>
+    <tr><td><code>HKLM\\SYSTEM\\CurrentControlSet\\Services</code></td><td>서비스 설정 (악성코드 지속성 확보)</td></tr>
   </tbody>
 </table>
 
@@ -230,7 +230,7 @@ ALL: ALL</code></pre>
 <ul>
   <li>목적: 악성코드의 무단 권한 상승 방지</li>
   <li>동작: 관리자 권한 필요 시 동의(Consent) 또는 자격증명(Credential) 프롬프트 표시</li>
-  <li>레지스트리: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System</li>
+  <li>레지스트리: <code>HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System</code></li>
 </ul>
 
 <h3>Windows 보안 도구</h3>
