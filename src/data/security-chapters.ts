@@ -159,7 +159,7 @@ ALL: ALL</code></pre>
 <table>
   <thead><tr><th>항목</th><th>내용</th></tr></thead>
   <tbody>
-    <tr><td>위치</td><td>%SystemRoot%\System32\config\SAM (레지스트리 HKLM\SAM)</td></tr>
+    <tr><td>위치</td><td><code>%SystemRoot%\\System32\\config\\SAM</code><br>(레지스트리 <code>HKLM\\SAM</code>)</td></tr>
     <tr><td>저장 형식</td><td>NTLM 해시 (MD4(패스워드))</td></tr>
     <tr><td>접근 제한</td><td>실행 중 OS는 잠금, SYSTEM 계정만 접근 가능</td></tr>
     <tr><td>공격 기법</td><td>Pass the Hash, SAM 덤프(fgdump, mimikatz)</td></tr>
@@ -170,11 +170,11 @@ ALL: ALL</code></pre>
 <table>
   <thead><tr><th>하이브</th><th>약어</th><th>역할</th></tr></thead>
   <tbody>
-    <tr><td>HKEY_LOCAL_MACHINE</td><td>HKLM</td><td>시스템 전체 하드웨어·소프트웨어·보안 설정</td></tr>
-    <tr><td>HKEY_CURRENT_USER</td><td>HKCU</td><td>현재 로그인 사용자 설정</td></tr>
-    <tr><td>HKEY_USERS</td><td>HKU</td><td>모든 사용자 프로파일</td></tr>
-    <tr><td>HKEY_CLASSES_ROOT</td><td>HKCR</td><td>파일 확장자 연결·COM 객체 등록</td></tr>
-    <tr><td>HKEY_CURRENT_CONFIG</td><td>HKCC</td><td>현재 하드웨어 프로파일</td></tr>
+    <tr><td><code>HKEY_LOCAL_MACHINE</code></td><td>HKLM</td><td>시스템 전체 하드웨어·소프트웨어·보안 설정</td></tr>
+    <tr><td><code>HKEY_CURRENT_USER</code></td><td>HKCU</td><td>현재 로그인 사용자 설정</td></tr>
+    <tr><td><code>HKEY_USERS</code></td><td>HKU</td><td>모든 사용자 프로파일</td></tr>
+    <tr><td><code>HKEY_CLASSES_ROOT</code></td><td>HKCR</td><td>파일 확장자 연결·COM 객체 등록</td></tr>
+    <tr><td><code>HKEY_CURRENT_CONFIG</code></td><td>HKCC</td><td>현재 하드웨어 프로파일</td></tr>
   </tbody>
 </table>
 
