@@ -281,6 +281,10 @@ for (const post of posts) {
   <script is:inline src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <script is:inline define:vars={{ isbnPostMap }}>
+    window.__ISBN_MAP__ = isbnPostMap;
+  </script>
+
+  <script is:inline>
     // ── 탭 전환 ─────────────────────────────────────────────
     var TABS = ['qr', 'bar', 'book'];
 
@@ -403,7 +407,7 @@ for (const post of posts) {
 
     // ── 영어원서 탭 ──────────────────────────────────────────
     var API          = 'https://api.daparapara.com';
-    var ISBN_MAP     = isbnPostMap;
+    var ISBN_MAP     = window.__ISBN_MAP__ || {};
     var _currentIsbn = null;
     var _pollTimer   = null;
     var _lastQuery   = '';
