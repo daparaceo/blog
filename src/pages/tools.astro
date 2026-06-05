@@ -266,9 +266,8 @@ for (const post of posts) {
 
       <!-- 포스트 생성 완료 -->
       <div id="book-post-result" class="hidden mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-        <p class="text-sm font-semibold text-emerald-800 mb-2">포스트 생성 완료</p>
-        <a id="book-post-link" href="#" target="_blank"
-          class="text-sm text-sky-600 underline break-all"></a>
+        <p class="text-sm font-semibold text-emerald-800">포스트 생성 완료</p>
+        <p class="text-xs text-emerald-600 mt-1">블로그에서 확인해주세요.</p>
       </div>
 
       <p id="book-error" class="hidden mt-3 text-sm text-red-500"></p>
@@ -568,9 +567,6 @@ for (const post of posts) {
           if (data.status === 'completed') {
             clearInterval(_pollTimer); _pollTimer = null;
             document.getElementById('book-post-progress').classList.add('hidden');
-            var linkEl = document.getElementById('book-post-link');
-            linkEl.href = data.post_url;
-            linkEl.textContent = data.post_url;
             document.getElementById('book-post-result').classList.remove('hidden');
           } else if (Date.now() >= deadline) {
             clearInterval(_pollTimer); _pollTimer = null;
