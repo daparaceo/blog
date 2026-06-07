@@ -818,7 +818,7 @@
       "Indexing API"
     ],
     "answer": 1,
-    "explanation": "WebCrypto API(Web Cryptography API)는 W3C가 표준화한 브라우저 기반 암호화 API로, JavaScript에서 직접 키를 노출하지 않고 암호화, 복호화, 서명, 검증, 키 생성·유도 등 다양한 암호화 작업을 수행할 수 있다.",
+    "explanation": "정답은 1번 WebCrypto API이다. 브라우저의 보안 컨텍스트에서 암호화·복호화, 해시, 서명 검증, 키 생성과 유도 같은 저수준 암호 연산을 제공하며 키를 추출 불가능한 형태로 관리할 수도 있다. REST·SOAP는 통신 인터페이스이고 Indexing API는 검색 색인용이다.",
     "hasImage": false,
     "tags": ["보안기사", "어플리케이션보안", "WebCryptoAPI", "브라우저암호화", "2021", "2021-2"]
   },
@@ -1880,7 +1880,7 @@
       "㉠→㉢→㉣→㉡→㉤"
     ],
     "answer": 2,
-    "explanation": "위험 관리 절차는 자산 식별 및 위협·취약점 분석(㉠ 식별) → 위험 분석(㉣ 위험도 산정) → 위험 평가 및 우선순위 결정(㉢ 평가) → 위험 처리 방안 선택 및 이행(㉡ 처리) → 지속적 감시 및 검토(㉤ 감시) 순이다.",
+    "explanation": "정답은 2번 ㉠→㉣→㉢→㉡→㉤이다. 먼저 자산과 위협·취약점을 식별하고 발생 가능성과 영향을 분석한 뒤, 산정된 위험을 평가하여 처리 우선순위를 정한다. 이후 회피·감소·전가·수용 등의 처리 방안을 이행하고 지속적으로 감시·검토한다.",
     "hasImage": true,
     "imageNote": "위험관리 절차 순서 표/다이어그램 포함",
     "tags": ["보안기사", "정보보안관리및법규", "위험관리절차", "위험분석", "2021", "2021-2"]
@@ -1981,7 +1981,7 @@
       "위험평가(Risk Assessment)"
     ],
     "answer": 1,
-    "explanation": "사업영향평가(BIA, Business Impact Analysis)는 업무 중단이 조직에 미치는 영향을 분석하여 핵심 업무를 식별하고 MTPD(Maximum Tolerable Period of Disruption, 최대허용중단시간), RTO(Recovery Time Objective, 목표복구시간), RPO(Recovery Point Objective, 목표복구시점) 등의 복구 목표를 도출한다.",
+    "explanation": "정답은 1번 사업영향평가(BIA)이다. BIA는 업무 중단이 재무·운영에 미치는 영향을 분석해 핵심 업무와 MTPD, RTO, RPO 등 복구 목표를 도출한다. BCP와 DRP는 이 분석 결과를 바탕으로 업무 연속성과 정보시스템 복구 절차를 수립하는 계획이라는 점이 다르다.",
     "hasImage": false,
     "tags": ["보안기사", "정보보안관리및법규", "BIA", "사업영향평가", "RTO", "RPO", "MTPD", "2021", "2021-2"]
   },
