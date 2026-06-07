@@ -23,8 +23,17 @@ export async function getStaticPaths() {
 const { questions, year, session, slug } = Astro.props;
 
 const subjectOrder = ['시스템보안', '네트워크보안', '어플리케이션보안', '정보보안일반', '정보보안관리및법규'];
+const questionImageDir = path.resolve(process.cwd(), 'public/images/security-questions');
+const questionImageExtensions = ['webp', 'png', 'jpg', 'jpeg'];
 
 const optionSymbols = ['①', '②', '③', '④'];
+
+function getQuestionImage(q: any) {
+  const extension = questionImageExtensions.find(ext =>
+    fs.existsSync(path.join(questionImageDir, `${q.id}.${ext}`))
+  );
+  return extension ? `/images/security-questions/${q.id}.${extension}` : null;
+}
 
 function getAnswers(q: any) {
   return Array.isArray(q.answers) ? q.answers : [q.answer];
@@ -141,6 +150,18 @@ function getRelatedChapters(q: any) {
                   <span class="text-gray-400 mr-1">{q.number}.</span>
                   <Fragment set:html={formatSecurityText(q.question)} />
                 </p>
+
+                {getQuestionImage(q) && (
+                  <figure class="mb-4">
+                    <img
+                      src={getQuestionImage(q)}
+                      alt={`${year}년 ${session}회 ${q.number}번 문제 참고 이미지`}
+                      loading="lazy"
+                      decoding="async"
+                      class="max-w-full h-auto rounded border border-gray-200"
+                    />
+                  </figure>
+                )}
 
                 <!-- 보기 (라디오 버튼) -->
                 <div class="space-y-2 mb-4">
