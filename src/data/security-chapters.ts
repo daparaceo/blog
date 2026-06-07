@@ -3854,9 +3854,9 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 
 <h3>침해사고 신고 의무</h3>
 <ul>
-  <li><strong>정보통신서비스 제공자</strong>: 침해사고 발생 인지 후 <strong>24시간 이내</strong> KISA에 신고</li>
-  <li><strong>주요정보통신기반시설 운영기관</strong>: 침해사고 즉시 관계중앙행정기관에 신고</li>
-  <li><strong>개인정보 유출</strong>: 정보주체에게 72시간 이내 통지, 1천 명 이상 시 개인정보보호위원회 신고</li>
+  <li><strong>정보통신서비스 제공자</strong>: 침해사고 발생 인지 후 <strong>24시간 이내</strong> 과학기술정보통신부장관 또는 KISA에 신고</li>
+  <li><strong>주요정보통신기반시설 운영기관</strong>: 침해사고 인지 시 관계 행정기관, 수사기관 또는 KISA에 통지</li>
+  <li><strong>개인정보 유출</strong>: 정보주체에게 72시간 이내 통지. 1천 명 이상, 민감정보·고유식별정보, 외부 불법 접근에 의한 유출 중 하나에 해당하면 72시간 이내 개인정보보호위원회 또는 KISA에 신고</li>
 </ul>
 
 <h3>주요 기관 역할</h3>
@@ -3879,7 +3879,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <thead><tr><th>함정</th><th>정리</th></tr></thead>
   <tbody>
     <tr><td>과태료와 과징금 혼동</td><td>과징금은 위반행위 관련 매출액 기준, 과태료는 신고·공개 등 의무 위반에 자주 출제</td></tr>
-    <tr><td>신고 대상 기관 혼동</td><td>개인정보 유출은 개인정보보호위원회, 침해사고 대응은 KISA·관계기관과 연결</td></tr>
+    <tr><td>신고 대상 기관 혼동</td><td>개인정보 유출 신고는 개인정보보호위원회 또는 KISA, 정보통신서비스 제공자의 침해사고 신고는 과학기술정보통신부장관 또는 KISA가 대상이다. 주요정보통신기반시설은 관계 행정기관, 수사기관 또는 KISA에 통지한다.</td></tr>
     <tr><td>법률 적용 대상 혼동</td><td>개인정보 보호법은 일반 개인정보 처리, 기반보호법은 주요정보통신기반시설 중심</td></tr>
   </tbody>
 </table>
