@@ -113,7 +113,7 @@ function getRelatedChapters(q: any) {
       }
       return { ...ch, _score: score };
     })
-    .filter(ch => ch._score > 0)
+    .filter(ch => ch._score >= 3)
     .sort((a, b) => b._score - a._score)
     .slice(0, 3);
 }

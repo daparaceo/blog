@@ -18,7 +18,7 @@ export const CHAPTERS: Chapter[] = [
     subjectLabel: '시스템보안',
     chapter: 'linux-security',
     chapterLabel: '유닉스·리눅스 보안',
-    keywords: ['umask', '파일 권한', 'setuid', 'setgid', 'sticky bit', '/etc/passwd', '/etc/shadow', '계정', '패스워드', 'RUID', 'EUID', 'TCP Wrapper', 'sudoers', '로그'],
+    keywords: ['umask', '파일 권한', 'setuid', 'setgid', 'sticky bit', '/etc/passwd', '/etc/shadow', 'RUID', 'EUID', 'TCP Wrapper', 'sudoers', 'PAM', '/etc/securetty'],
     content: `
 <h3>파일 권한 (rwx)</h3>
 <p>리눅스 파일 권한은 소유자(User)/그룹(Group)/기타(Other) 3계층, 각각 읽기(r=4)/쓰기(w=2)/실행(x=1) 3비트로 표현합니다.</p>
@@ -3965,7 +3965,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안관리및법규',
     chapter: 'privacy-advanced',
     chapterLabel: '개인정보 보호 심화',
-    keywords: ['개인정보 영향평가', 'PIA', '가명처리', '익명처리', '개인정보 보호책임자', 'CPO', 'DPO', '국외이전', '개인정보 유출통지', '72시간', '개인정보 안전성 확보조치', '암호화', '접근권한', '접속기록'],
+    keywords: ['개인정보 영향평가', 'PIA', '가명처리', '익명처리', '개인정보 보호책임자', 'CPO', 'DPO', '국외이전', '개인정보 유출통지', '72시간', '개인정보 안전성 확보조치', '개인정보 암호화', '개인정보 접근권한', '개인정보 접속기록'],
     content: `
 <h3>개인정보 안전성 확보조치 기준</h3>
 <table>
