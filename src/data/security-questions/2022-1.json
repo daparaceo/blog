@@ -28,7 +28,7 @@
     "subject": "시스템보안",
     "topic": "패스워드 파일",
     "type": "objective",
-    "question": "다음은 리눅스 /etc/passwd 파일의 일부이다. A에 해당하는 것은?\n\n(이미지: passwd 파일 구조 다이어그램 - A:x:0:0:root:/root:/bin/bash)",
+    "question": "다음은 리눅스 /etc/passwd 파일의 일부이다. A에 해당하는 것은?",
     "options": [
       "그룹 ID",
       "패스워드",
@@ -309,7 +309,7 @@
     "subject": "시스템보안",
     "topic": "파일 접근 권한",
     "type": "objective",
-    "question": "다음은 리눅스 시스템에서 ls -l 명령 실행 결과의 일부이다. 사용자 kim이 jang 사용자 소유의 디렉터리에 접근하려 할 때 옳은 것은?\n\n(이미지: drwxr-x--- 2 jang jang 4096 Jan 10 10:00 jang_dir)",
+    "question": "다음은 리눅스 시스템에서 ls -l 명령 실행 결과의 일부이다. 사용자 kim이 jang 사용자 소유의 디렉터리에 접근하려 할 때 옳은 것은?",
     "options": [
       "kim은 jang_dir 디렉터리의 파일 목록을 볼 수 있다.",
       "kim은 jang_dir 디렉터리 내에 파일을 생성할 수 있다.",
@@ -390,7 +390,7 @@
     "subject": "시스템보안",
     "topic": "SUID/SGID 파일 탐색",
     "type": "objective",
-    "question": "다음 find 명령어에서 SUID와 SGID가 모두 설정된 파일을 검색하는 옵션으로 옳은 것은?\n\n(이미지: find / [옵션] -type f -print 형태의 명령어 구조)",
+    "question": "다음 find 명령어에서 SUID와 SGID가 모두 설정된 파일을 검색하는 옵션으로 옳은 것은?",
     "options": [
       "-perm -06000",
       "-perm +06000",
@@ -571,7 +571,7 @@
     "subject": "네트워크보안",
     "topic": "DoS 공격",
     "type": "objective",
-    "question": "다음은 tcpdump로 캡처한 패킷의 일부이다. 이 패킷에 해당하는 공격 유형은?\n\n(이미지: tcpdump 출력 - 출발지 IP와 목적지 IP가 동일한 SYN 패킷)",
+    "question": "다음은 tcpdump로 캡처한 패킷의 일부이다. 이 패킷에 해당하는 공격 유형은?",
     "options": [
       "SYN Flooding",
       "Smurf 공격",
@@ -672,7 +672,7 @@
     "subject": "네트워크보안",
     "topic": "포트 스캔 분석",
     "type": "objective",
-    "question": "다음 패킷 캡처 정보를 분석했을 때, 어떤 유형의 포트 스캔인가?\n\n(이미지: 패킷 테이블 - 스캐너→대상: SYN, 대상→스캐너: SYN/ACK, 스캐너→대상: RST 패턴 반복)",
+    "question": "다음 패킷 캡처 정보를 분석했을 때, 어떤 유형의 포트 스캔인가?",
     "options": [
       "TCP Connect 스캔",
       "TCP SYN 스캔(Half-open 스캔)",
@@ -1333,7 +1333,7 @@
     "subject": "정보보안일반",
     "topic": "접근통제 모델",
     "type": "objective",
-    "question": "다음 설명에서 ㉠, ㉡, ㉢에 해당하는 접근통제 모델로 옳게 짝지어진 것은?\n\n㉠ 자원의 소유자가 임의로 접근 권한을 설정하고 다른 주체에게 위임할 수 있다.\n㉡ 시스템이 보안 레이블(등급)을 기반으로 접근 통제를 강제적으로 수행한다.\n㉢ 사용자에게 역할을 부여하고 역할에 따라 접근 권한이 결정된다.",
+    "question": "다음 설명에서 ㉠, ㉡, ㉢에 해당하는 접근통제 모델로 옳게 짝지어진 것은?",
     "options": [
       "㉠ MAC, ㉡ DAC, ㉢ RBAC",
       "㉠ DAC, ㉡ MAC, ㉢ RBAC",
