@@ -68,7 +68,46 @@ const relatedQuestions = primary.length >= 2
   ? primary
   : scored.slice(0, 3);
 
+const questionImageDir = path.resolve(process.cwd(), 'public/images/security-questions');
+const questionImageExtensions = ['webp', 'png', 'jpg', 'jpeg'];
+const questionImagesByStem = new Map<string, { file: string; priority: number }>();
+
+fs.readdirSync(questionImageDir).forEach(file => {
+  const extension = path.extname(file).slice(1).toLowerCase();
+  const priority = questionImageExtensions.indexOf(extension);
+  if (priority === -1) return;
+
+  const stem = path.basename(file, path.extname(file));
+  const current = questionImagesByStem.get(stem);
+  if (!current || priority < current.priority) {
+    questionImagesByStem.set(stem, { file, priority });
+  }
+});
+
 const optionSymbols = ['①', '②', '③', '④'];
+
+function getImageSeries(prefix: string) {
+  return Array.from(questionImagesByStem.entries())
+    .filter(([stem]) => {
+      if (stem === prefix) return true;
+      if (!stem.startsWith(`${prefix}_`)) return false;
+      return /^\d+$/.test(stem.slice(prefix.length + 1));
+    })
+    .sort(([a], [b]) => {
+      const aOrder = a === prefix ? 0 : Number(a.slice(prefix.length + 1));
+      const bOrder = b === prefix ? 0 : Number(b.slice(prefix.length + 1));
+      return aOrder - bOrder;
+    })
+    .map(([, image]) => `/images/security-questions/${image.file}`);
+}
+
+function getQuestionImages(q: any) {
+  return getImageSeries(q.id);
+}
+
+function getOptionImages(q: any, optionNumber: number) {
+  return getImageSeries(`${q.id}-${optionNumber}`);
+}
 
 function getAnswers(q: any) {
   return Array.isArray(q.answers) ? q.answers : [q.answer];
@@ -158,6 +197,18 @@ function formatSecurityText(value: string) {
               </div>
               <p class="text-sm font-medium text-gray-800 mb-3 leading-relaxed" set:html={formatSecurityText(q.question)}></p>
 
+              {getQuestionImages(q).map((image, imageIndex) => (
+                <figure class="mb-3">
+                  <img
+                    src={image}
+                    alt={`${q.examSlug.replace('-', '년 ')}회 ${q.number}번 문제 참고 이미지 ${imageIndex + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    class="max-w-full h-auto rounded border border-gray-200"
+                  />
+                </figure>
+              ))}
+
               <!-- 보기 (라디오 버튼) -->
               <div class="space-y-1.5 mb-3">
                 {q.options.map((opt: string, i: number) => (
@@ -168,7 +219,18 @@ function formatSecurityText(value: string) {
                       value={i + 1}
                       class="mt-0.5 accent-sky-600 shrink-0"
                     />
-                    <span class="text-sm text-gray-700" style="overflow-wrap:anywhere" set:html={formatSecurityText(opt)}></span>
+                    <span class="min-w-0 flex-1">
+                      <span class="block text-sm text-gray-700" style="overflow-wrap:anywhere" set:html={formatSecurityText(opt)}></span>
+                      {getOptionImages(q, i + 1).map((image, imageIndex) => (
+                        <img
+                          src={image}
+                          alt={`${q.examSlug.replace('-', '년 ')}회 ${q.number}번 ${i + 1}번 선택지 참고 이미지 ${imageIndex + 1}`}
+                          loading="lazy"
+                          decoding="async"
+                          class="max-w-full h-auto mt-2 rounded border border-gray-200"
+                        />
+                      ))}
+                    </span>
                   </label>
                 ))}
               </div>
