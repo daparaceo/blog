@@ -4,53 +4,151 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft && data.category === 'english-reading');
 const posts = allPosts.sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+
+const postsData = posts.map((post) => ({
+  slug: post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug,
+  title: post.data.title,
+  description: post.data.description ?? '',
+  author: post.data.author ?? '',
+  ar_level: post.data.ar_level ?? null,
+  date: post.data.publishedAt.toISOString(),
+  dateLabel: post.data.publishedAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
+}));
 ---
 
 <BaseLayout
   title="영어원서 | daparapara"
   description="영어원서 읽기 기록 — 어휘, 줄거리, 리뷰를 정리합니다."
 >
-  <div class="mb-8">
+  <div class="mb-6">
     <nav class="text-xs text-gray-400 mb-3">
       <a href="/learn/" class="hover:text-brand-600">학습</a>
       <span class="mx-1">/</span>
       <span class="text-gray-600">영어원서</span>
     </nav>
-    <h1 class="text-2xl font-bold text-gray-900 mb-1">영어원서</h1>
-    <p class="text-gray-500 text-sm">어휘, 줄거리, 독후감을 함께 정리한 영어원서 읽기 기록입니다.</p>
+    <div class="flex items-end justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">영어원서</h1>
+        <p class="text-gray-500 text-sm">어휘, 줄거리, 독후감을 함께 정리한 영어원서 읽기 기록입니다.</p>
+      </div>
+      <span id="post-count" class="text-xs text-gray-400 whitespace-nowrap pb-0.5">{posts.length}권</span>
+    </div>
+  </div>
+
+  <!-- 정렬 버튼 -->
+  <div class="flex gap-2 mb-5">
+    {[
+      { key: 'date',  label: '최신순' },
+      { key: 'ar_asc',  label: 'AR 낮은순' },
+      { key: 'ar_desc', label: 'AR 높은순' },
+      { key: 'title', label: '제목순' },
+    ].map(({ key, label }) => (
+      <button
+        type="button"
+        data-sort={key}
+        class:list={[
+          'sort-btn text-xs px-3 py-1.5 rounded-full border transition-colors',
+          key === 'date'
+            ? 'border-brand-400 bg-brand-50 text-brand-700'
+            : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600',
+        ]}
+      >
+        {label}
+      </button>
+    ))}
   </div>
 
   {posts.length === 0 ? (
     <p class="text-gray-400 text-sm">아직 등록된 글이 없습니다.</p>
   ) : (
-    <ul class="divide-y divide-gray-100">
-      {posts.map((post) => {
-        const bareSlug = post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug;
-        return (
-          <li class="py-4 group">
-            <a href={`/learn/english/books/${bareSlug}/`} class="flex items-start justify-between gap-4">
-              <div class="flex-1 min-w-0">
-                <span class="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">
-                  {post.data.title}
-                </span>
-                {post.data.description && (
-                  <p class="text-gray-500 text-sm mt-0.5 line-clamp-1">{post.data.description}</p>
-                )}
-                {(post.data.author || post.data.ar_level) && (
-                  <p class="text-xs text-gray-400 mt-1">
-                    {post.data.author && <span>{post.data.author}</span>}
-                    {post.data.author && post.data.ar_level && <span class="mx-1">·</span>}
-                    {post.data.ar_level && <span>AR {post.data.ar_level}</span>}
-                  </p>
-                )}
-              </div>
-              <time datetime={post.data.publishedAt.toISOString()} class="text-xs text-gray-400 whitespace-nowrap mt-1">
-                {post.data.publishedAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
-              </time>
-            </a>
-          </li>
-        );
-      })}
-    </ul>
+    <ul id="book-list" class="divide-y divide-gray-100"></ul>
   )}
+
+  <script is:inline define:vars={{ postsData }}>
+    var POSTS = postsData;
+    var currentSort = 'date';
+
+    function renderList(items) {
+      var ul = document.getElementById('book-list');
+      if (!ul) return;
+      ul.innerHTML = items.map(function(p) {
+        var meta = '';
+        if (p.author || p.ar_level !== null) {
+          var parts = [];
+          if (p.author) parts.push('<span>' + escHtml(p.author) + '</span>');
+          if (p.ar_level !== null) parts.push('<span>AR ' + p.ar_level + '</span>');
+          meta = '<p class="text-xs text-gray-400 mt-1">' + parts.join('<span class="mx-1">·</span>') + '</p>';
+        }
+        var desc = p.description
+          ? '<p class="text-gray-500 text-sm mt-0.5 line-clamp-1">' + escHtml(p.description) + '</p>'
+          : '';
+        return (
+          '<li class="py-4 group">' +
+            '<a href="/learn/english/books/' + p.slug + '/" class="flex items-start justify-between gap-4">' +
+              '<div class="flex-1 min-w-0">' +
+                '<span class="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">' +
+                  escHtml(p.title) +
+                '</span>' +
+                desc +
+                meta +
+              '</div>' +
+              '<time class="text-xs text-gray-400 whitespace-nowrap mt-1">' + p.dateLabel + '</time>' +
+            '</a>' +
+          '</li>'
+        );
+      }).join('');
+    }
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function sortPosts(key) {
+      var sorted = POSTS.slice();
+      if (key === 'date') {
+        sorted.sort(function(a, b) { return b.date < a.date ? -1 : b.date > a.date ? 1 : 0; });
+      } else if (key === 'ar_asc') {
+        sorted.sort(function(a, b) {
+          var av = a.ar_level !== null ? a.ar_level : 999;
+          var bv = b.ar_level !== null ? b.ar_level : 999;
+          return av - bv;
+        });
+      } else if (key === 'ar_desc') {
+        sorted.sort(function(a, b) {
+          var av = a.ar_level !== null ? a.ar_level : -1;
+          var bv = b.ar_level !== null ? b.ar_level : -1;
+          return bv - av;
+        });
+      } else if (key === 'title') {
+        sorted.sort(function(a, b) { return a.title.localeCompare(b.title, 'ko'); });
+      }
+      return sorted;
+    }
+
+    function setActiveBtn(key) {
+      document.querySelectorAll('.sort-btn').forEach(function(btn) {
+        var isActive = btn.getAttribute('data-sort') === key;
+        btn.className = 'sort-btn text-xs px-3 py-1.5 rounded-full border transition-colors ' + (
+          isActive
+            ? 'border-brand-400 bg-brand-50 text-brand-700'
+            : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600'
+        );
+      });
+    }
+
+    document.querySelectorAll('.sort-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var key = btn.getAttribute('data-sort');
+        currentSort = key;
+        setActiveBtn(key);
+        renderList(sortPosts(key));
+      });
+    });
+
+    renderList(sortPosts('date'));
+  </script>
 </BaseLayout>
