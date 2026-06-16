@@ -2,7 +2,7 @@
 // @astrojs/sitemap 라이브러리 버그 우회용
 
 import { getCollection } from 'astro:content';
-import { CHAPTERS } from '../data/security-chapters';
+import { CHAPTERS } from '../data/certs/security/chapters';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -31,7 +31,7 @@ export async function GET() {
     }));
 
   // 보안기사 섹션 (새 URL)
-  const questionsDir = path.resolve(process.cwd(), 'src/data/security-questions');
+  const questionsDir = path.resolve(process.cwd(), 'src/data/certs/security/questions');
   const examSlugs = fs.readdirSync(questionsDir)
     .filter((f: string) => f.endsWith('.json'))
     .map((f: string) => f.replace('.json', ''));

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import { CHAPTERS } from '../../../../../data/security-chapters';
+import { CHAPTERS } from '../../../../../data/certs/security/chapters';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 
 const { chapterData } = Astro.props;
 
-const questionsDir = path.resolve(process.cwd(), 'src/data/security-questions');
+const questionsDir = path.resolve(process.cwd(), 'src/data/certs/security/questions');
 const allQuestions: any[] = [];
 
 const files = fs.readdirSync(questionsDir).filter(f => f.endsWith('.json'));
@@ -61,7 +61,7 @@ const scored = allQuestions
 const primary = scored.filter(q => q._score >= 3).slice(0, 5);
 const relatedQuestions = primary.length >= 2 ? primary : scored.slice(0, 3);
 
-const questionImageDir = path.resolve(process.cwd(), 'public/images/security-questions');
+const questionImageDir = path.resolve(process.cwd(), 'public/images/certs/security/questions');
 const questionImageExtensions = ['webp', 'png', 'jpg', 'jpeg'];
 const questionImagesByStem = new Map<string, { file: string; priority: number }>();
 
@@ -91,7 +91,7 @@ function getImageSeries(prefix: string) {
       const bOrder = b === prefix ? 0 : Number(b.slice(prefix.length + 1));
       return aOrder - bOrder;
     })
-    .map(([, image]) => `/images/security-questions/${image.file}`);
+    .map(([, image]) => `/images/certs/security/questions/${image.file}`);
 }
 
 function getQuestionImages(q: any) { return getImageSeries(q.id); }

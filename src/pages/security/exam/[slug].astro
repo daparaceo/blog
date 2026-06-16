@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export async function getStaticPaths() {
-  const dir = path.resolve(process.cwd(), 'src/data/security-questions');
+  const dir = path.resolve(process.cwd(), 'src/data/certs/security/questions');
   const files = fs.readdirSync(dir).filter((f: string) => f.endsWith('.json'));
   return files.map((file: string) => {
     const slug = file.replace('.json', '');
