@@ -70,6 +70,10 @@ const postsData = posts.map((post) => ({
     var POSTS = postsData;
     var currentSort = 'date';
 
+    function bareTitle(t) {
+      return t.replace(/^\[AR[\s\d.]+\]\s*/, '');
+    }
+
     function renderList(items) {
       var ul = document.getElementById('book-list');
       if (!ul) return;
@@ -128,9 +132,9 @@ const postsData = posts.map((post) => ({
           return bv - av;
         });
       } else if (key === 'title') {
-        sorted.sort(function(a, b) { return a.title.localeCompare(b.title, 'ko'); });
+        sorted.sort(function(a, b) { return bareTitle(a.title).localeCompare(bareTitle(b.title), 'ko'); });
       } else if (key === 'title_desc') {
-        sorted.sort(function(a, b) { return b.title.localeCompare(a.title, 'ko'); });
+        sorted.sort(function(a, b) { return bareTitle(b.title).localeCompare(bareTitle(a.title), 'ko'); });
       }
       return sorted;
     }
