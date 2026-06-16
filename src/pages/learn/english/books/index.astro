@@ -36,12 +36,14 @@ const postsData = posts.map((post) => ({
   </div>
 
   <!-- 정렬 버튼 -->
-  <div class="flex gap-2 mb-5">
+  <div class="flex flex-wrap gap-2 mb-5">
     {[
-      { key: 'date',  label: '최신순' },
-      { key: 'ar_asc',  label: 'AR 낮은순' },
-      { key: 'ar_desc', label: 'AR 높은순' },
-      { key: 'title', label: '제목순' },
+      { key: 'date',       label: '최신순' },
+      { key: 'date_asc',   label: '오래된순' },
+      { key: 'ar_asc',     label: 'AR 낮은순' },
+      { key: 'ar_desc',    label: 'AR 높은순' },
+      { key: 'title',      label: '제목순' },
+      { key: 'title_desc', label: '제목역순' },
     ].map(({ key, label }) => (
       <button
         type="button"
@@ -111,6 +113,8 @@ const postsData = posts.map((post) => ({
       var sorted = POSTS.slice();
       if (key === 'date') {
         sorted.sort(function(a, b) { return b.date < a.date ? -1 : b.date > a.date ? 1 : 0; });
+      } else if (key === 'date_asc') {
+        sorted.sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
       } else if (key === 'ar_asc') {
         sorted.sort(function(a, b) {
           var av = a.ar_level !== null ? a.ar_level : 999;
@@ -125,6 +129,8 @@ const postsData = posts.map((post) => ({
         });
       } else if (key === 'title') {
         sorted.sort(function(a, b) { return a.title.localeCompare(b.title, 'ko'); });
+      } else if (key === 'title_desc') {
+        sorted.sort(function(a, b) { return b.title.localeCompare(a.title, 'ko'); });
       }
       return sorted;
     }
