@@ -183,22 +183,23 @@ for (const post of posts) {
             <input id="book-isbn" type="text" placeholder="9781234567890"
               inputmode="numeric"
               class="flex-1 px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-sky-400 transition-colors bg-white" />
-            <button id="scan-open-btn" onclick="openScanner()"
-              class="px-3 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 active:scale-95 transition-all flex items-center"
-              title="카메라로 스캔">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="2"   y="4" width="1.5" height="16"/>
-                <rect x="4.5" y="4" width="1"   height="16"/>
-                <rect x="6.5" y="4" width="2"   height="16"/>
-                <rect x="9.5" y="4" width="1"   height="16"/>
-                <rect x="11.5" y="4" width="1.5" height="16"/>
-                <rect x="14"  y="4" width="1"   height="16"/>
-                <rect x="16"  y="4" width="2"   height="16"/>
-                <rect x="19"  y="4" width="1"   height="16"/>
-                <rect x="21"  y="4" width="1.5" height="16"/>
-              </svg>
-            </button>
           </div>
+          <!-- 바코드 스캔 버튼: 모바일(md 미만)에서만 표시 -->
+          <button id="scan-open-btn" onclick="openScanner()"
+            class="md:hidden mt-2 w-full flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-600 text-sm rounded-xl hover:bg-gray-200 active:scale-95 transition-all">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="2"   y="4" width="1.5" height="16"/>
+              <rect x="4.5" y="4" width="1"   height="16"/>
+              <rect x="6.5" y="4" width="2"   height="16"/>
+              <rect x="9.5" y="4" width="1"   height="16"/>
+              <rect x="11.5" y="4" width="1.5" height="16"/>
+              <rect x="14"  y="4" width="1"   height="16"/>
+              <rect x="16"  y="4" width="2"   height="16"/>
+              <rect x="19"  y="4" width="1"   height="16"/>
+              <rect x="21"  y="4" width="1.5" height="16"/>
+            </svg>
+            바코드 스캔
+          </button>
         </div>
 
         <!-- 인라인 스캐너 -->
@@ -411,6 +412,7 @@ for (const post of posts) {
     var _currentIsbn = null;
     var _pollTimer   = null;
     var _lastQuery   = '';
+    var _lastPage    = 0;
 
     // ── AR 레벨 배지 ─────────────────────────────────────────
     function arBadgeHtml(ar) {
@@ -429,28 +431,51 @@ for (const post of posts) {
       var q = document.getElementById('book-query').value.trim();
       if (!q || q.length < 2) return;
       _lastQuery = q;
-      var size = extended ? 10 : 5;
+      var size = 5;
+
+      if (!extended) {
+        _lastPage = 0;
+      } else {
+        _lastPage++;
+      }
 
       var listEl    = document.getElementById('book-candidates');
       var moreBtn   = document.getElementById('btn-more-search');
       var errEl     = document.getElementById('book-error');
       errEl.classList.add('hidden');
-      listEl.innerHTML = '<p class="text-sm text-center text-gray-400 py-3">검색 중...</p>';
-      listEl.classList.remove('hidden');
       moreBtn.classList.add('hidden');
 
+      if (!extended) {
+        listEl.innerHTML = '<p class="text-sm text-center text-gray-400 py-3">검색 중...</p>';
+        listEl.classList.remove('hidden');
+      } else {
+        listEl.insertAdjacentHTML('beforeend',
+          '<p id="more-loading" class="text-sm text-center text-gray-400 py-3">검색 중...</p>');
+      }
+
       try {
-        var res  = await fetch(API + '/book-search?q=' + encodeURIComponent(q) + '&size=' + size + '&lang=en');
+        var res = await fetch(
+          API + '/book-search?q=' + encodeURIComponent(q) +
+          '&size=' + size + '&lang=en&page=' + _lastPage
+        );
         if (!res.ok) throw new Error('검색 실패 (' + res.status + ')');
         var data = await res.json();
         var results = data.results || [];
 
+        var loadingEl = document.getElementById('more-loading');
+        if (loadingEl) loadingEl.remove();
+
         if (!results.length) {
-          listEl.innerHTML = '<p class="text-sm text-center text-gray-500 py-3">결과가 없어요. 영어로 검색해보세요.</p>';
+          if (!extended) {
+            listEl.innerHTML = '<p class="text-sm text-center text-gray-500 py-3">결과가 없어요. 영어로 검색해보세요.</p>';
+          } else {
+            listEl.insertAdjacentHTML('beforeend',
+              '<p class="text-sm text-center text-gray-500 py-3">더 이상 결과가 없어요.</p>');
+          }
           return;
         }
 
-        listEl.innerHTML = results.map(function(item) {
+        var html = results.map(function(item) {
           return '<button type="button" ' +
             'class="w-full text-left bg-white border border-gray-200 rounded-xl p-3 ' +
             'hover:border-sky-300 hover:bg-sky-50 active:scale-[0.98] transition-all" ' +
@@ -466,9 +491,22 @@ for (const post of posts) {
             '</div></div></button>';
         }).join('');
 
-        moreBtn.classList.toggle('hidden', extended || results.length < size);
+        if (!extended) {
+          listEl.innerHTML = html;
+        } else {
+          listEl.insertAdjacentHTML('beforeend', html);
+        }
+
+        moreBtn.classList.toggle('hidden', results.length < size);
       } catch (e) {
-        listEl.innerHTML = '<p class="text-sm text-center text-red-400 py-3">검색 오류: ' + e.message + '</p>';
+        var loadingEl = document.getElementById('more-loading');
+        if (loadingEl) loadingEl.remove();
+        if (!extended) {
+          listEl.innerHTML = '<p class="text-sm text-center text-red-400 py-3">검색 오류: ' + e.message + '</p>';
+        } else {
+          listEl.insertAdjacentHTML('beforeend',
+            '<p class="text-sm text-center text-red-400 py-3">검색 오류: ' + e.message + '</p>');
+        }
       }
     }
 
