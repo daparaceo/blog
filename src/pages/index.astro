@@ -1,77 +1,102 @@
 ---
 import { getCollection } from 'astro:content';
-import { CATEGORIES } from '../content/config';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()
-);
-
-// 카테고리별 최신 글 3개씩
-const postsByCategory = CATEGORIES.map(({ slug, label }) => ({
-  slug,
-  label,
-  posts: sortedPosts.filter((p) => p.data.category === slug).slice(0, 3),
-})).filter(({ posts }) => posts.length > 0);
+const englishPosts = allPosts
+  .filter((p) => p.data.category === 'english-reading')
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())
+  .slice(0, 5);
 ---
 
 <BaseLayout
   title="daparapara"
   description="깊이 파고들고, 깊이 배워, 오래가는 가치를 만듭니다."
 >
-  <!-- 최신 글 전체 목록 (카테고리 없을 때도 표시) -->
-  <section class="mb-12">
-    <h2 class="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">최신 글</h2>
-    <ul class="divide-y divide-gray-100">
-      {sortedPosts.slice(0, 5).map((post) => (
-        <li class="py-4 group">
-          <a href={`/blog/${post.slug.split('/').pop()}/`} class="flex items-start justify-between gap-4">
-            <div class="flex-1 min-w-0">
-              {post.data.category && (
-                <span class="text-xs text-brand-600 font-medium mr-2">
-                  {CATEGORIES.find(c => c.slug === post.data.category)?.label}
-                </span>
-              )}
-              <span class="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">
-                {post.data.title}
-              </span>
-              {post.data.description && (
-                <p class="text-gray-500 text-sm mt-0.5 line-clamp-1">{post.data.description}</p>
-              )}
-            </div>
-            <time datetime={post.data.publishedAt.toISOString()} class="text-xs text-gray-400 whitespace-nowrap mt-1">
-              {post.data.publishedAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
-            </time>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <!-- 카테고리별 섹션 -->
-  {postsByCategory.map(({ slug, label, posts }) => (
-    <section class="mb-10">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-lg font-bold text-gray-900">{label}</h2>
-        <a href={`/${slug}/`} class="text-xs text-brand-600 hover:underline">더 보기 →</a>
+  <!-- 영어원서 섹션 -->
+  {englishPosts.length > 0 && (
+    <section class="mb-12">
+      <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+        <h2 class="text-lg font-bold text-gray-900">영어원서</h2>
+        <a href="/learn/english/books/" class="text-xs text-brand-600 hover:underline">전체 보기 →</a>
       </div>
       <ul class="divide-y divide-gray-100">
-        {posts.map((post) => (
-          <li class="py-3 group">
-            <a href={`/blog/${post.slug.split('/').pop()}/`} class="flex items-start justify-between gap-4">
-              <div class="flex-1 min-w-0">
-                <span class="text-sm font-medium text-gray-800 group-hover:text-brand-600 transition-colors">
-                  {post.data.title}
-                </span>
-              </div>
-              <time datetime={post.data.publishedAt.toISOString()} class="text-xs text-gray-400 whitespace-nowrap">
-                {post.data.publishedAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
-              </time>
-            </a>
-          </li>
-        ))}
+        {englishPosts.map((post) => {
+          const bareSlug = post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug;
+          return (
+            <li class="py-4 group">
+              <a href={`/learn/english/books/${bareSlug}/`} class="flex items-start justify-between gap-4">
+                <div class="flex-1 min-w-0">
+                  <span class="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">
+                    {post.data.title}
+                  </span>
+                  {post.data.description && (
+                    <p class="text-gray-500 text-sm mt-0.5 line-clamp-1">{post.data.description}</p>
+                  )}
+                  {(post.data.author || post.data.ar_level) && (
+                    <p class="text-xs text-gray-400 mt-0.5">
+                      {post.data.author && <span>{post.data.author}</span>}
+                      {post.data.author && post.data.ar_level && <span class="mx-1">·</span>}
+                      {post.data.ar_level && <span>AR {post.data.ar_level}</span>}
+                    </p>
+                  )}
+                </div>
+                <time datetime={post.data.publishedAt.toISOString()} class="text-xs text-gray-400 whitespace-nowrap mt-1">
+                  {post.data.publishedAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                </time>
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </section>
-  ))}
+  )}
+
+  <!-- 정보보안기사 섹션 -->
+  <section class="mb-12">
+    <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+      <h2 class="text-lg font-bold text-gray-900">정보보안기사</h2>
+      <a href="/learn/certs/security/" class="text-xs text-brand-600 hover:underline">전체 보기 →</a>
+    </div>
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {[
+        { href: '/learn/certs/security/system/', label: '시스템 보안' },
+        { href: '/learn/certs/security/network/', label: '네트워크 보안' },
+        { href: '/learn/certs/security/application/', label: '애플리케이션 보안' },
+        { href: '/learn/certs/security/general/', label: '정보보안 일반' },
+        { href: '/learn/certs/security/law/', label: '법규' },
+        { href: '/learn/certs/security/exam/written/2023-1/', label: '기출문제' },
+      ].map(({ href, label }) => (
+        <a
+          href={href}
+          class="block rounded-lg border border-gray-200 px-3 py-3 text-sm font-medium text-gray-700 hover:border-brand-300 hover:text-brand-600 hover:bg-brand-50 transition-colors"
+        >
+          {label}
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- 검색 도구 섹션 -->
+  <section>
+    <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+      <h2 class="text-lg font-bold text-gray-900">검색 도구</h2>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <a
+        href="/search/library/"
+        class="block rounded-lg border border-gray-200 px-4 py-3 hover:border-brand-300 hover:bg-brand-50 transition-colors"
+      >
+        <p class="text-sm font-semibold text-gray-800">도서관 통합 검색</p>
+        <p class="text-xs text-gray-500 mt-0.5">소장 도서관 · 대출 가능 여부</p>
+      </a>
+      <a
+        href="/tools/isbn-scan/"
+        class="block rounded-lg border border-gray-200 px-4 py-3 hover:border-brand-300 hover:bg-brand-50 transition-colors"
+      >
+        <p class="text-sm font-semibold text-gray-800">ISBN 바코드 스캔</p>
+        <p class="text-xs text-gray-500 mt-0.5">카메라로 책 스캔 · AR 정보</p>
+      </a>
+    </div>
+  </section>
 </BaseLayout>

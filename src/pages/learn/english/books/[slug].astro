@@ -1,0 +1,276 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => {
+    const bareSlug = post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug;
+    return {
+      params: { slug: bareSlug },
+      props: { post },
+    };
+  });
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const formattedDate = post.data.publishedAt.toLocaleDateString('ko-KR', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const allPosts = await getCollection('blog', ({ data }) => data.draft !== true);
+const currentData = post.data;
+
+const pinnedSlugs: string[] = (currentData.pinnedRelated ?? []).filter((s) => s !== post.slug);
+const pinnedPosts = pinnedSlugs
+  .map((slug) => allPosts.find((p) => p.slug === slug))
+  .filter(Boolean) as typeof allPosts;
+
+const excludedSlugs = new Set([post.slug, ...pinnedSlugs]);
+const autoPosts = allPosts
+  .filter((p) => !excludedSlugs.has(p.slug) && p.data.category === currentData.category)
+  .map((p) => {
+    let score = 0;
+    if (currentData.series && p.data.series && currentData.series === p.data.series) score += 4;
+    if (currentData.author && p.data.author && currentData.author === p.data.author) score += 3;
+    if (currentData.ar_level !== undefined && p.data.ar_level !== undefined) {
+      const diff = Math.abs(currentData.ar_level - p.data.ar_level);
+      if (diff <= 0.5) score += 2;
+      else if (diff <= 1.5) score += 1;
+    }
+    if (currentData.tags && p.data.tags) {
+      const sharedTags = currentData.tags.filter((t) => p.data.tags!.includes(t));
+      score += sharedTags.length;
+    }
+    const d = new Date(p.data.publishedAt);
+    const dateBonus = (d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate()) / 100000000;
+    return { post: p, score: score + dateBonus };
+  })
+  .filter(({ score }) => score > 0.0001)
+  .sort((a, b) => b.score - a.score)
+  .map(({ post }) => post);
+
+const relatedPosts = [...pinnedPosts, ...autoPosts].slice(0, 3);
+const ogImage = post.data.ogImage;
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  ogImage={ogImage}
+  isArticle={true}
+  publishedDate={post.data.publishedAt.toISOString()}
+>
+  <article>
+    <header class="mb-8 pb-8 border-b border-gray-100">
+      {post.data.tags && post.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-3">
+          {post.data.tags.map((tag) => (
+            <a
+              href={`/tags/${tag}/`}
+              class="text-xs px-2 py-1 bg-brand-50 text-brand-700 rounded-full hover:bg-brand-100 transition-colors"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
+      <h1 class="text-3xl font-bold text-gray-900 mb-3 leading-tight">
+        {post.data.title}
+      </h1>
+      {post.data.description && (
+        <p class="text-gray-600 text-lg mb-4">{post.data.description}</p>
+      )}
+      <time datetime={post.data.publishedAt.toISOString()} class="text-sm text-gray-400">
+        {formattedDate}
+      </time>
+    </header>
+
+    <!-- AdFit 광고 (포스트 상단) -->
+    <div class="mb-6 hidden md:flex justify-center">
+      <ins class="kakao_ad_area" style="display:none;"
+        data-ad-unit="DAN-T2zvng3y2R58cLAF"
+        data-ad-width="728"
+        data-ad-height="90"></ins>
+    </div>
+    <div class="mb-6 flex justify-center md:hidden">
+      <ins class="kakao_ad_area" style="display:none;"
+        data-ad-unit="DAN-npX6FNhXLeE9JyIY"
+        data-ad-width="320"
+        data-ad-height="50"></ins>
+    </div>
+    <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
+
+    {post.data.locations && post.data.locations.length > 0 && (
+      <div class="mb-8">
+        <div
+          id="blog-map"
+          class="rounded-xl border border-gray-200 w-full overflow-hidden"
+          style="height: 360px;"
+          data-locations={JSON.stringify(post.data.locations)}
+        ></div>
+        <script is:inline>
+          (function () {
+            var el = document.getElementById('blog-map');
+            var locs = JSON.parse(el.getAttribute('data-locations'));
+            var lat = locs.reduce(function (s, l) { return s + l.lat; }, 0) / locs.length;
+            var lng = locs.reduce(function (s, l) { return s + l.lng; }, 0) / locs.length;
+            var zoom = locs.length === 1 ? 15 : 12;
+            var label = locs[0].label || '';
+            var isKorea = lat >= 33 && lat <= 38.6 && lng >= 124.6 && lng <= 131.9;
+            var isKorean = (navigator.language || '').toLowerCase().startsWith('ko');
+            var iframe = document.createElement('iframe');
+            iframe.style.cssText = 'width:100%;height:360px;border:0;';
+            iframe.setAttribute('loading', 'lazy');
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+            var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth < 768;
+            if (!isMobile && isKorean && isKorea) {
+              var t = encodeURIComponent(label);
+              iframe.src = 'https://map.naver.com/v5/embed?type=map&lat=' + lat + '&lng=' + lng + '&zoom=' + zoom +
+                (label ? '&title=' + t + '&pinType=place&pinTitle=' + t + '&pinX=' + lng + '&pinY=' + lat : '');
+            } else {
+              iframe.src = 'https://maps.google.com/maps?q=' + lat + ',' + lng + '&z=' + zoom + '&output=embed&hl=' + (isKorean ? 'ko' : 'en');
+            }
+            el.appendChild(iframe);
+          })();
+        </script>
+      </div>
+    )}
+
+    {post.data.category === 'english-reading' ? (
+      <div data-pagefind-body>
+        <Content />
+      </div>
+    ) : (
+      <div
+        data-pagefind-body
+        class="
+          prose prose-gray max-w-none
+          prose-headings:font-bold prose-headings:text-gray-900
+          prose-a:text-brand-600 prose-a:no-underline hover:prose-a:underline
+          prose-img:rounded-xl prose-img:shadow-sm
+          prose-code:text-brand-700 prose-code:bg-brand-50 prose-code:px-1 prose-code:rounded
+          prose-pre:bg-gray-900 prose-pre:text-gray-100
+        "
+      >
+        <Content />
+      </div>
+    )}
+
+    {relatedPosts.length > 0 && (
+      <section class="mt-12 pt-8 border-t border-gray-100">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <span>이런 글도 추천해요</span>
+        </h3>
+        <div class="flex flex-col gap-3">
+          {relatedPosts.map((related) => (
+            <a
+              href={`/learn/english/books/${related.slug.split('/').pop()}/`}
+              class="block bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg px-4 py-3 transition-all group"
+            >
+              <span class="text-blue-600 group-hover:underline text-sm font-medium">
+                {related.data.title}
+              </span>
+              {related.data.description && (
+                <p class="text-gray-500 text-xs mt-1 line-clamp-1">{related.data.description}</p>
+              )}
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <nav class="mt-8 pt-6 border-t border-gray-100">
+      <a href="/learn/english/books/" class="text-sm text-brand-600 hover:underline">
+        ← 영어원서 목록으로
+      </a>
+    </nav>
+  </article>
+
+<script is:inline>
+  (function () {
+    var PEEK_H = 150;
+    document.querySelectorAll('details.review-toggle').forEach(function (el) {
+      var summary = el.querySelector('summary');
+      if (!summary) return;
+      el.setAttribute('open', '');
+      var wrap = document.createElement('div');
+      wrap.className = 'peek-wrap is-peeking';
+      Array.from(el.childNodes).forEach(function (c) { if (c !== summary) wrap.appendChild(c); });
+      el.appendChild(wrap);
+      wrap.style.maxHeight = PEEK_H + 'px';
+      var expanded = false;
+      summary.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (expanded) {
+          wrap.style.maxHeight = wrap.scrollHeight + 'px';
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              wrap.style.maxHeight = PEEK_H + 'px';
+              wrap.classList.add('is-peeking');
+              summary.classList.remove('is-expanded');
+            });
+          });
+          expanded = false;
+        } else {
+          wrap.classList.remove('is-peeking');
+          summary.classList.add('is-expanded');
+          var fullH = wrap.scrollHeight;
+          wrap.style.maxHeight = fullH + 'px';
+          wrap.addEventListener('transitionend', function done() {
+            wrap.removeEventListener('transitionend', done);
+            if (expanded) wrap.style.maxHeight = 'none';
+          });
+          expanded = true;
+        }
+      });
+    });
+  })();
+</script>
+</BaseLayout>
+
+<style is:global>
+  .book-container { max-width: 720px; margin: 0 auto; }
+  .section { margin: 30px 0; }
+  .section h3 { font-size: 1.2em; color: #222; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 3px solid #4285f4; }
+  .vocab-item { background: #f8f9fa; padding: 15px; margin: 12px 0; border-radius: 6px; border-left: 4px solid #4285f4; cursor: pointer; transition: all 0.2s; }
+  .vocab-item:hover { background: #e3f2fd; transform: translateX(3px); }
+  .vocab-text { font-size: 1.1em; font-weight: bold; color: #222; margin-bottom: 8px; }
+  .vocab-meaning { color: #555; margin: 5px 0; }
+  .vocab-example { font-size: 0.9em; color: #666; margin-top: 8px; padding-left: 10px; border-left: 2px solid #ddd; font-style: italic; }
+  .vocab-note { font-size: 0.85em; color: #999; margin-top: 5px; }
+  .quote-item { background: #fff8e1; padding: 15px; margin: 12px 0; border-radius: 6px; border-left: 4px solid #ffc107; cursor: pointer; transition: all 0.2s; }
+  .quote-item:hover { background: #fff3cd; transform: translateX(3px); }
+  .quote-text { font-style: italic; color: #444; margin-bottom: 8px; line-height: 1.7; }
+  .quote-translation { color: #666; margin: 8px 0; }
+  .quote-note { font-size: 0.9em; color: #999; margin-top: 8px; }
+  .tip-box { background: #e3f2fd; padding: 12px 20px 20px; border-radius: 8px; border: 2px solid #90caf9; margin: 25px 0; }
+  .tip-box h3 { color: #1976d2; margin: 0 0 12px; font-size: 1.1em; }
+  .tip-box p { margin: 5px 0; color: #856404; }
+  .tip-box ul { margin-left: 10px; }
+  .tip-box li { margin: 5px 0; color: #555; }
+  .book-link { display: block; background: #f8f9fa; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #e0e0e0; color: #1976d2; text-decoration: none; transition: all 0.2s; }
+  .book-link:hover { background: #e3f2fd; transform: translateY(-2px); box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+  .related-books { display: flex; flex-direction: column; gap: 8px; }
+  .book-table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 0.9em; }
+  .book-table td { padding: 6px 10px; border: 1px solid #ddd; }
+  .book-table .label { background: #f8f9fa; width: 110px; font-weight: bold; }
+  .affiliate-notice { font-size: 0.85em; color: #999; text-align: center; margin-top: 12px; }
+  .book-cover { display: block; width: 80%; max-width: 576px; margin: 0 auto 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  details.review-toggle { margin: 25px 0; }
+  details.review-toggle > summary { font-size: 1.2em; font-weight: bold; color: #222; padding-bottom: 10px; border-bottom: 3px solid #34a853; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  details.review-toggle > summary::-webkit-details-marker { display: none; }
+  details.review-toggle > summary::after { content: '▼'; font-size: 0.65em; color: #94a3b8; transition: transform 0.2s; flex-shrink: 0; }
+  .review-en { background: #f8f9fa; padding: 15px; margin: 15px 0 10px; border-radius: 6px; border-left: 4px solid #34a853; }
+  .review-en p { margin: 6px 0; color: #1e3a5f; line-height: 1.8; }
+  .review-ko { background: #f0fdf4; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #86efac; }
+  .review-ko p { margin: 6px 0; color: #334155; line-height: 1.8; }
+  .peek-wrap { overflow: hidden; transition: max-height 0.35s ease; }
+  .peek-wrap.is-peeking { -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%); mask-image: linear-gradient(to bottom, black 40%, transparent 100%); }
+  details.review-toggle > summary.is-expanded::after { transform: rotate(180deg); }
+</style>

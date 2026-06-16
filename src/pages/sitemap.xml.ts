@@ -2,7 +2,6 @@
 // @astrojs/sitemap 라이브러리 버그 우회용
 
 import { getCollection } from 'astro:content';
-import { CATEGORIES } from '../content/config';
 import { CHAPTERS } from '../data/security-chapters';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,39 +12,26 @@ export async function GET() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
 
   const staticPages = [
-    { url: '/',         priority: '1.0', changefreq: 'daily' },
-    { url: '/about/',   priority: '0.8', changefreq: 'monthly' },
-    { url: '/privacy/', priority: '0.5', changefreq: 'yearly' },
-    { url: '/search/',  priority: '0.6', changefreq: 'monthly' },
+    { url: '/',                   priority: '1.0', changefreq: 'daily' },
+    { url: '/about/',             priority: '0.8', changefreq: 'monthly' },
+    { url: '/privacy/',           priority: '0.5', changefreq: 'yearly' },
+    { url: '/search/',            priority: '0.7', changefreq: 'monthly' },
+    { url: '/search/library/',    priority: '0.7', changefreq: 'monthly' },
+    { url: '/tools/isbn-scan/',   priority: '0.6', changefreq: 'monthly' },
+    { url: '/learn/english/books/', priority: '0.8', changefreq: 'weekly' },
   ];
 
-  // 글이 1개 이상 있는 카테고리만 포함 + lastmod는 해당 카테고리 최신 글 날짜
-  const categoryEntries = CATEGORIES
-    .map(({ slug }) => {
-      const categoryPosts = posts.filter(
-        (p) => p.data.category === slug || (p.data.categories ?? []).includes(slug)
-      );
-      if (categoryPosts.length === 0) return null;
-      const latest = categoryPosts
-        .map((p) => p.data.publishedAt)
-        .sort((a, b) => b.valueOf() - a.valueOf())[0];
-      return {
-        url: `/${slug}/`,
-        priority: '0.8',
-        changefreq: 'weekly',
-        lastmod: latest.toISOString().split('T')[0],
-      };
-    })
-    .filter(Boolean) as { url: string; priority: string; changefreq: string; lastmod: string }[];
+  // 영어원서 포스트 (새 URL)
+  const englishPosts = posts
+    .filter((p) => p.data.category === 'english-reading')
+    .map((post) => ({
+      url: `/learn/english/books/${post.slug.split('/').pop()}/`,
+      priority: '0.7',
+      changefreq: 'monthly',
+      lastmod: post.data.publishedAt.toISOString().split('T')[0],
+    }));
 
-  const postEntries = posts.map((post) => ({
-    url: `/blog/${post.slug.split('/').pop()}/`,
-    priority: '0.7',
-    changefreq: 'monthly',
-    lastmod: post.data.publishedAt.toISOString().split('T')[0],
-  }));
-
-  // 보안기사 섹션 항목
+  // 보안기사 섹션 (새 URL)
   const questionsDir = path.resolve(process.cwd(), 'src/data/security-questions');
   const examSlugs = fs.readdirSync(questionsDir)
     .filter((f: string) => f.endsWith('.json'))
@@ -54,21 +40,25 @@ export async function GET() {
   const subjectSlugs = ['system', 'network', 'application', 'general', 'law'];
 
   const securityEntries = [
-    { url: '/security/', priority: '0.8', changefreq: 'weekly' },
-    ...subjectSlugs.map(slug => ({ url: `/security/${slug}/`, priority: '0.7', changefreq: 'monthly' })),
+    { url: '/learn/certs/security/', priority: '0.8', changefreq: 'weekly' },
+    ...subjectSlugs.map(slug => ({
+      url: `/learn/certs/security/${slug}/`,
+      priority: '0.7',
+      changefreq: 'monthly',
+    })),
     ...CHAPTERS.map(ch => ({
-      url: `/security/${ch.subject}/${ch.chapter}/`,
+      url: `/learn/certs/security/${ch.subject}/${ch.chapter}/`,
       priority: '0.7',
       changefreq: 'monthly',
     })),
     ...examSlugs.map((slug: string) => ({
-      url: `/security/exam/${slug}/`,
+      url: `/learn/certs/security/exam/written/${slug}/`,
       priority: '0.7',
       changefreq: 'monthly',
     })),
   ];
 
-  const allEntries = [...staticPages, ...categoryEntries, ...postEntries, ...securityEntries];
+  const allEntries = [...staticPages, ...englishPosts, ...securityEntries];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft && data.category === 'english-reading');
+const posts = allPosts.sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+
+<BaseLayout
+  title="영어원서 | daparapara"
+  description="영어원서 읽기 기록 — 어휘, 줄거리, 리뷰를 정리합니다."
+>
+  <div class="mb-8">
+    <nav class="text-xs text-gray-400 mb-3">
+      <a href="/learn/" class="hover:text-brand-600">학습</a>
+      <span class="mx-1">/</span>
+      <span class="text-gray-600">영어원서</span>
+    </nav>
+    <h1 class="text-2xl font-bold text-gray-900 mb-1">영어원서</h1>
+    <p class="text-gray-500 text-sm">어휘, 줄거리, 독후감을 함께 정리한 영어원서 읽기 기록입니다.</p>
+  </div>
+
+  {posts.length === 0 ? (
+    <p class="text-gray-400 text-sm">아직 등록된 글이 없습니다.</p>
+  ) : (
+    <ul class="divide-y divide-gray-100">
+      {posts.map((post) => {
+        const bareSlug = post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug;
+        return (
+          <li class="py-4 group">
+            <a href={`/learn/english/books/${bareSlug}/`} class="flex items-start justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <span class="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">
+                  {post.data.title}
+                </span>
+                {post.data.description && (
+                  <p class="text-gray-500 text-sm mt-0.5 line-clamp-1">{post.data.description}</p>
+                )}
+                {(post.data.author || post.data.ar_level) && (
+                  <p class="text-xs text-gray-400 mt-1">
+                    {post.data.author && <span>{post.data.author}</span>}
+                    {post.data.author && post.data.ar_level && <span class="mx-1">·</span>}
+                    {post.data.ar_level && <span>AR {post.data.ar_level}</span>}
+                  </p>
+                )}
+              </div>
+              <time datetime={post.data.publishedAt.toISOString()} class="text-xs text-gray-400 whitespace-nowrap mt-1">
+                {post.data.publishedAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+              </time>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  )}
+</BaseLayout>

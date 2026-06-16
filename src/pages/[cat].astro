@@ -41,7 +41,10 @@ const { label, posts } = Astro.props;
     <ul class="divide-y divide-gray-100">
       {posts.map((post) => (
         <li class="py-5 group">
-          <a href={`/blog/${post.slug.split('/').pop()}/`} class="block">
+          <a href={post.data.category === 'english-reading'
+              ? `/learn/english/books/${post.slug.split('/').pop()}/`
+              : `/blog/${post.slug.split('/').pop()}/`
+            } class="block">
             <h2 class="text-lg font-semibold text-gray-900 group-hover:text-brand-600 transition-colors mb-1">
               {post.data.title}
             </h2>

@@ -1,15 +1,14 @@
 ---
-// src/layouts/BaseLayout.astro
-// 공통 레이아웃 — 광고 스크립트, SEO 메타태그, 헤더/푸터
-
 import { getCollection } from 'astro:content';
-import { CATEGORIES } from '../content/config';
 
-// 글이 1개 이상 있는 카테고리만 헤더에 노출
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const activeCategories = CATEGORIES.filter(({ slug }) =>
-  allPosts.some((p) => p.data.category === slug)
-);
+const hasEnglish = allPosts.some((p) => p.data.category === 'english-reading');
+
+const navLinks = [
+  ...(hasEnglish ? [{ href: '/learn/english/books/', label: '영어원서' }] : []),
+  { href: '/learn/certs/security/', label: '정보보안기사' },
+  { href: '/search/library/', label: '도서관 검색' },
+];
 
 interface Props {
   title: string;
@@ -118,22 +117,16 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
         </a>
       </div>
 
-      <!-- 카테고리 네비게이션 -->
+      <!-- 포탈 네비게이션 -->
       <nav class="flex gap-4 pb-2 text-sm overflow-x-auto">
-        {activeCategories.map(({ slug, label }) => (
+        {navLinks.map(({ href, label }) => (
           <a
-            href={`/${slug}/`}
+            href={href}
             class="whitespace-nowrap text-gray-500 hover:text-brand-600 transition-colors pb-1 border-b-2 border-transparent hover:border-brand-400"
           >
             {label}
           </a>
         ))}
-        <a
-          href="/security/"
-          class="whitespace-nowrap text-gray-500 hover:text-brand-600 transition-colors pb-1 border-b-2 border-transparent hover:border-brand-400"
-        >
-          정보보안기사
-        </a>
       </nav>
     </div>
   </header>

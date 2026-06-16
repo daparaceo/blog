@@ -1,0 +1,17 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex={true}>
+  <div class="mb-6 text-xs text-center px-3 py-2 rounded border border-yellow-300 bg-yellow-50 text-yellow-800">
+    테스트 영역 — 검색엔진에 노출되지 않습니다
+  </div>
+  <slot />
+</BaseLayout>
