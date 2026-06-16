@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const hasEnglish = allPosts.some((p) => p.data.category === 'english-reading');
+const learnPosts = await getCollection('learn', ({ data }) => !data.draft);
+const hasEnglish = learnPosts.length > 0;
 
 const navLinks = [
   ...(hasEnglish ? [{ href: '/learn/english/books/', label: '영어원서' }] : []),

@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getCollection('learn', ({ data }) => !data.draft);
   return posts.map((post) => {
     const bareSlug = post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug;
     return {
@@ -22,7 +22,7 @@ const formattedDate = post.data.publishedAt.toLocaleDateString('ko-KR', {
   day: 'numeric',
 });
 
-const allPosts = await getCollection('blog', ({ data }) => data.draft !== true);
+const allPosts = await getCollection('learn', ({ data }) => data.draft !== true);
 const currentData = post.data;
 
 const pinnedSlugs: string[] = (currentData.pinnedRelated ?? []).filter((s) => s !== post.slug);

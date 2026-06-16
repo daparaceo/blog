@@ -9,7 +9,7 @@ import path from 'node:path';
 export async function GET() {
   const siteUrl = 'https://daparapara.com';
 
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getCollection('learn', ({ data }) => !data.draft);
 
   const staticPages = [
     { url: '/',                   priority: '1.0', changefreq: 'daily' },
@@ -21,9 +21,8 @@ export async function GET() {
     { url: '/learn/english/books/', priority: '0.8', changefreq: 'weekly' },
   ];
 
-  // 영어원서 포스트 (새 URL)
+  // 영어원서 포스트 (learn 컬렉션)
   const englishPosts = posts
-    .filter((p) => p.data.category === 'english-reading')
     .map((post) => ({
       url: `/learn/english/books/${post.slug.split('/').pop()}/`,
       priority: '0.7',

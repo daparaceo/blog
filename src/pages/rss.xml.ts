@@ -8,18 +8,26 @@ export async function GET() {
   const blogName = 'daparapara';
   const blogDescription = '생활정보, IT, 재테크, 캠핑, 영어원서 등 다양한 주제의 블로그';
 
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
-  const sorted = posts.sort(
+  const [blogPosts, learnPosts] = await Promise.all([
+    getCollection('blog', ({ data }) => !data.draft),
+    getCollection('learn', ({ data }) => !data.draft),
+  ]);
+
+  const allWithUrl = [
+    ...blogPosts.map(p => ({ data: p.data, url: `/blog/${p.slug.split('/').pop()}/` })),
+    ...learnPosts.map(p => ({ data: p.data, url: `/learn/english/books/${p.slug.split('/').pop()}/` })),
+  ];
+  const sorted = allWithUrl.sort(
     (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()
   );
 
-  const items = sorted.map((post) => `
+  const items = sorted.map(({ data, url }) => `
     <item>
-      <title><![CDATA[${post.data.title}]]></title>
-      <link>${siteUrl}/blog/${post.slug.split('/').pop()}/</link>
-      <guid>${siteUrl}/blog/${post.slug.split('/').pop()}/</guid>
-      <description><![CDATA[${post.data.description ?? ''}]]></description>
-      <pubDate>${post.data.publishedAt.toUTCString()}</pubDate>
+      <title><![CDATA[${data.title}]]></title>
+      <link>${siteUrl}${url}</link>
+      <guid>${siteUrl}${url}</guid>
+      <description><![CDATA[${data.description ?? ''}]]></description>
+      <pubDate>${data.publishedAt.toUTCString()}</pubDate>
     </item>`).join('');
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

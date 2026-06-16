@@ -4,9 +4,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-const posts = await getCollection('blog', ({ data }) =>
-  !data.draft && data.category === 'english-reading'
-);
+const posts = await getCollection('learn', ({ data }) => !data.draft);
 const isbnPostMap: Record<string, { slug: string; title: string; ogImage: string }> = {};
 for (const post of posts) {
   const addEntry = (isbn: string) => {

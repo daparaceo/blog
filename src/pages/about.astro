@@ -3,7 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { CATEGORIES } from '../content/config';
 
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const [blogPosts, learnPosts] = await Promise.all([
+  getCollection('blog', ({ data }) => !data.draft),
+  getCollection('learn', ({ data }) => !data.draft),
+]);
+const allPosts = [...blogPosts, ...learnPosts];
 const activeCategories = CATEGORIES.filter(({ slug }) =>
   allPosts.some((p) => p.data.category === slug)
 );

@@ -7,15 +7,21 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
-  const allPosts = await getCollection('blog', ({ data }) => data.draft !== true);
+  const [blogPosts, learnPosts] = await Promise.all([
+    getCollection('blog', ({ data }) => data.draft !== true),
+    getCollection('learn', ({ data }) => data.draft !== true),
+  ]);
 
-  // 전체 태그 수집
+  const allPosts = [
+    ...blogPosts.map(p => ({ slug: p.slug, data: p.data, url: `/blog/${p.slug.split('/').pop()}/` })),
+    ...learnPosts.map(p => ({ slug: p.slug, data: p.data, url: `/learn/english/books/${p.slug.split('/').pop()}/` })),
+  ];
+
   const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags ?? []))];
 
   return allTags.map((tag) => ({
     params: { tag },
     props: {
-      // 해당 태그를 가진 글만 필터링 후 날짜 내림차순 정렬
       posts: allPosts
         .filter((p) => p.data.tags?.includes(tag))
         .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()),
@@ -45,7 +51,7 @@ const { posts } = Astro.props;
   <ul class="divide-y divide-gray-100">
     {posts.map((post) => (
       <li class="py-5 group">
-        <a href={`/blog/${post.slug.split('/').pop()}/`} class="block">
+        <a href={post.url} class="block">
           <h2 class="text-lg font-semibold text-gray-900 group-hover:text-brand-600 transition-colors mb-1">
             {post.data.title}
           </h2>

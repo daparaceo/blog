@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => data.draft !== true);
+  const posts = await getCollection('learn', ({ data }) => data.draft !== true);
   return posts.map((post) => {
     const bareSlug = post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug;
     return {

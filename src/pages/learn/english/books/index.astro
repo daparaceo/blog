@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 
-const allPosts = await getCollection('blog', ({ data }) => !data.draft && data.category === 'english-reading');
+const allPosts = await getCollection('learn', ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
 
 const postsData = posts.map((post) => ({

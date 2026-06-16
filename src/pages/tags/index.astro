@@ -5,14 +5,18 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const allPosts = await getCollection('blog', ({ data }) => data.draft !== true);
+const [blogPosts, learnPosts] = await Promise.all([
+  getCollection('blog', ({ data }) => data.draft !== true),
+  getCollection('learn', ({ data }) => data.draft !== true),
+]);
 
 // 태그별 글 수 집계
 const tagCount: Record<string, number> = {};
-for (const post of allPosts) {
-  for (const tag of post.data.tags ?? []) {
-    tagCount[tag] = (tagCount[tag] ?? 0) + 1;
-  }
+for (const tag of [
+  ...blogPosts.flatMap(p => p.data.tags ?? []),
+  ...learnPosts.flatMap(p => p.data.tags ?? []),
+]) {
+  tagCount[tag] = (tagCount[tag] ?? 0) + 1;
 }
 
 // 글 수 내림차순으로 정렬

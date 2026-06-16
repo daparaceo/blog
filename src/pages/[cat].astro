@@ -6,13 +6,16 @@ import { CATEGORIES } from '../content/config';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
-  const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+  const [blogPosts, learnPosts] = await Promise.all([
+    getCollection('blog', ({ data }) => !data.draft),
+    getCollection('learn', ({ data }) => !data.draft),
+  ]);
 
   return CATEGORIES.map(({ slug, label }) => ({
     params: { cat: slug },
     props: {
       label,
-      posts: allPosts
+      posts: [...blogPosts, ...learnPosts]
         .filter((p) => p.data.category === slug || (p.data.categories ?? []).includes(slug))
         .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()),
     },
