@@ -26,47 +26,24 @@ const postsData = posts.map((post) => ({
       <span class="mx-1">/</span>
       <span class="text-gray-600">영어원서</span>
     </nav>
-    <div class="flex items-end justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900 mb-1">영어원서</h1>
-        <p class="text-gray-500 text-sm">어휘, 줄거리, 독후감을 함께 정리한 영어원서 읽기 기록입니다.</p>
-      </div>
-      <span id="post-count" class="text-xs text-gray-400 whitespace-nowrap pb-0.5"></span>
-    </div>
-  </div>
 
-  <!-- 컨트롤 바 -->
-  <div class="flex flex-wrap items-center gap-3 mb-5">
-    <!-- AR 필터 버튼 -->
-    <div class="flex flex-wrap gap-1.5">
-      {[
-        { key: 'all',  label: '전체' },
-        { key: '0-1',  label: 'AR 0~1' },
-        { key: '1-2',  label: 'AR 1~2' },
-        { key: '2-3',  label: 'AR 2~3' },
-        { key: '3-4',  label: 'AR 3~4' },
-        { key: '4+',   label: 'AR 4+' },
-      ].map(({ key, label }) => (
-        <button
-          type="button"
-          data-filter={key}
-          class:list={[
-            'filter-btn text-xs px-3 py-1.5 rounded-full border transition-colors',
-            key === 'all'
-              ? 'border-brand-400 bg-brand-50 text-brand-700'
-              : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600',
-          ]}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-
-    <!-- 정렬 드롭다운 -->
-    <div class="ml-auto">
+    <!-- 제목 + 드롭다운 한 줄 -->
+    <div class="flex items-center gap-2 mb-1">
+      <h1 class="text-2xl font-bold text-gray-900 mr-auto">영어원서</h1>
+      <select
+        id="filter-select"
+        class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-600 bg-white outline-none focus:border-brand-400 cursor-pointer"
+      >
+        <option value="all">전체 AR</option>
+        <option value="0-1">AR 0~1</option>
+        <option value="1-2">AR 1~2</option>
+        <option value="2-3">AR 2~3</option>
+        <option value="3-4">AR 3~4</option>
+        <option value="4+">AR 4+</option>
+      </select>
       <select
         id="sort-select"
-        class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 bg-white outline-none focus:border-brand-400 cursor-pointer"
+        class="text-xs border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-600 bg-white outline-none focus:border-brand-400 cursor-pointer"
       >
         <option value="date">최신순</option>
         <option value="date_asc">오래된순</option>
@@ -75,6 +52,12 @@ const postsData = posts.map((post) => ({
         <option value="title">제목순</option>
         <option value="title_desc">제목역순</option>
       </select>
+    </div>
+
+    <!-- 설명 + 카운트 -->
+    <div class="flex items-end justify-between">
+      <p class="text-gray-500 text-sm">어휘, 줄거리, 독후감을 함께 정리한 영어원서 읽기 기록입니다.</p>
+      <span id="post-count" class="text-xs text-gray-400 whitespace-nowrap ml-3 pb-0.5"></span>
     </div>
   </div>
 
@@ -86,7 +69,7 @@ const postsData = posts.map((post) => ({
 
   <script is:inline define:vars={{ postsData }}>
     var POSTS = postsData;
-    var currentSort = 'date';
+    var currentSort   = 'date';
     var currentFilter = 'all';
 
     function bareTitle(t) {
@@ -184,23 +167,11 @@ const postsData = posts.map((post) => ({
       }).join('');
     }
 
-    // 필터 버튼
-    document.querySelectorAll('.filter-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        currentFilter = btn.getAttribute('data-filter');
-        document.querySelectorAll('.filter-btn').forEach(function(b) {
-          var active = b.getAttribute('data-filter') === currentFilter;
-          b.className = 'filter-btn text-xs px-3 py-1.5 rounded-full border transition-colors ' + (
-            active
-              ? 'border-brand-400 bg-brand-50 text-brand-700'
-              : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600'
-          );
-        });
-        renderList();
-      });
+    document.getElementById('filter-select').addEventListener('change', function() {
+      currentFilter = this.value;
+      renderList();
     });
 
-    // 정렬 드롭다운
     document.getElementById('sort-select').addEventListener('change', function() {
       currentSort = this.value;
       renderList();
