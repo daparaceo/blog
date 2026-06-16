@@ -31,33 +31,51 @@ const postsData = posts.map((post) => ({
         <h1 class="text-2xl font-bold text-gray-900 mb-1">영어원서</h1>
         <p class="text-gray-500 text-sm">어휘, 줄거리, 독후감을 함께 정리한 영어원서 읽기 기록입니다.</p>
       </div>
-      <span id="post-count" class="text-xs text-gray-400 whitespace-nowrap pb-0.5">{posts.length}권</span>
+      <span id="post-count" class="text-xs text-gray-400 whitespace-nowrap pb-0.5"></span>
     </div>
   </div>
 
-  <!-- 정렬 버튼 -->
-  <div class="flex flex-wrap gap-2 mb-5">
-    {[
-      { key: 'date',       label: '최신순' },
-      { key: 'date_asc',   label: '오래된순' },
-      { key: 'ar_asc',     label: 'AR 낮은순' },
-      { key: 'ar_desc',    label: 'AR 높은순' },
-      { key: 'title',      label: '제목순' },
-      { key: 'title_desc', label: '제목역순' },
-    ].map(({ key, label }) => (
-      <button
-        type="button"
-        data-sort={key}
-        class:list={[
-          'sort-btn text-xs px-3 py-1.5 rounded-full border transition-colors',
-          key === 'date'
-            ? 'border-brand-400 bg-brand-50 text-brand-700'
-            : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600',
-        ]}
+  <!-- 컨트롤 바 -->
+  <div class="flex flex-wrap items-center gap-3 mb-5">
+    <!-- AR 필터 버튼 -->
+    <div class="flex flex-wrap gap-1.5">
+      {[
+        { key: 'all',  label: '전체' },
+        { key: '0-1',  label: 'AR 0~1' },
+        { key: '1-2',  label: 'AR 1~2' },
+        { key: '2-3',  label: 'AR 2~3' },
+        { key: '3-4',  label: 'AR 3~4' },
+        { key: '4+',   label: 'AR 4+' },
+      ].map(({ key, label }) => (
+        <button
+          type="button"
+          data-filter={key}
+          class:list={[
+            'filter-btn text-xs px-3 py-1.5 rounded-full border transition-colors',
+            key === 'all'
+              ? 'border-brand-400 bg-brand-50 text-brand-700'
+              : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600',
+          ]}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+
+    <!-- 정렬 드롭다운 -->
+    <div class="ml-auto">
+      <select
+        id="sort-select"
+        class="text-xs border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 bg-white outline-none focus:border-brand-400 cursor-pointer"
       >
-        {label}
-      </button>
-    ))}
+        <option value="date">최신순</option>
+        <option value="date_asc">오래된순</option>
+        <option value="ar_asc">AR 낮은순</option>
+        <option value="ar_desc">AR 높은순</option>
+        <option value="title">제목순</option>
+        <option value="title_desc">제목역순</option>
+      </select>
+    </div>
   </div>
 
   {posts.length === 0 ? (
@@ -69,15 +87,76 @@ const postsData = posts.map((post) => ({
   <script is:inline define:vars={{ postsData }}>
     var POSTS = postsData;
     var currentSort = 'date';
+    var currentFilter = 'all';
 
     function bareTitle(t) {
       return t.replace(/^\[AR[\s\d.]+\]\s*/, '');
     }
 
-    function renderList(items) {
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function filterPosts(posts, key) {
+      if (key === 'all') return posts;
+      return posts.filter(function(p) {
+        var ar = p.ar_level;
+        if (ar === null) return false;
+        if (key === '0-1') return ar >= 0 && ar < 1;
+        if (key === '1-2') return ar >= 1 && ar < 2;
+        if (key === '2-3') return ar >= 2 && ar < 3;
+        if (key === '3-4') return ar >= 3 && ar < 4;
+        if (key === '4+')  return ar >= 4;
+        return true;
+      });
+    }
+
+    function sortPosts(posts, key) {
+      var sorted = posts.slice();
+      if (key === 'date') {
+        sorted.sort(function(a, b) { return b.date < a.date ? -1 : b.date > a.date ? 1 : 0; });
+      } else if (key === 'date_asc') {
+        sorted.sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+      } else if (key === 'ar_asc') {
+        sorted.sort(function(a, b) {
+          return (a.ar_level !== null ? a.ar_level : 999) - (b.ar_level !== null ? b.ar_level : 999);
+        });
+      } else if (key === 'ar_desc') {
+        sorted.sort(function(a, b) {
+          return (b.ar_level !== null ? b.ar_level : -1) - (a.ar_level !== null ? a.ar_level : -1);
+        });
+      } else if (key === 'title') {
+        sorted.sort(function(a, b) { return bareTitle(a.title).localeCompare(bareTitle(b.title), 'ko'); });
+      } else if (key === 'title_desc') {
+        sorted.sort(function(a, b) { return bareTitle(b.title).localeCompare(bareTitle(a.title), 'ko'); });
+      }
+      return sorted;
+    }
+
+    function renderList() {
+      var filtered = filterPosts(POSTS, currentFilter);
+      var sorted   = sortPosts(filtered, currentSort);
+
+      var countEl = document.getElementById('post-count');
+      if (countEl) {
+        countEl.textContent = currentFilter === 'all'
+          ? POSTS.length + '권'
+          : sorted.length + ' / ' + POSTS.length + '권';
+      }
+
       var ul = document.getElementById('book-list');
       if (!ul) return;
-      ul.innerHTML = items.map(function(p) {
+
+      if (sorted.length === 0) {
+        ul.innerHTML = '<li class="py-8 text-center text-sm text-gray-400">해당 AR 범위의 책이 없습니다.</li>';
+        return;
+      }
+
+      ul.innerHTML = sorted.map(function(p) {
         var meta = '';
         if (p.author || p.ar_level !== null) {
           var parts = [];
@@ -105,60 +184,28 @@ const postsData = posts.map((post) => ({
       }).join('');
     }
 
-    function escHtml(s) {
-      return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function sortPosts(key) {
-      var sorted = POSTS.slice();
-      if (key === 'date') {
-        sorted.sort(function(a, b) { return b.date < a.date ? -1 : b.date > a.date ? 1 : 0; });
-      } else if (key === 'date_asc') {
-        sorted.sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
-      } else if (key === 'ar_asc') {
-        sorted.sort(function(a, b) {
-          var av = a.ar_level !== null ? a.ar_level : 999;
-          var bv = b.ar_level !== null ? b.ar_level : 999;
-          return av - bv;
-        });
-      } else if (key === 'ar_desc') {
-        sorted.sort(function(a, b) {
-          var av = a.ar_level !== null ? a.ar_level : -1;
-          var bv = b.ar_level !== null ? b.ar_level : -1;
-          return bv - av;
-        });
-      } else if (key === 'title') {
-        sorted.sort(function(a, b) { return bareTitle(a.title).localeCompare(bareTitle(b.title), 'ko'); });
-      } else if (key === 'title_desc') {
-        sorted.sort(function(a, b) { return bareTitle(b.title).localeCompare(bareTitle(a.title), 'ko'); });
-      }
-      return sorted;
-    }
-
-    function setActiveBtn(key) {
-      document.querySelectorAll('.sort-btn').forEach(function(btn) {
-        var isActive = btn.getAttribute('data-sort') === key;
-        btn.className = 'sort-btn text-xs px-3 py-1.5 rounded-full border transition-colors ' + (
-          isActive
-            ? 'border-brand-400 bg-brand-50 text-brand-700'
-            : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600'
-        );
-      });
-    }
-
-    document.querySelectorAll('.sort-btn').forEach(function(btn) {
+    // 필터 버튼
+    document.querySelectorAll('.filter-btn').forEach(function(btn) {
       btn.addEventListener('click', function() {
-        var key = btn.getAttribute('data-sort');
-        currentSort = key;
-        setActiveBtn(key);
-        renderList(sortPosts(key));
+        currentFilter = btn.getAttribute('data-filter');
+        document.querySelectorAll('.filter-btn').forEach(function(b) {
+          var active = b.getAttribute('data-filter') === currentFilter;
+          b.className = 'filter-btn text-xs px-3 py-1.5 rounded-full border transition-colors ' + (
+            active
+              ? 'border-brand-400 bg-brand-50 text-brand-700'
+              : 'border-gray-200 text-gray-500 hover:border-brand-300 hover:text-brand-600'
+          );
+        });
+        renderList();
       });
     });
 
-    renderList(sortPosts('date'));
+    // 정렬 드롭다운
+    document.getElementById('sort-select').addEventListener('change', function() {
+      currentSort = this.value;
+      renderList();
+    });
+
+    renderList();
   </script>
 </BaseLayout>
