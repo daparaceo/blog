@@ -411,6 +411,7 @@ for (const post of posts) {
     var _pollTimer   = null;
     var _lastQuery   = '';
     var _lastPage    = 0;
+    var _shownIsbns  = new Set();
 
     // ── AR 레벨 배지 ─────────────────────────────────────────
     function arBadgeHtml(ar) {
@@ -433,6 +434,7 @@ for (const post of posts) {
 
       if (!extended) {
         _lastPage = 0;
+        _shownIsbns.clear();
       } else {
         _lastPage++;
       }
@@ -473,7 +475,11 @@ for (const post of posts) {
           return;
         }
 
-        var html = results.map(function(item) {
+        var html = results.filter(function(item) {
+          if (_shownIsbns.has(item.isbn)) return false;
+          _shownIsbns.add(item.isbn);
+          return true;
+        }).map(function(item) {
           return '<button type="button" ' +
             'class="w-full text-left bg-white border border-gray-200 rounded-xl p-3 ' +
             'hover:border-sky-300 hover:bg-sky-50 active:scale-[0.98] transition-all" ' +
