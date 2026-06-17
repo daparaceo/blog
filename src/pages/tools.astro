@@ -421,6 +421,12 @@ for (const post of posts) {
       if (!extended) {
         _lastPage = 0;
         _shownIsbns.clear();
+        _currentIsbn = null;
+        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+        document.getElementById('book-info-card').classList.add('hidden');
+        document.getElementById('book-post-progress').classList.add('hidden');
+        document.getElementById('book-post-result').classList.add('hidden');
+        document.getElementById('book-error').classList.add('hidden');
       } else {
         _lastPage++;
       }
