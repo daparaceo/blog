@@ -151,9 +151,9 @@ for (const post of posts) {
 
       <!-- 제목/저자 검색 -->
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">제목 또는 저자</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">제목, 저자 또는 ISBN</label>
         <div class="flex gap-2">
-          <input id="book-query" type="text" placeholder="Harry Potter / J.K. Rowling"
+          <input id="book-query" type="text" placeholder="Harry Potter / J.K. Rowling / 9780439708180"
             class="flex-1 px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-sky-400 transition-colors bg-white" />
           <button onclick="searchByTitle(false)"
             class="px-4 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 active:scale-95 transition-all">
@@ -429,6 +429,14 @@ for (const post of posts) {
     async function searchByTitle(extended) {
       var q = document.getElementById('book-query').value.trim();
       if (!q || q.length < 2) return;
+
+      var digits = q.replace(/\D/g, '');
+      if (digits.length === 10 || digits.length === 13) {
+        document.getElementById('book-isbn').value = digits;
+        lookupIsbn();
+        return;
+      }
+
       _lastQuery = q;
       var size = 5;
 
