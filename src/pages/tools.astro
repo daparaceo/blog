@@ -475,11 +475,12 @@ for (const post of posts) {
           return;
         }
 
-        var html = results.filter(function(item) {
+        var filtered = results.filter(function(item) {
           if (_shownIsbns.has(item.isbn)) return false;
           _shownIsbns.add(item.isbn);
           return true;
-        }).map(function(item) {
+        });
+        var html = filtered.map(function(item) {
           return '<button type="button" ' +
             'class="w-full text-left bg-white border border-gray-200 rounded-xl p-3 ' +
             'hover:border-sky-300 hover:bg-sky-50 active:scale-[0.98] transition-all" ' +
@@ -498,10 +499,15 @@ for (const post of posts) {
         if (!extended) {
           listEl.innerHTML = html;
         } else {
-          listEl.insertAdjacentHTML('beforeend', html);
+          if (html) {
+            listEl.insertAdjacentHTML('beforeend', html);
+          } else {
+            listEl.insertAdjacentHTML('beforeend',
+              '<p class="text-sm text-center text-gray-500 py-3">더 이상 새로운 결과가 없어요.</p>');
+          }
         }
 
-        moreBtn.classList.toggle('hidden', results.length < size);
+        moreBtn.classList.toggle('hidden', filtered.length === 0 || results.length < size);
       } catch (e) {
         var loadingEl = document.getElementById('more-loading');
         if (loadingEl) loadingEl.remove();
