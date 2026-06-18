@@ -3,7 +3,6 @@ title: "[AR 2.6] Curious George at the Baseball Game - 야구장에서 펼쳐진
 description: "호기심 많은 원숭이 조지가 야구장에서 코치의 수신호를 따라 했다가 소동을 일으키고, 결국 길 잃은 아이를 구해 영웅이 되는 유쾌한 이야기입니다."
 publishedAt: 2026-05-06
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Curious George at the Baseball Game, Margret Rey, 야구장, 호기심, 그림책, 모험]
 en_title: "Curious George at the Baseball Game"
 author: "Margret Rey"
 ar_level: 2.6

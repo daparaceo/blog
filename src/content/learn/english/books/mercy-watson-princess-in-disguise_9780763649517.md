@@ -3,7 +3,6 @@ title: "[AR 2.7] Mercy Watson, Princess in Disguise - 핼러윈 공주로 변신
 description: "핼러윈을 맞아 공주로 변신한 돼지 머시가 간식을 찾아 나섰다가 고양이와 신나는 추격전을 벌입니다. 이웃들이 함께 소동을 해결하고 버터 토스트를 나누는 유쾌한 이야기입니다."
 publishedAt: 2026-06-13
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, "Mercy Watson Princess in Disguise", "Kate DiCamillo", 핼러윈, 공주변신, 코미디동화, 이웃]
 en_title: "Mercy Watson, Princess in Disguise"
 author: "Kate DiCamillo"
 ar_level: 2.7

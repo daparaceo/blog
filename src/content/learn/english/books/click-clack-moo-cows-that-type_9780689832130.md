@@ -3,7 +3,6 @@ title: "[AR 2.3] Click, Clack, Moo: Cows That Type - 타자 치는 소들의 파
 description: "소들이 타자기로 편지를 써서 전기담요를 요구하며 파업을 벌이는 유쾌한 농장 이야기. 의사소통과 협상의 힘을 유머러스하게 담은 그림책."
 publishedAt: 2026-05-18
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Click Clack Moo, Doreen Cronin, 농장동물, 그림책, 픽션, 협상과타협]
 en_title: "Click, Clack, Moo: Cows That Type"
 author: "Doreen Cronin"
 ar_level: 2.3

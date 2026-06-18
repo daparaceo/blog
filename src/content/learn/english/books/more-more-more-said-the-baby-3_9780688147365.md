@@ -3,7 +3,6 @@ title: "[AR 2.5] More More More, Said the Baby - 더 더 더! 아기를 향한 �
 description: "세 아기와 가족의 따뜻한 사랑을 담은 그림책. Little Guy, Little Pumpkin, Little Bird — 각자의 방식으로 아기를 사랑하는 가족의 이야기를 영어로 만나보세요."
 publishedAt: 2026-05-17
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, More More More Said the Baby, Vera B. Williams, 아기그림책, 가족사랑, 유아영어, 반복문장]
 en_title: "More More More, Said the Baby"
 author: "Vera B. Williams"
 ar_level: 2.5

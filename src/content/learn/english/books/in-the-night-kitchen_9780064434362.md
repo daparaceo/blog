@@ -3,7 +3,6 @@ title: "[AR 2.5] In the Night Kitchen - 한밤의 부엌에서 펼쳐지는 꿈�
 description: "잠든 미키가 한밤의 부엌으로 떨어져 빵 반죽 비행기를 타고 우유를 구해 오는 유쾌하고 환상적인 꿈 이야기."
 publishedAt: 2026-04-22
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, In the Night Kitchen, Maurice Sendak, 꿈속모험, 그림책, 판타지, 유아영어]
 en_title: "In the Night Kitchen"
 author: "Maurice Sendak"
 ar_level: 2.5

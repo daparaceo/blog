@@ -3,7 +3,6 @@ title: "[AR 2.5] The Gruffalo's Child - 무서운 빅 배드 마우스를 찾아
 description: "눈 내리는 밤, 그루팔로의 아이가 전설 속 '빅 배드 마우스'를 찾아 어두운 숲으로 떠납니다. 과연 빅 배드 마우스는 정말 존재할까요?"
 publishedAt: 2026-04-28
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, The Gruffalo's Child, Julia Donaldson, 그루팔로, 그림책, 판타지, 용기]
 en_title: "The Gruffalo's Child"
 author: "Julia Donaldson"
 ar_level: 2.5

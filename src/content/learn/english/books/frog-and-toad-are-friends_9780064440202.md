@@ -3,7 +3,6 @@ title: "[AR 2.9] Frog and Toad Are Friends - 서로 다른 두 친구의 따뜻�
 description: "성격은 다르지만 언제나 서로를 돕고 아끼는 Frog와 Toad의 일상을 통해 우정과 배려의 의미를 전하는 따뜻한 영어 원서입니다."
 publishedAt: 2026-06-14
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, "Frog and Toad Are Friends", "Arnold Lobel", 우정, 배려, 리더스북, 단짝친구]
 en_title: "Frog and Toad Are Friends"
 author: "Arnold Lobel"
 ar_level: 2.9

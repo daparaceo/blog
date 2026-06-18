@@ -3,7 +3,6 @@ title: "[AR 2.0] Don't Worry, Little Crab - 처음으로 바다에 뛰어든 작
 description: "거대한 파도 앞에서 겁을 먹은 작은 게가 큰 게의 따뜻한 응원을 받아 한 걸음씩 용기를 내는 이야기로, 새로운 도전을 두려워하는 아이들에게 깊은 공감을 전합니다."
 publishedAt: 2026-06-04
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Don't Worry Little Crab, Chris Haughton, 용기, 그림책, 바다, 도전]
 en_title: "Don't Worry, Little Crab"
 author: "Chris Haughton"
 ar_level: 2.0

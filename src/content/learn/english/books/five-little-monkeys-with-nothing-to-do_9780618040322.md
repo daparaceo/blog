@@ -3,7 +3,6 @@ title: "[AR 2.1] Five Little Monkeys with Nothing to Do - 심심한 꼬마 원�
 description: "학교가 없는 여름날, 심심해하던 다섯 꼬마 원숭이들이 할머니를 맞이하기 위해 집안일을 시작합니다. 반복되는 문장과 유쾌한 반전으로 생활 어휘를 익히기 좋은 영어 원서입니다."
 publishedAt: 2026-06-18
 category: "english-reading"
-tags: ["영어원서", "영어학습", "초등영어", "AR레벨", "Five Little Monkeys", "Eileen Christelow", "집안일", "원숭이"]
 en_title: "Five Little Monkeys with Nothing to Do"
 author: "Eileen Christelow"
 ar_level: 2.1

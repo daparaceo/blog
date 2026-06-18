@@ -4,7 +4,6 @@ description: "언제나 동생을 돌보던 언니가 혼자 울고 있을 때, 
 publishedAt: 2026-04-20
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/0198aa21588a1633c20fb2bc.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Big Sister and Little Sister, Charlotte Zolotow, 자매, 그림책, 우정과사랑, 가족]
 en_title: "Big Sister and Little Sister"
 author: "Charlotte Zolotow"
 ar_level: 2.9

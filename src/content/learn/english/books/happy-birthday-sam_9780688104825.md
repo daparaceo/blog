@@ -3,7 +3,6 @@ title: "[AR 2.8] Happy Birthday, Sam - 혼자서 해내고 싶은 샘의 특별�
 description: "한 살 더 먹은 샘은 무엇이든 혼자 해 보려 하지만 손이 닿지 않아 어려움을 겪습니다. 할아버지가 보내 주신 작은 의자는 샘이 스스로 해낼 수 있도록 도와줍니다."
 publishedAt: 2026-06-09
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, "Happy Birthday, Sam", "Pat Hutchins", 생일, 자립심, 그림책, 성장]
 en_title: "Happy Birthday, Sam"
 author: "Pat Hutchins"
 ar_level: 2.8

@@ -3,7 +3,6 @@ title: "[AR 1.9] Five Little Monkeys Bake a Birthday Cake: (formerly titled Don'
 description: "Originally published in 1992 under the title Don't wake up mama!"
 publishedAt: 2026-06-18
 category: "english-reading"
-tags: ["영어원서", "영어학습", "초등영어", "AR레벨", "Five Little Monkeys", "Birthday Cake", "Eileen Christelow"]
 en_title: "Five Little Monkeys Bake a Birthday Cake: (formerly titled Don't Wake Up Mama)"
 author: "Eileen Christelow"
 ar_level: 1.9

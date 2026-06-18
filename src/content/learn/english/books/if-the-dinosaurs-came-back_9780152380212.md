@@ -4,7 +4,6 @@ description: "공룡을 열렬히 사랑하는 아이가 상상하는 유쾌한 
 publishedAt: 2026-04-13
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/149dcca273d8afd3b1d4367c.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, If The Dinosaurs Came Back, Bernard Most, 공룡, 상상력, 픽션그림책, 창의력]
 en_title: "If The Dinosaurs Came Back"
 author: "Bernard Most"
 ar_level: 2.9

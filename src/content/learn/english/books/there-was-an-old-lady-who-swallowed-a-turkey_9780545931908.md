@@ -4,7 +4,6 @@ description: "칠면조를 꿀꺽 삼킨 할머니가 공, 모자, 풍선, 보�
 publishedAt: 2026-04-21
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/6db65348dcfe1c4eb8d9f417.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, There Was An Old Lady Who Swallowed A Turkey, Lucille Colandro, 추수감사절, 누적식그림책, 리듬영어, 반복학습]
 en_title: "There Was An Old Lady Who Swallowed A Turkey!"
 author: "Lucille Colandro"
 ar_level: 2.6

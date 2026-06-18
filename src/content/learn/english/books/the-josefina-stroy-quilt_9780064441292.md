@@ -3,7 +3,6 @@ title: "[AR 2.7] The Josefina Story Quilt - 서부로 가는 길, 조세피나�
 description: "1850년 서부 개척 시대, 소녀 Faith가 사랑하는 암탉 Josefina와 함께 캘리포니아로 떠나는 여정을 담은 따뜻하고 감동적인 영어 원서입니다."
 publishedAt: 2026-05-04
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, The Josefina Story Quilt, Eleanor Coerr, 서부개척시대, 우정과이별, 역사동화, 퀼트]
 en_title: "The Josefina Story Quilt"
 author: "Eleanor Coerr"
 ar_level: 2.7

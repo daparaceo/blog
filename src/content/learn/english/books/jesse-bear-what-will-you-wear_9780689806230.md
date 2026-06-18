@@ -3,7 +3,6 @@ title: "[AR 2.5] Jesse Bear, What Will You Wear? - 하루 종일 무엇을 입�
 description: "아침부터 밤까지, 곰돌이 제시가 하루 동안 '입는' 것들을 유쾌하게 노래하는 그림책. 반복되는 라임과 리듬이 영어 읽기 재미를 높여줍니다."
 publishedAt: 2026-05-09
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Jesse Bear What Will You Wear, Nancy White Carlstrom, 곰돌이제시, 라임그림책, 픽처북, 하루일과]
 en_title: "Jesse Bear, What Will You Wear?"
 author: "Nancy White Carlstrom"
 ar_level: 2.5

@@ -3,7 +3,6 @@ title: "[AR 2.9] D.W. the Picky Eater - 편식쟁이 D.W.의 특별한 외식 �
 description: "음식에 까다로운 D.W.는 가족과 외식하다가 큰 소동을 일으킵니다. Grandma Thora의 생일 외식에서 D.W.가 새로운 음식을 먹어 볼 수 있을까요?"
 publishedAt: 2026-06-16
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, D.W. the Picky Eater, Marc Brown, 편식, 식습관, 그림책, 가족]
 en_title: "D.W. the Picky Eater"
 author: "Marc Brown"
 ar_level: 2.9

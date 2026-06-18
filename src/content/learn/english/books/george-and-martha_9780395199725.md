@@ -3,7 +3,6 @@ title: "[AR 2.7] George and Martha - 두 친구가 알려 주는 우정과 솔�
 description: "George and Martha는 다섯 가지 짧은 이야기 속에서 두 친구가 서로를 배려하고, 실수하고, 다시 웃는 모습을 보여 주는 따뜻한 그림책입니다."
 publishedAt: 2026-06-04
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, George and Martha, James Marshall, 우정, 솔직함, 그림책, 친구관계]
 en_title: "George and Martha"
 author: "James Marshall"
 ar_level: 2.7

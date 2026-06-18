@@ -4,7 +4,6 @@ description: "농장의 소, 수탉, 돼지, 공작새 등 12가지 동물의 �
 publishedAt: 2026-04-15
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/670cc06497e0d4796b080410.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Barnyard Banter, Denise Fleming, 동물소리, 농장동물, 그림책, 의성어]
 en_title: "Barnyard Banter"
 author: "Denise Fleming"
 ar_level: 2.3

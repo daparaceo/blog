@@ -4,7 +4,6 @@ description: "맑은 날, 비 오는 날, 바람 부는 날, 눈 오는 날… �
 publishedAt: 2026-04-16
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/2e02e82d210a3c29d54b3452.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Bear In Sunshine, Stella Blackstone, 날씨영어, 계절, 유아그림책, 운율]
 en_title: "Bear In Sunshine"
 author: "Stella Blackstone"
 ar_level: 1.5

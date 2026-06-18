@@ -3,7 +3,6 @@ title: "[AR 2.7] Survival Adventure - 숲속에서 배우는 생존과 협동"
 description: "Chip, Biff, Wilf가 마법 열쇠를 따라 숲속 생존 모험에 들어가 덫, 곰, 비바람을 함께 헤쳐 나가는 Oxford Reading Tree 이야기입니다."
 publishedAt: 2026-06-16
 category: "english-reading"
-tags: ["영어원서", "영어학습", "초등영어", "AR레벨", "Survival Adventure", "Roderick Hunt", "Oxford Reading Tree", "모험", "생존", "협동"]
 en_title: "Survival Adventure"
 author: "Roderick Hunt"
 ar_level: 2.7

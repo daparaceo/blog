@@ -4,7 +4,6 @@ description: "공기는 보이지 않지만 어디에나 있어요. 컵과 냅�
 publishedAt: 2026-04-10
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/d6c4105873728dfd627d3ff1.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Air Is All Around You, Franklyn M. Branley, 과학그림책, 논픽션, 자연과학, 공기]
 en_title: "Air Is All Around You"
 author: "Franklyn M. Branley"
 ar_level: 2.6

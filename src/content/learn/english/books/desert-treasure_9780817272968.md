@@ -4,7 +4,6 @@ description: "아빠와 함께 사막 캠핑을 떠난 마이클이 오래된 �
 publishedAt: 2026-04-20
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/51d2fb26878b48b3a1e9350f.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Desert Treasure, Andrew Clements, 사막탐험, 보물찾기, 리더스북, 자연과물]
 en_title: "Desert Treasure"
 author: "Andrew Clements"
 ar_level: 2.8

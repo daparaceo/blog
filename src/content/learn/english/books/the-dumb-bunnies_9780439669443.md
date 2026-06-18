@@ -4,7 +4,6 @@ description: "황당하게 행동하는 토끼 가족의 코믹한 일상을 담
 publishedAt: 2026-04-14
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/02fcc49e679650d80e5a2515.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, The Dumb Bunnies, Dav Pilkey, 토끼, 그림책, 유머, 패러디]
 en_title: "The Dumb Bunnies"
 author: "Dav Pilkey"
 ar_level: 2.8

@@ -3,7 +3,6 @@ title: "[AR 2.5] Snow Monsters Do Drink Hot Chocolate - 눈 덮인 베일리 시
 description: "에디와 친구들은 스노보드 고수 해리 스노든을 만납니다. 하워드는 그가 설인이라고 확신하는데… 과연 베일리 시티에 영원한 겨울이 찾아올까요?"
 publishedAt: 2026-04-26
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Snow Monsters Do Drink Hot Chocolate, Marcia Thornton Jones, 설인, 챕터북, 판타지, 겨울]
 en_title: "Snow Monsters Do Drink Hot Chocolate"
 author: "Marcia Thornton Jones"
 ar_level: 2.5

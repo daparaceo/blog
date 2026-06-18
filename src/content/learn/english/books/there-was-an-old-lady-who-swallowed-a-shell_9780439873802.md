@@ -3,7 +3,6 @@ title: "[AR 2.2] There Was An Old Lady Who Swallowed A Shell! - 조개를 삼킨
 description: "조개껍데기를 꿀꺽 삼킨 할머니가 게, 물고기, 갈매기까지 차례로 삼키며 벌어지는 유쾌한 연쇄 이야기! 반복 구조로 영어 읽기 실력을 키우는 AR 2.2 그림책."
 publishedAt: 2026-04-22
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, There Was An Old Lady Who Swallowed A Shell, Lucille Colandro, 반복영어그림책, 바다생물, 누적이야기, 유머]
 en_title: "There Was An Old Lady Who Swallowed A Shell!"
 author: "Lucille Colandro"
 ar_level: 2.2

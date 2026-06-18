@@ -4,7 +4,6 @@ description: "나비를 사자로, 안내판을 동물로 착각하는 황당한
 publishedAt: 2026-04-13
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/ef499576109740a7d5126bf9.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, DumbBunnies, DavPilkey, 유머그림책, 동물원, 넌센스유머, 시리즈]
 en_title: "The Dumb Bunnies Go To The Zoo"
 author: "Dav Pilkey"
 ar_level: 2.7

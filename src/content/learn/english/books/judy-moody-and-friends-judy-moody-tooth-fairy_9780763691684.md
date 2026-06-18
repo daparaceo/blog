@@ -3,7 +3,6 @@ title: "[AR 2.9] Judy Moody and Friends: Judy Moody, Tooth Fairy - 치아 요정
 description: "Judy Moody는 Tooth Fairy가 진짜인지 확인하기 위해 동생 Stink의 흔들리는 이를 빠지게 하려 합니다. 믿음과 상상력, 형제자매의 장난이 어우러진 AR 2.9 영어원서입니다."
 publishedAt: 2026-06-16
 category: "english-reading"
-tags: ["영어원서", "영어학습", "초등영어", "AR레벨", "Judy Moody", "Tooth Fairy", "Megan McDonald", "Judy Moody and Friends", "챕터북"]
 en_title: "Judy Moody and Friends: Judy Moody, Tooth Fairy"
 author: "Megan McDonald"
 ar_level: 2.9

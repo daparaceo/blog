@@ -3,7 +3,6 @@ title: "[AR 2.2] Fluffy's Valentine's Day - 질투 많고 사랑스러운 교실
 description: "교실 기니피그 Fluffy는 아이들이 자신을 잊은 줄 알고 서운해하지만, 곧 특별한 밸런타인 선물을 받습니다. 목욕과 새 친구 Kiss와의 만남까지 이어지는 유쾌한 이야기입니다."
 publishedAt: 2026-06-18
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Fluffy's Valentine's Day, Kate McMullan, 밸런타인데이, 기니피그, 챕터북, 질투와 사랑]
 en_title: "Fluffy's Valentine's Day"
 author: "Kate McMullan"
 ar_level: 2.2

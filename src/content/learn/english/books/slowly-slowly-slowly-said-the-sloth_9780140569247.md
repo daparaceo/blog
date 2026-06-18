@@ -4,7 +4,6 @@ description: "나무늘보는 왜 그렇게 느리고 조용하고 게으른 걸
 publishedAt: 2026-04-20
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/434e5a0234cffaed20658fbe.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Slowly Slowly Slowly Said the Sloth, Eric Carle, 나무늘보, 자기표현, 그림책, 자존감]
 en_title: "\"Slowly, Slowly, Slowly,\" Said the Sloth"
 author: "Eric Carle"
 ar_level: 2.8

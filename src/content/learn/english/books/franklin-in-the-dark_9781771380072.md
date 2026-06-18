@@ -4,7 +4,6 @@ description: "어둠이 무서워 껍데기 속으로 들어가지 못하는 거
 publishedAt: 2026-04-20
 ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/78ca704433fceb04bc33ec3f.jpg"
 category: "english-reading"
-tags: [영어원서, 영어학습, 초등영어, AR레벨, Franklin in the Dark, Paulette Bourgeois, 프랭클린, 두려움극복, 그림책, 자기극복]
 en_title: "Franklin in the Dark"
 author: "Paulette Bourgeois"
 ar_level: 2.5
