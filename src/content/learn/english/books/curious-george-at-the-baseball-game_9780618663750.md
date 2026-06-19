@@ -4,7 +4,7 @@ description: "호기심 많은 원숭이 조지가 야구장에서 코치의 수
 publishedAt: 2026-05-06
 category: "english-reading"
 en_title: "Curious George at the Baseball Game"
-author: "Margret Rey"
+author: "Laura Driscoll"
 ar_level: 2.6
 series: "Curious George"
 isbn: "9780618663750"
@@ -14,7 +14,7 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/3
 <img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/3754f99c7587a795403d0a92.jpg" alt="Curious George at the Baseball Game (cover)" />
 <table class="book-table">
   <tr><td class="label">Title</td><td>Curious George at the Baseball Game</td></tr>
-  <tr><td class="label">Author</td><td>Margret Rey</td></tr>
+  <tr><td class="label">Author</td><td>Laura Driscoll</td></tr>
   <tr><td class="label">Illustrator</td><td>H.A. Rey</td></tr>
   <tr><td class="label">ISBN</td><td>9780618663750</td></tr>
   <tr><td class="label">Series</td><td>Curious George</td></tr>
@@ -136,7 +136,7 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/3
 <summary>💡 리뷰</summary>
 <div class="review-en">
 <p><b>Introduction</b></p>
-<p>&nbsp;&nbsp;"Curious George at the Baseball Game" is written by Margret Rey. It is a story about a curious little monkey named George who visits a baseball stadium and ends up having an unexpected adventure.</p>
+<p>&nbsp;&nbsp;"Curious George at the Baseball Game" is written by Laura Driscoll. It is a story about a curious little monkey named George who visits a baseball stadium and ends up having an unexpected adventure.</p>
 <p><b>Body</b></p>
 <p>&nbsp;&nbsp;I really enjoyed this book because George always tries his best, even when things go wrong. When he copied the coach's hand signals and caused trouble, I felt sorry for him. But the best part was when George found the lost boy and helped him get back to his dad. It showed that even small mistakes can lead to something wonderful.</p>
 <p><b>Conclusion</b></p>
