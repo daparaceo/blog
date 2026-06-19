@@ -24,8 +24,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/f
 </table>
 </div>
 
-<p>Frog와 Toad는 성격은 다르지만 서로를 진심으로 아끼는 단짝 친구입니다. Frog는 봄이 왔는데도 계속 자고 싶어 하는 Toad를 깨우고, 아픈 친구를 위해 재미있는 이야기를 들려줍니다. 두 친구는 산책 중 잃어버린 단추를 찾기 위해 지나온 길을 함께 되돌아가기도 합니다. 일상에서 벌어지는 유쾌한 사건을 통해 우정과 배려의 의미를 자연스럽게 보여 주는 책입니다.</p>
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

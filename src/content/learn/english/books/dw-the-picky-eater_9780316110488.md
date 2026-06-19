@@ -24,8 +24,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/7
 </table>
 </div>
 
-<p>D.W.는 새로운 음식을 잘 먹으려 하지 않는 아주 까다로운 아이입니다. 가족과 함께 장을 정리할 때도, 친구 집에서 저녁을 먹을 때도, 식탁 위 음식이 마음에 들지 않으면 쉽게 거절하지요. 어느 날 D.W.는 식당에서 샐러드 때문에 큰 소동을 일으키고, 한동안 가족 외식에 함께 가지 못하게 됩니다. 하지만 Grandma Thora의 생일 저녁 식사에 꼭 가고 싶어진 D.W.는 새로운 음식을 먹어 보겠다고 약속합니다.</p>
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

@@ -22,8 +22,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/0
 </table>
 </div>
 
-<p>Chip과 Wilf는 텐트에서 자 보려고 생존 키트를 준비하지만, 비가 와서 방 안에서 캠핑을 하게 됩니다. 그때 마법 열쇠가 빛나고, 아이들은 숲속 생존 모험 속으로 들어갑니다. 그곳에서 길을 잃은 Amy와 Little Fox를 만나고, 덫과 곰, 비바람 같은 위험을 함께 헤쳐 나갑니다. 처음에는 쓸모없어 보였던 Biff의 우산도 뜻밖의 중요한 생존 도구가 됩니다.</p>
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

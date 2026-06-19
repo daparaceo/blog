@@ -23,8 +23,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/5
 </table>
 </div>
 
-<p>Judy Moody와 친구들은 운동장에서 놀다가, 한 5학년 아이가 “치아 요정은 없다”고 말하는 것을 듣게 됩니다. 모두가 충격을 받지만 Judy는 Tooth Fairy가 진짜인지 직접 확인해 보기로 합니다. 마침 동생 Stink에게 흔들리는 이가 있다는 사실을 알게 되고, Judy는 여러 가지 엉뚱한 방법으로 이를 빠지게 하려 합니다. 이 이야기는 믿음, 상상력, 형제자매 사이의 장난스러운 관계를 유쾌하게 보여 줍니다.</p>
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

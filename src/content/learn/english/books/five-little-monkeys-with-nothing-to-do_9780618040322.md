@@ -24,8 +24,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/4
 </table>
 </div>
 
-<p>여름방학이 되어 학교에 가지 않는 다섯 꼬마 원숭이들은 심심해서 할 일이 없다고 말합니다. 엄마는 Grandma Bessie가 점심을 먹으러 오기 때문에 집을 깨끗하게 해야 한다고 알려 줍니다. 원숭이들은 방을 치우고, 욕실을 닦고, 늪 근처에서 berries를 따며 바쁜 하루를 보냅니다. 하지만 열심히 도와주려는 마음과 달리, 마지막에는 웃음이 나는 소동이 벌어집니다.</p>
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

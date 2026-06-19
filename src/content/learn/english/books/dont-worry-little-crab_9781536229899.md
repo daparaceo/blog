@@ -20,8 +20,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/2
 </table>
 </div>
 
-<p>Little Crab과 Very Big Crab은 작은 조수 웅덩이에서 살고 있습니다. 어느 날, 두 게는 드디어 넓은 바다로 나가기로 합니다. 바위를 넘고, 웅덩이를 건너고, 미끌미끌한 해조류를 헤치며 나아가는 동안 Little Crab은 신이 나서 "나는 어디든 갈 수 있어!"라고 외칩니다. 하지만 막상 바다 앞에 서자 거대한 파도가 무서워 한 발짝도 떼지 못합니다. Very Big Crab은 "걱정 마, 내가 여기 있어"라는 말과 함께 조금씩 앞으로 나아가도록 이끌어 줍니다. 마침내 바닷속으로 뛰어든 Little Crab은 새로운 친구들을 만나고, 해초를 먹고, 숨바꼭질을 하며 "나는 바다가 정말 좋아!"라고 외치게 됩니다.</p>
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

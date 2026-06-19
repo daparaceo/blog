@@ -1,6 +1,6 @@
 ---
 title: "[AR 1.9] Five Little Monkeys Bake a Birthday Cake: (formerly titled Don't Wake Up Mama)"
-description: "Originally published in 1992 under the title Don't wake up mama!"
+description: "다섯 원숭이들이 엄마를 위해 몰래 생일 케이크를 준비하지만, 조용히 하려 할수록 작은 소동이 이어집니다. 서툴지만 사랑 가득한 생일 준비 과정과 마지막 반전을 유쾌하게 담은 이야기입니다."
 publishedAt: 2026-06-18
 category: "english-reading"
 en_title: "Five Little Monkeys Bake a Birthday Cake: (formerly titled Don't Wake Up Mama)"
@@ -20,8 +20,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/4
   <tr><td class="label">AR Level</td><td>1.9</td></tr>
 </table>
 </div>
-
-<p>다섯 마리 꼬마 원숭이들은 엄마의 생일이라고 생각하고, 엄마가 깨기 전에 몰래 생일 케이크를 만들기로 합니다. 조용히 하려고 하지만 재채기, 기름 흘리기, 시끄러운 선물 만들기까지 계속 작은 소동이 벌어집니다. 케이크가 타고 소방차까지 오지만, 원숭이들은 끝까지 엄마를 위한 깜짝 선물을 준비합니다. 마지막에는 엄마의 생일이 사실 내일이라는 재미있는 반전도 기다리고 있습니다.</p>
 
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>

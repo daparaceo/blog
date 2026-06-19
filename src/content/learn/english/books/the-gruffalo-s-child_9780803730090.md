@@ -23,8 +23,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/f
 </table>
 </div>
 
-눈 내리는 겨울밤, 그루팔로가 코를 골며 잠든 사이 그루팔로의 아이는 심심함을 견디지 못하고 동굴 밖으로 살금살금 나섭니다. 아빠가 무서워서 절대 가면 안 된다고 했던 어두운 숲 속에는 전설의 '빅 배드 마우스'가 살고 있다고 하는데요. 뱀, 올빼미, 여우를 차례로 만나지만 모두 "나는 빅 배드 마우스가 아니야"라고 말합니다. 과연 빅 배드 마우스는 진짜 존재하는 걸까요? Julia Donaldson의 운율감 넘치는 문장과 Axel Scheffler의 생생한 그림이 어우러진 《The Gruffalo's Child》는 전작 《The Gruffalo》의 매력을 그대로 이어받은 사랑스러운 속편입니다.
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

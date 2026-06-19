@@ -22,8 +22,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/8
 </table>
 </div>
 
-<p>밸런타인데이를 앞두고 Ms. Day의 반 아이들은 각자 좋아하는 것을 담은 valentine box를 만듭니다. Fluffy는 아이들이 자신에게 관심을 주지 않는다고 생각해 삐치지만, 사실 아이들은 Fluffy를 위한 특별한 상자를 준비하고 있었습니다. 이후 Fluffy는 향기 좋은 목욕을 하게 되고, 밸런타인데이 파티에서는 다른 기니피그 Kiss를 만나게 됩니다. 사랑스럽지만 자존심 강한 Fluffy의 속마음이 재미있게 드러나는 초등 영어 원서입니다.</p>
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

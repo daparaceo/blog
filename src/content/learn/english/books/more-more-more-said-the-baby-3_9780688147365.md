@@ -19,8 +19,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/a
 </table>
 </div>
 
-세 명의 아기 — Little Guy, Little Pumpkin, Little Bird — 가 각자의 가족에게 듬뿍 사랑을 받는 이야기입니다. 아빠는 Little Guy의 배꼽에 뽀뽀를 해주고, 할머니는 Little Pumpkin의 발가락을 하나하나 입 맞춰주며, 엄마는 Little Bird의 눈꺼풀에 조용히 키스합니다. 사랑받는 아기들은 모두 같은 말로 답합니다. "More. More. More." 반복되는 리듬과 따뜻한 그림이 어우러진 Caldecott Honor 수상작입니다.
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>

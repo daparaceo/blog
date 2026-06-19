@@ -24,8 +24,6 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/4
 </table>
 </div>
 
-<p><i>George and Martha</i>는 두 하마 친구 George와 Martha가 겪는 다섯 가지 짧은 이야기로 이루어진 그림책입니다. George는 Martha의 완두콩 수프를 싫어하지만 친구의 마음을 다치게 하고 싶지 않아 솔직히 말하지 못합니다. 또 날고 싶어 하거나, 창문을 몰래 들여다보거나, 거울을 너무 자주 보는 등 친구 사이에서 생길 수 있는 작은 실수들이 유머러스하게 펼쳐집니다. 이 책은 우정에는 배려뿐 아니라 솔직함, 사생활 존중, 서로를 격려하는 마음도 필요하다는 것을 알려 줍니다.</p>
-
 <div class="tip-box">
   <h3>📌 이렇게 활용하세요</h3>
   <ul>
