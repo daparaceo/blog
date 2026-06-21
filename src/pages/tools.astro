@@ -475,10 +475,10 @@ for (const post of posts) {
           return true;
         });
         var html = filtered.map(function(item) {
-          return '<div class="book-candidate" data-book-isbn="' + item.isbn.replace(/\D/g, '') + '">' +
+          return '<div class="book-candidate bg-white border border-gray-200 rounded-xl overflow-hidden transition-colors" ' +
+            'data-book-isbn="' + item.isbn.replace(/\D/g, '') + '">' +
             '<button type="button" ' +
-            'class="book-candidate-button w-full text-left bg-white border border-gray-200 rounded-xl p-3 ' +
-            'hover:border-sky-300 hover:bg-sky-50 active:scale-[0.98] transition-all" ' +
+            'class="book-candidate-button w-full text-left p-3 hover:bg-sky-50 transition-colors" ' +
             'onclick="selectCandidate(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">' +
             '<div class="flex items-start gap-3">' +
             (item.cover_url
@@ -489,7 +489,7 @@ for (const post of posts) {
             (item.author ? '<p class="text-xs text-gray-500 mt-0.5">' + item.author + '</p>' : '') +
             (item.ar_level ? '<div class="mt-1">' + arBadgeHtml(item.ar_level) + '</div>' : '') +
             '</div></div></button>' +
-            '<div class="book-candidate-detail hidden mt-2"></div></div>';
+            '<div class="book-candidate-detail hidden px-3 pb-3"></div></div>';
         }).join('');
 
         if (!extended) {
@@ -525,7 +525,6 @@ for (const post of posts) {
       if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
 
       var post    = ISBN_MAP[cleanIsbn] || ISBN_MAP[item.isbn];
-      var arHtml  = arBadgeHtml(item.ar_level);
       var ctaHtml = post
         ? '<a href="/learn/english/books/' + post.slug + '/" target="_blank" ' +
           'class="block mt-3 w-full py-2.5 bg-emerald-600 text-white text-sm font-semibold text-center ' +
@@ -540,33 +539,18 @@ for (const post of posts) {
         detail.classList.add('hidden');
         detail.innerHTML = '';
       });
-      document.querySelectorAll('.book-candidate-button').forEach(function(button) {
-        button.classList.remove('border-sky-400', 'bg-sky-50');
+      document.querySelectorAll('.book-candidate').forEach(function(candidate) {
+        candidate.classList.remove('border-sky-400', 'bg-sky-50');
       });
       var candidateEl = document.querySelector('[data-book-isbn="' + cleanIsbn + '"]');
       var cardEl = candidateEl ? candidateEl.querySelector('.book-candidate-detail') : standaloneCard;
       if (candidateEl) {
-        candidateEl.querySelector('.book-candidate-button').classList.add('border-sky-400', 'bg-sky-50');
+        candidateEl.classList.add('border-sky-400', 'bg-sky-50');
       }
       document.getElementById('book-post-progress').classList.add('hidden');
       document.getElementById('book-post-result').classList.add('hidden');
       document.getElementById('book-error').classList.add('hidden');
-      cardEl.innerHTML =
-        '<div class="p-4 bg-white border border-gray-200 rounded-xl">' +
-        '<div class="flex gap-3">' +
-        (item.cover_url
-          ? '<img src="' + item.cover_url + '" alt="표지" ' +
-            'class="w-14 h-20 object-cover rounded-lg shadow-sm flex-shrink-0" ' +
-            'onerror="this.style.display=\'none\'">'
-          : '') +
-        '<div class="flex-1 min-w-0">' +
-        (post ? '<p class="text-xs font-semibold text-emerald-600 mb-0.5">포스트 있음</p>' : '') +
-        '<p class="font-semibold text-gray-900 text-sm leading-snug">' + (item.title || '') + '</p>' +
-        (item.author ? '<p class="text-xs text-gray-500 mt-0.5">' + item.author + '</p>' : '') +
-        (arHtml ? '<div class="mt-1">' + arHtml + '</div>' : '') +
-        '</div></div>' +
-        ctaHtml +
-        '</div>';
+      cardEl.innerHTML = ctaHtml;
       cardEl.classList.remove('hidden');
     }
 
