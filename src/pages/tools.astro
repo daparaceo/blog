@@ -325,6 +325,7 @@ for (const post of posts) {
 
       try {
         _bookQrCode = new Html5Qrcode('book-qr-reader');
+        _bookScanning = true;
         await _bookQrCode.start(
           { facingMode: 'environment' },
           {
@@ -338,22 +339,22 @@ for (const post of posts) {
           },
           function(decodedText) {
             if (!_bookScanning) return;
-            _bookScanning = false;
-            _bookQrCode.stop().catch(function() {});
             var isbn = normalizeIsbn(decodedText);
             document.getElementById('book-isbn').value = isbn;
             document.getElementById('book-query').value = isbn;
+            _bookScanning = false;
+            _bookQrCode.stop().catch(function() {});
             if (navigator.vibrate) navigator.vibrate(120);
             closeScanner();
             lookupIsbn();
           },
           function() {}
         );
-        _bookScanning = true;
         statusEl.classList.add('hidden');
         scanGuide.classList.remove('hidden');
         startBookScanLine();
       } catch (err) {
+        _bookScanning = false;
         startOverlay.classList.remove('hidden');
         var msg;
         if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
@@ -575,6 +576,7 @@ for (const post of posts) {
       var errEl = document.getElementById('book-error');
       var cardEl = document.getElementById('book-info-card');
 
+      document.getElementById('book-query').value = isbn;
       errEl.classList.add('hidden');
       cardEl.classList.add('hidden');
       document.getElementById('book-post-progress').classList.add('hidden');
