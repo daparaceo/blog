@@ -340,6 +340,7 @@ for (const post of posts) {
           function(decodedText) {
             if (!_bookScanning) return;
             var isbn = normalizeIsbn(decodedText);
+            resetBookSearchResults();
             document.getElementById('book-isbn').value = isbn;
             document.getElementById('book-query').value = isbn;
             _bookScanning = false;
@@ -406,9 +407,37 @@ for (const post of posts) {
     }
 
     // ── 제목/저자 검색 ────────────────────────────────────────
+    function resetBookSearchResults() {
+      _lastPage = 0;
+      _shownIsbns.clear();
+      _currentIsbn = null;
+      if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+
+      var listEl = document.getElementById('book-candidates');
+      listEl.innerHTML = '';
+      listEl.classList.add('hidden');
+      document.getElementById('btn-more-search').classList.add('hidden');
+      document.getElementById('book-info-card').classList.add('hidden');
+      document.getElementById('book-post-progress').classList.add('hidden');
+      document.getElementById('book-post-result').classList.add('hidden');
+      document.getElementById('book-error').classList.add('hidden');
+    }
+
     async function searchByTitle(extended) {
-      var q = document.getElementById('book-query').value.trim();
+      var inputEl = document.getElementById('book-query');
+      var q = extended ? _lastQuery : inputEl.value.trim();
       if (!q || q.length < 2) return;
+
+      var listEl  = document.getElementById('book-candidates');
+      var moreBtn = document.getElementById('btn-more-search');
+      var errEl   = document.getElementById('book-error');
+
+      if (!extended) {
+        resetBookSearchResults();
+        _lastQuery = q;
+      } else {
+        _lastPage++;
+      }
 
       var digits = q.replace(/\D/g, '');
       if (digits.length === 10 || digits.length === 13) {
@@ -417,25 +446,7 @@ for (const post of posts) {
         return;
       }
 
-      _lastQuery = q;
       var size = 5;
-
-      if (!extended) {
-        _lastPage = 0;
-        _shownIsbns.clear();
-        _currentIsbn = null;
-        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
-        document.getElementById('book-info-card').classList.add('hidden');
-        document.getElementById('book-post-progress').classList.add('hidden');
-        document.getElementById('book-post-result').classList.add('hidden');
-        document.getElementById('book-error').classList.add('hidden');
-      } else {
-        _lastPage++;
-      }
-
-      var listEl    = document.getElementById('book-candidates');
-      var moreBtn   = document.getElementById('btn-more-search');
-      var errEl     = document.getElementById('book-error');
       errEl.classList.add('hidden');
       moreBtn.classList.add('hidden');
 
@@ -446,7 +457,6 @@ for (const post of posts) {
         listEl.insertAdjacentHTML('beforeend',
           '<p id="more-loading" class="text-sm text-center text-gray-400 py-3">검색 중...</p>');
       }
-
       try {
         var res = await fetch(
           API + '/book-search?q=' + encodeURIComponent(q) +
