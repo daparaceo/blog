@@ -8,13 +8,9 @@ export async function GET() {
   const blogName = 'daparapara';
   const blogDescription = '생활정보, IT, 재테크, 캠핑, 영어원서 등 다양한 주제의 블로그';
 
-  const [blogPosts, learnPosts] = await Promise.all([
-    getCollection('blog', ({ data }) => !data.draft),
-    getCollection('learn', ({ data }) => !data.draft),
-  ]);
+  const learnPosts = await getCollection('learn', ({ data }) => !data.draft);
 
   const allWithUrl = [
-    ...blogPosts.map(p => ({ data: p.data, url: `/blog/${p.slug.split('/').pop()}/` })),
     ...learnPosts.map(p => ({ data: p.data, url: `/learn/english/books/${p.slug.split('/').pop()}/` })),
   ];
   const sorted = allWithUrl.sort(

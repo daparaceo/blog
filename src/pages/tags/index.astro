@@ -5,16 +5,12 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const [blogPosts, learnPosts] = await Promise.all([
-  getCollection('blog', ({ data }) => data.draft !== true),
-  getCollection('learn', ({ data }) => data.draft !== true),
-]);
+const learnPosts = await getCollection('learn', ({ data }) => data.draft !== true);
 
 // 태그별 글 수 집계
 const tagCount: Record<string, number> = {};
 for (const tag of [
-  ...blogPosts.flatMap(p => p.data.tags ?? []),
-  ...learnPosts.flatMap(p => p.data.tags ?? []),
+    ...learnPosts.flatMap(p => p.data.tags ?? []),
 ]) {
   tagCount[tag] = (tagCount[tag] ?? 0) + 1;
 }

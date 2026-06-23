@@ -40,10 +40,8 @@ const contentSchema = z.object({
   draft: z.boolean().optional().default(false),
 });
 
-const blogCollection = defineCollection({ type: 'content', schema: contentSchema });
 const learnCollection = defineCollection({ type: 'content', schema: contentSchema });
 
 export const collections = {
-  blog: blogCollection,
   learn: learnCollection,
 };
