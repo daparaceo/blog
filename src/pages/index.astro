@@ -23,7 +23,15 @@ const englishPosts = (await getCollection('learn', ({ data }) => !data.draft))
           const bareSlug = post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug;
           return (
             <li class="py-4 group">
-              <a href={`/learn/english/books/${bareSlug}/`} class="flex items-start justify-between gap-4">
+              <a href={`/learn/english/books/${bareSlug}/`} class="flex items-start gap-3 sm:gap-4">
+                {post.data.ogImage && (
+                  <img
+                    src={post.data.ogImage}
+                    alt=""
+                    loading="lazy"
+                    class="w-14 h-20 flex-shrink-0 rounded-md object-cover shadow-sm bg-gray-100"
+                  />
+                )}
                 <div class="flex-1 min-w-0">
                   <span class="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">
                     {post.data.title}
@@ -39,7 +47,7 @@ const englishPosts = (await getCollection('learn', ({ data }) => !data.draft))
                     </p>
                   )}
                 </div>
-                <time datetime={post.data.publishedAt.toISOString()} class="text-xs text-gray-400 whitespace-nowrap mt-1">
+                <time datetime={post.data.publishedAt.toISOString()} class="text-xs text-gray-400 whitespace-nowrap mt-1 ml-auto">
                   {post.data.publishedAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
                 </time>
               </a>

@@ -11,6 +11,7 @@ const postsData = posts.map((post) => ({
   description: post.data.description ?? '',
   author: post.data.author ?? '',
   ar_level: post.data.ar_level ?? null,
+  ogImage: post.data.ogImage ?? '',
   date: post.data.publishedAt.toISOString(),
   dateLabel: post.data.publishedAt.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
 }));
@@ -150,9 +151,13 @@ const postsData = posts.map((post) => ({
         var desc = p.description
           ? '<p class="text-gray-500 text-sm mt-0.5 line-clamp-1">' + escHtml(p.description) + '</p>'
           : '';
+        var cover = p.ogImage
+          ? '<img src="' + escHtml(p.ogImage) + '" alt="" loading="lazy" class="w-14 h-20 flex-shrink-0 rounded-md object-cover shadow-sm bg-gray-100">'
+          : '';
         return (
           '<li class="py-4 group">' +
-            '<a href="/learn/english/books/' + p.slug + '/" class="flex items-start justify-between gap-4">' +
+            '<a href="/learn/english/books/' + p.slug + '/" class="flex items-start gap-3 sm:gap-4">' +
+              cover +
               '<div class="flex-1 min-w-0">' +
                 '<span class="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">' +
                   escHtml(p.title) +
@@ -160,7 +165,7 @@ const postsData = posts.map((post) => ({
                 desc +
                 meta +
               '</div>' +
-              '<time class="text-xs text-gray-400 whitespace-nowrap mt-1">' + p.dateLabel + '</time>' +
+              '<time class="text-xs text-gray-400 whitespace-nowrap mt-1 ml-auto">' + p.dateLabel + '</time>' +
             '</a>' +
           '</li>'
         );
