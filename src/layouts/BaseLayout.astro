@@ -69,6 +69,7 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0ea5e9" />
   <meta name="apple-mobile-web-app-title" content="daparapara" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
 
@@ -131,6 +132,40 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
     </div>
   </header>
 
+  <div
+    id="install-shortcut"
+    class="hidden fixed inset-x-3 bottom-3 z-50 mx-auto max-w-sm rounded-lg border border-sky-100 bg-white p-3 shadow-lg"
+    role="region"
+    aria-label="홈 화면 바로가기"
+  >
+    <div class="flex items-start gap-3">
+      <img src="/apple-touch-icon.png" alt="" class="h-10 w-10 shrink-0 rounded-xl" loading="lazy" />
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-semibold text-gray-900">daparapara 바로가기</p>
+        <p id="install-shortcut-message" class="mt-0.5 text-xs leading-5 text-gray-600">
+          홈 화면에 추가해 빠르게 열 수 있습니다.
+        </p>
+        <div class="mt-2 flex items-center gap-2">
+          <button
+            id="install-shortcut-action"
+            type="button"
+            class="rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-brand-700"
+          >
+            추가
+          </button>
+          <button
+            id="install-shortcut-close"
+            type="button"
+            class="rounded-md px-2.5 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+            aria-label="닫기"
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- 메인 콘텐츠 -->
   <main class="flex-grow max-w-3xl mx-auto w-full px-4 py-10">
     <slot />
@@ -148,6 +183,75 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
       </p>
     </div>
   </footer>
+
+  <script>
+    const shortcutBanner = document.getElementById('install-shortcut');
+    const shortcutAction = document.getElementById('install-shortcut-action');
+    const shortcutClose = document.getElementById('install-shortcut-close');
+    const shortcutMessage = document.getElementById('install-shortcut-message');
+    const shortcutDismissedKey = 'daparapara-install-shortcut-dismissed';
+    let installPromptEvent = null;
+
+    function isStandaloneMode() {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+
+    function isMobileSafari() {
+      const ua = window.navigator.userAgent;
+      return /iPhone|iPad|iPod/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+    }
+
+    function showShortcutBanner() {
+      if (!shortcutBanner || isStandaloneMode() || localStorage.getItem(shortcutDismissedKey) === '1') return;
+      shortcutBanner.classList.remove('hidden');
+    }
+
+    function hideShortcutBanner() {
+      shortcutBanner?.classList.add('hidden');
+    }
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      installPromptEvent = event;
+      shortcutMessage.textContent = '홈 화면에 추가해 앱처럼 빠르게 열 수 있습니다.';
+      shortcutAction.textContent = '추가';
+      showShortcutBanner();
+    });
+
+    shortcutAction?.addEventListener('click', async () => {
+      if (installPromptEvent) {
+        installPromptEvent.prompt();
+        await installPromptEvent.userChoice;
+        installPromptEvent = null;
+        hideShortcutBanner();
+        return;
+      }
+
+      if (isMobileSafari()) {
+        shortcutMessage.textContent = 'Safari 공유 버튼을 누른 뒤 홈 화면에 추가를 선택하세요.';
+      }
+    });
+
+    shortcutClose?.addEventListener('click', () => {
+      localStorage.setItem(shortcutDismissedKey, '1');
+      hideShortcutBanner();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installPromptEvent = null;
+      hideShortcutBanner();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!shortcutAction || !shortcutMessage) return;
+
+      if (isMobileSafari()) {
+        shortcutAction.textContent = '방법 보기';
+        shortcutMessage.textContent = 'Safari에서 홈 화면 바로가기를 만들 수 있습니다.';
+        showShortcutBanner();
+      }
+    });
+  </script>
 
   <!-- TTS: data-word 속성이 있는 요소 클릭 시 음성 재생 -->
   <script>

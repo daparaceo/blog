@@ -1,12 +1,25 @@
 {
   "name": "daparapara",
   "short_name": "daparapara",
-  "description": "깊이 파고들고, 깊이 배워, 오래가는 가치를 만드는 블로그",
+  "description": "깊이 파고들고, 깊이 배우고, 오래가는 가치를 만듭니다.",
   "start_url": "/",
-  "display": "browser",
+  "scope": "/",
+  "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0ea5e9",
   "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
     {
       "src": "/apple-touch-icon.png",
       "sizes": "180x180",
