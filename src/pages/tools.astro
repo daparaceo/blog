@@ -236,7 +236,7 @@ for (const post of posts) {
       <div id="book-post-progress" class="hidden mt-4">
         <div class="flex items-center gap-3 p-4 bg-sky-50 border border-sky-200 rounded-xl">
           <div class="w-4 h-4 border-2 border-sky-600 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
-          <p class="text-sm text-sky-700">워크봇이 포스트를 생성 중입니다...</p>
+          <p id="book-post-progress-text" class="text-sm text-sky-700">포스트 생성 요청을 처리 중입니다...</p>
         </div>
         <p id="book-poll-elapsed" class="mt-2 text-xs text-gray-400 text-center"></p>
       </div>
@@ -245,6 +245,10 @@ for (const post of posts) {
       <div id="book-post-result" class="hidden mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
         <p class="text-sm font-semibold text-emerald-800">포스트 생성 완료</p>
         <p class="text-xs text-emerald-600 mt-1">블로그에서 확인해주세요.</p>
+        <a id="book-post-result-link" href="#" target="_blank"
+          class="hidden mt-3 w-full py-2.5 bg-emerald-600 text-white text-sm font-semibold text-center rounded-xl hover:bg-emerald-700 active:scale-95 transition-all">
+          포스트 보러가기
+        </a>
       </div>
 
       <p id="book-error" class="hidden mt-3 text-sm text-red-500"></p>
@@ -609,7 +613,7 @@ for (const post of posts) {
       var post    = ISBN_MAP[book.isbn] || ISBN_MAP[(book.isbn || '').replace(/\D/g, '')];
       var arHtml  = arBadgeHtml(book.ar_level);
       var ctaHtml = post
-        ? '<a href="/blog/' + post.slug + '/" target="_blank" ' +
+        ? '<a href="/learn/english/books/' + post.slug + '/" target="_blank" ' +
           'class="inline-block mt-3 px-4 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 active:scale-95 transition-all">' +
           '리뷰 보기</a>'
         : '<button onclick="startPostPolling()" ' +
@@ -634,37 +638,97 @@ for (const post of posts) {
 
     // ── 포스트 생성 폴링 ─────────────────────────────────────
     var POLL_INTERVAL = 10000;
-    var POLL_TIMEOUT  = 180000;
+    var POLL_TIMEOUT  = 900000;
 
-    function startPostPolling() {
+    function showPostResult(data) {
+      document.getElementById('book-post-progress').classList.add('hidden');
+      document.getElementById('book-post-result').classList.remove('hidden');
+      var linkEl = document.getElementById('book-post-result-link');
+      if (data && data.post_url) {
+        linkEl.href = data.post_url;
+        linkEl.classList.remove('hidden');
+      } else {
+        linkEl.classList.add('hidden');
+      }
+    }
+
+    function showPostError(message) {
+      if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+      document.getElementById('book-post-progress').classList.add('hidden');
+      document.getElementById('book-post-result').classList.add('hidden');
+      var errEl = document.getElementById('book-error');
+      errEl.textContent = message || '포스트 생성이 보류되었습니다. 잠시 후 다시 시도해주세요.';
+      errEl.classList.remove('hidden');
+    }
+
+    async function pollPostStatus(startedAt, deadline) {
+      var elapsed = Math.round((Date.now() - startedAt) / 1000);
+      document.getElementById('book-poll-elapsed').textContent = elapsed + '초 경과 · 10초마다 상태 확인 중';
+
+      var res = await fetch(API + '/book-status?isbn=' + _currentIsbn);
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || '포스트 상태를 확인할 수 없습니다.');
+
+      if (data.status === 'completed' || data.display_status === 'posted') {
+        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+        showPostResult(data);
+        return true;
+      }
+
+      if (data.display_status === 'failed' || data.display_status === 'cancelled') {
+        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+        showPostError(data.last_error || '포스트 생성이 보류되었습니다.');
+        return true;
+      }
+
+      if (Date.now() >= deadline) {
+        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+        showPostError('포스트 생성 요청은 등록됐지만 아직 완료되지 않았습니다. 잠시 후 다시 확인해주세요.');
+        return true;
+      }
+      return false;
+    }
+
+    async function startPostPolling() {
       if (!_currentIsbn) return;
+      if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+
       document.getElementById('book-post-progress').classList.remove('hidden');
       document.getElementById('book-post-result').classList.add('hidden');
+      document.getElementById('book-post-result-link').classList.add('hidden');
       document.getElementById('book-error').classList.add('hidden');
+      document.getElementById('book-post-progress-text').textContent = 'Codex 포스팅 요청을 등록하는 중입니다...';
+      document.getElementById('book-poll-elapsed').textContent = '';
 
+      var startedAt = Date.now();
       var deadline = Date.now() + POLL_TIMEOUT;
 
-      _pollTimer = setInterval(async function() {
-        try {
-          var elapsed = Math.round((Date.now() - (deadline - POLL_TIMEOUT)) / 1000);
-          document.getElementById('book-poll-elapsed').textContent = elapsed + '초 경과';
+      try {
+        var req = await fetch(API + '/post-request', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ isbn: _currentIsbn }),
+        });
+        var body = await req.json().catch(function() { return {}; });
+        if (!req.ok) throw new Error(body.error || '포스트 생성 요청에 실패했습니다.');
 
-          var res  = await fetch(API + '/book-status?isbn=' + _currentIsbn);
-          var data = await res.json();
+        if (body.status === 'completed' || body.display_status === 'posted') {
+          showPostResult(body);
+          return;
+        }
 
-          if (data.status === 'completed') {
-            clearInterval(_pollTimer); _pollTimer = null;
-            document.getElementById('book-post-progress').classList.add('hidden');
-            document.getElementById('book-post-result').classList.remove('hidden');
-          } else if (Date.now() >= deadline) {
-            clearInterval(_pollTimer); _pollTimer = null;
-            document.getElementById('book-post-progress').classList.add('hidden');
-            var errEl = document.getElementById('book-error');
-            errEl.textContent = '포스트 생성에 실패했습니다. 워크봇 상태를 확인해주세요.';
-            errEl.classList.remove('hidden');
-          }
-        } catch (_) {}
-      }, POLL_INTERVAL);
+        document.getElementById('book-post-progress-text').textContent = '포스트 생성 요청됨. Codex 워크봇 처리를 기다리는 중입니다...';
+        var finished = await pollPostStatus(startedAt, deadline);
+        if (!finished && !_pollTimer) {
+          _pollTimer = setInterval(function() {
+            pollPostStatus(startedAt, deadline).catch(function(e) {
+              showPostError(e.message);
+            });
+          }, POLL_INTERVAL);
+        }
+      } catch (e) {
+        showPostError(e.message);
+      }
     }
 
     // ── QR 생성 ─────────────────────────────────────────────
