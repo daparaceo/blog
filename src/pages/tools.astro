@@ -410,6 +410,16 @@ for (const post of posts) {
              cls + '">AR ' + ar + '</span>';
     }
 
+    function bookMetaHtml(isbn, ar) {
+      var clean = (isbn || '').toString().replace(/\D/g, '');
+      var isbnHtml = clean
+        ? '<span class="text-xs text-gray-400">ISBN ' + clean + '</span>'
+        : '';
+      var arHtml = arBadgeHtml(ar);
+      if (!isbnHtml && !arHtml) return '';
+      return '<div class="mt-1 flex flex-wrap items-center gap-1.5">' + isbnHtml + arHtml + '</div>';
+    }
+
     // ── 제목/저자 검색 ────────────────────────────────────────
     function resetBookSearchResults() {
       _lastPage = 0;
@@ -501,7 +511,7 @@ for (const post of posts) {
             '<div class="flex-1 min-w-0">' +
             '<p class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">' + (item.title || '(제목 없음)') + '</p>' +
             (item.author ? '<p class="text-xs text-gray-500 mt-0.5">' + item.author + '</p>' : '') +
-            (item.ar_level ? '<div class="mt-1">' + arBadgeHtml(item.ar_level) + '</div>' : '') +
+            bookMetaHtml(item.isbn, item.ar_level) +
             '</div></div></button>' +
             '<div class="book-candidate-detail hidden px-3 pb-3"></div></div>';
         }).join('');
@@ -611,7 +621,6 @@ for (const post of posts) {
     // ── 책 정보 카드 렌더 ─────────────────────────────────────
     function buildBookCard(book) {
       var post    = ISBN_MAP[book.isbn] || ISBN_MAP[(book.isbn || '').replace(/\D/g, '')];
-      var arHtml  = arBadgeHtml(book.ar_level);
       var ctaHtml = post
         ? '<a href="/learn/english/books/' + post.slug + '/" target="_blank" ' +
           'class="inline-block mt-3 px-4 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 active:scale-95 transition-all">' +
@@ -630,7 +639,7 @@ for (const post of posts) {
         '<p class="font-semibold text-gray-900 text-sm leading-snug">' + (book.title || '') + '</p>' +
         (book.author ? '<p class="text-xs text-gray-500 mt-0.5">' + book.author + '</p>' : '') +
         (book.series ? '<p class="text-xs text-gray-400 mt-0.5">' + book.series + '</p>' : '') +
-        (arHtml ? '<div class="mt-1">' + arHtml + '</div>' : '') +
+        bookMetaHtml(book.isbn, book.ar_level) +
         '</div></div>' +
         ctaHtml +
         '</div>';
