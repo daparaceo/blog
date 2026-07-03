@@ -394,6 +394,7 @@ for (const post of posts) {
     var ISBN_MAP     = window.__ISBN_MAP__ || {};
     var _currentIsbn = null;
     var _pollTimer   = null;
+    var _pollErrorCount = 0;
     var _lastQuery   = '';
     var _lastPage    = 0;
     var _shownIsbns  = new Set();
@@ -674,9 +675,24 @@ for (const post of posts) {
       var elapsed = Math.round((Date.now() - startedAt) / 1000);
       document.getElementById('book-poll-elapsed').textContent = elapsed + '초 경과 · 10초마다 상태 확인 중';
 
-      var res = await fetch(API + '/book-status?isbn=' + _currentIsbn);
-      var data = await res.json();
-      if (!res.ok) throw new Error(data.error || '포스트 상태를 확인할 수 없습니다.');
+      var res;
+      var data;
+      try {
+        res = await fetch(API + '/book-status?isbn=' + _currentIsbn);
+        data = await res.json().catch(function() { return {}; });
+      } catch (_) {
+        _pollErrorCount++;
+        document.getElementById('book-poll-elapsed').textContent =
+          elapsed + '초 경과 · 상태 확인 재시도 중';
+        if (_pollErrorCount < 3) return false;
+        throw new Error('포스트 요청은 등록됐지만 상태 확인 연결이 불안정합니다. 잠시 후 다시 확인해주세요.');
+      }
+      if (!res.ok) {
+        _pollErrorCount++;
+        if (_pollErrorCount < 3) return false;
+        throw new Error(data.error || '포스트 상태를 확인할 수 없습니다.');
+      }
+      _pollErrorCount = 0;
 
       if (data.status === 'completed' || data.display_status === 'posted') {
         if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
@@ -706,8 +722,9 @@ for (const post of posts) {
       document.getElementById('book-post-result').classList.add('hidden');
       document.getElementById('book-post-result-link').classList.add('hidden');
       document.getElementById('book-error').classList.add('hidden');
-      document.getElementById('book-post-progress-text').textContent = 'Codex 포스팅 요청을 등록하는 중입니다...';
+      document.getElementById('book-post-progress-text').textContent = '포스트 요청 중입니다.';
       document.getElementById('book-poll-elapsed').textContent = '';
+      _pollErrorCount = 0;
 
       var startedAt = Date.now();
       var deadline = Date.now() + POLL_TIMEOUT;
@@ -726,7 +743,7 @@ for (const post of posts) {
           return;
         }
 
-        document.getElementById('book-post-progress-text').textContent = '포스트 생성 요청됨. Codex 워크봇 처리를 기다리는 중입니다...';
+        document.getElementById('book-post-progress-text').textContent = '포스트 요청 중입니다.';
         var finished = await pollPostStatus(startedAt, deadline);
         if (!finished && !_pollTimer) {
           _pollTimer = setInterval(function() {
@@ -736,7 +753,9 @@ for (const post of posts) {
           }, POLL_INTERVAL);
         }
       } catch (e) {
-        showPostError(e.message);
+        showPostError(e && e.message === 'Failed to fetch'
+          ? '포스트 요청 API에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.'
+          : e.message);
       }
     }
 
