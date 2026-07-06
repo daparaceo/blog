@@ -16,8 +16,6 @@ export async function GET() {
     { url: '/about/',             priority: '0.8', changefreq: 'monthly' },
     { url: '/privacy/',           priority: '0.5', changefreq: 'yearly' },
     { url: '/search/',            priority: '0.7', changefreq: 'monthly' },
-    { url: '/search/library/',    priority: '0.7', changefreq: 'monthly' },
-    { url: '/tools/isbn-scan/',   priority: '0.6', changefreq: 'monthly' },
     { url: '/learn/',             priority: '0.8', changefreq: 'weekly' },
     { url: '/learn/english/books/', priority: '0.8', changefreq: 'weekly' },
   ];

@@ -88,20 +88,13 @@ const englishPosts = (await getCollection('learn', ({ data }) => !data.draft))
     <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
       <h2 class="text-lg font-bold text-gray-900">검색 도구</h2>
     </div>
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 gap-3">
       <a
-        href="/search/library/"
+        href="/search/"
         class="block rounded-lg border border-gray-200 px-4 py-3 hover:border-brand-300 hover:bg-brand-50 transition-colors"
       >
-        <p class="text-sm font-semibold text-gray-800">도서관 통합 검색</p>
-        <p class="text-xs text-gray-500 mt-0.5">소장 도서관 · 대출 가능 여부</p>
-      </a>
-      <a
-        href="/tools/isbn-scan/"
-        class="block rounded-lg border border-gray-200 px-4 py-3 hover:border-brand-300 hover:bg-brand-50 transition-colors"
-      >
-        <p class="text-sm font-semibold text-gray-800">ISBN 바코드 스캔</p>
-        <p class="text-xs text-gray-500 mt-0.5">카메라로 책 스캔 · AR 정보</p>
+        <p class="text-sm font-semibold text-gray-800">사이트 검색</p>
+        <p class="text-xs text-gray-500 mt-0.5">영어원서와 학습 글 검색</p>
       </a>
     </div>
   </section>
