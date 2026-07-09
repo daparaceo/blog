@@ -1,16 +1,78 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('learn', ({ data }) => !data.draft);
+const isbnPostMap: Record<string, { slug: string; title: string; ogImage: string }> = {};
+for (const post of posts) {
+  const addEntry = (isbn: string) => {
+    const clean = isbn.replace(/\D/g, '');
+    if (clean.length >= 10 && !isbnPostMap[clean]) {
+      isbnPostMap[clean] = {
+        slug: post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug,
+        title: post.data.title,
+        ogImage: post.data.ogImage ?? '',
+      };
+    }
+  };
+  if (post.data.isbn) addEntry(String(post.data.isbn));
+  const filename = post.slug.split('/').pop() ?? '';
+  const m = filename.match(/_(97[89]\d{10})$/);
+  if (m) addEntry(m[1]);
+}
 ---
 
 <BaseLayout title="검색" description="daparapara의 글을 검색합니다.">
   <div class="max-w-none">
     <h1 class="text-2xl font-bold text-gray-900 mb-4">검색</h1>
     <div id="search"></div>
+
+    <section class="mt-10 pt-8 border-t border-gray-100">
+      <label class="block text-sm font-medium text-gray-700 mb-1">제목, 저자 또는 ISBN</label>
+      <div class="flex gap-2">
+        <input id="book-query" type="text" placeholder="Harry Potter / J.K. Rowling / 9780439708180"
+          class="flex-1 min-w-0 px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-sky-400 transition-colors bg-white" />
+        <button onclick="searchByTitle(false)"
+          class="px-4 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 active:scale-95 transition-all">
+          검색
+        </button>
+      </div>
+
+      <div id="book-candidates" class="hidden mt-2 space-y-2"></div>
+      <button id="btn-more-search"
+        class="hidden mt-2 w-full py-2 text-sm text-sky-600 border border-sky-200 rounded-xl hover:bg-sky-50 transition-colors"
+        onclick="searchByTitle(true)">
+        추가 검색
+      </button>
+      <div id="book-info-card" class="hidden mt-3"></div>
+      <input id="book-isbn" type="hidden" />
+
+      <div id="book-post-progress" class="hidden mt-4">
+        <div class="flex items-center gap-3 p-4 bg-sky-50 border border-sky-200 rounded-xl">
+          <div class="w-4 h-4 border-2 border-sky-600 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+          <p id="book-post-progress-text" class="text-sm text-sky-700">포스트 요청 중입니다.</p>
+        </div>
+        <p id="book-poll-elapsed" class="mt-2 text-xs text-gray-400 text-center"></p>
+      </div>
+
+      <div id="book-post-result" class="hidden mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+        <p class="text-sm font-semibold text-emerald-800">포스트 생성 완료</p>
+        <p class="text-xs text-emerald-600 mt-1">블로그에서 확인해주세요.</p>
+        <a id="book-post-result-link" href="#" target="_blank"
+          class="hidden mt-3 w-full py-2.5 bg-emerald-600 text-white text-sm font-semibold text-center rounded-xl hover:bg-emerald-700 active:scale-95 transition-all">
+          포스트 보러가기
+        </a>
+      </div>
+
+      <p id="book-error" class="hidden mt-3 text-sm text-red-500"></p>
+    </section>
   </div>
 
   <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
   <script src="/pagefind/pagefind-ui.js" is:inline></script>
-  <script is:inline>
+  <script define:vars={{ isbnPostMap }}>
+    window.__ISBN_MAP__ = isbnPostMap;
+
     window.addEventListener('DOMContentLoaded', () => {
       new PagefindUI({
         element: '#search',
@@ -25,6 +87,385 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           searching: '검색 중...',
         },
       });
+    });
+
+    var API = 'https://api.daparapara.com';
+    var ISBN_MAP = window.__ISBN_MAP__ || {};
+    var _currentIsbn = null;
+    var _pollTimer = null;
+    var _pollErrorCount = 0;
+    var _lastQuery = '';
+    var _lastPage = 0;
+    var _shownIsbns = new Set();
+    var POLL_INTERVAL = 10000;
+    var POLL_TIMEOUT = 300000;
+
+    function arBadgeHtml(ar) {
+      if (!ar) return '';
+      var n = parseFloat(ar);
+      var cls = isNaN(n) ? 'bg-gray-100 text-gray-600'
+               : n < 1.0 ? 'bg-purple-100 text-purple-700'
+               : n < 3.5 ? 'bg-sky-100 text-sky-700'
+               :            'bg-amber-100 text-amber-700';
+      return '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ' +
+             cls + '">AR ' + ar + '</span>';
+    }
+
+    function bookMetaHtml(isbn, ar) {
+      var clean = (isbn || '').toString().replace(/\D/g, '');
+      var isbnHtml = clean ? '<span class="text-xs text-gray-400">ISBN ' + clean + '</span>' : '';
+      var arHtml = arBadgeHtml(ar);
+      if (!isbnHtml && !arHtml) return '';
+      return '<div class="mt-1 flex flex-wrap items-center gap-1.5">' + isbnHtml + arHtml + '</div>';
+    }
+
+    function resetBookSearchResults() {
+      _lastPage = 0;
+      _shownIsbns.clear();
+      _currentIsbn = null;
+      if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+
+      document.getElementById('book-candidates').innerHTML = '';
+      document.getElementById('book-candidates').classList.add('hidden');
+      document.getElementById('btn-more-search').classList.add('hidden');
+      document.getElementById('book-info-card').classList.add('hidden');
+      document.getElementById('book-post-progress').classList.add('hidden');
+      document.getElementById('book-post-result').classList.add('hidden');
+      document.getElementById('book-error').classList.add('hidden');
+    }
+
+    async function searchByTitle(extended) {
+      var inputEl = document.getElementById('book-query');
+      var q = extended ? _lastQuery : inputEl.value.trim();
+      if (!q || q.length < 2) return;
+
+      var listEl = document.getElementById('book-candidates');
+      var moreBtn = document.getElementById('btn-more-search');
+      var errEl = document.getElementById('book-error');
+
+      if (!extended) {
+        resetBookSearchResults();
+        _lastQuery = q;
+      } else {
+        _lastPage++;
+      }
+
+      var digits = q.replace(/\D/g, '');
+      if (digits.length === 10 || digits.length === 13) {
+        document.getElementById('book-isbn').value = digits;
+        lookupIsbn();
+        return;
+      }
+
+      var size = 5;
+      errEl.classList.add('hidden');
+      moreBtn.classList.add('hidden');
+
+      if (!extended) {
+        listEl.innerHTML = '<p class="text-sm text-center text-gray-400 py-3">검색 중...</p>';
+        listEl.classList.remove('hidden');
+      } else {
+        listEl.insertAdjacentHTML('beforeend',
+          '<p id="more-loading" class="text-sm text-center text-gray-400 py-3">검색 중...</p>');
+      }
+
+      try {
+        var res = await fetch(
+          API + '/book-search?q=' + encodeURIComponent(q) +
+          '&size=' + size + '&lang=en&page=' + _lastPage
+        );
+        if (!res.ok) throw new Error('검색 실패 (' + res.status + ')');
+        var data = await res.json();
+        var results = data.results || [];
+
+        var loadingEl = document.getElementById('more-loading');
+        if (loadingEl) loadingEl.remove();
+
+        if (!results.length) {
+          if (!extended) {
+            listEl.innerHTML = '<p class="text-sm text-center text-gray-500 py-3">결과가 없어요. 영어로 검색해보세요.</p>';
+          } else {
+            listEl.insertAdjacentHTML('beforeend',
+              '<p class="text-sm text-center text-gray-500 py-3">더 이상 결과가 없어요.</p>');
+          }
+          return;
+        }
+
+        var filtered = results.filter(function(item) {
+          if (_shownIsbns.has(item.isbn)) return false;
+          _shownIsbns.add(item.isbn);
+          return true;
+        });
+        var html = filtered.map(function(item) {
+          return '<div class="book-candidate bg-white border border-gray-200 rounded-xl overflow-hidden transition-colors" ' +
+            'data-book-isbn="' + item.isbn.replace(/\D/g, '') + '">' +
+            '<button type="button" class="book-candidate-button w-full text-left p-3 hover:bg-sky-50 transition-colors" ' +
+            'onclick="selectCandidate(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">' +
+            '<div class="flex items-start gap-3">' +
+            (item.cover_url
+              ? '<img src="' + item.cover_url + '" class="w-10 h-14 object-cover rounded flex-shrink-0" onerror="this.style.display=\\'none\\'">'
+              : '') +
+            '<div class="flex-1 min-w-0">' +
+            '<p class="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">' + (item.title || '(제목 없음)') + '</p>' +
+            (item.author ? '<p class="text-xs text-gray-500 mt-0.5">' + item.author + '</p>' : '') +
+            bookMetaHtml(item.isbn, item.ar_level) +
+            '</div></div></button>' +
+            '<div class="book-candidate-detail hidden px-3 pb-3"></div></div>';
+        }).join('');
+
+        if (!extended) {
+          listEl.innerHTML = html;
+        } else if (html) {
+          listEl.insertAdjacentHTML('beforeend', html);
+        } else {
+          listEl.insertAdjacentHTML('beforeend',
+            '<p class="text-sm text-center text-gray-500 py-3">더 이상 새로운 결과가 없어요.</p>');
+        }
+
+        moreBtn.classList.toggle('hidden', filtered.length === 0 || results.length < size);
+      } catch (e) {
+        var loadingEl = document.getElementById('more-loading');
+        if (loadingEl) loadingEl.remove();
+        if (!extended) {
+          listEl.innerHTML = '<p class="text-sm text-center text-red-400 py-3">검색 오류: ' + e.message + '</p>';
+        } else {
+          listEl.insertAdjacentHTML('beforeend',
+            '<p class="text-sm text-center text-red-400 py-3">검색 오류: ' + e.message + '</p>');
+        }
+      }
+    }
+
+    function selectCandidate(item) {
+      if (!item.isbn) return;
+
+      var cleanIsbn = item.isbn.replace(/\D/g, '');
+      _currentIsbn = cleanIsbn;
+      document.getElementById('book-isbn').value = cleanIsbn;
+      if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+
+      var post = ISBN_MAP[cleanIsbn] || ISBN_MAP[item.isbn];
+      var ctaHtml = post
+        ? '<a href="/learn/english/books/' + post.slug + '/" target="_blank" ' +
+          'class="block mt-3 w-full py-2.5 bg-emerald-600 text-white text-sm font-semibold text-center rounded-xl hover:bg-emerald-700 active:scale-95 transition-all">포스트 보러가기</a>'
+        : '<button onclick="startPostPolling()" ' +
+          'class="js-book-post-button mt-3 w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">포스트 생성하기</button>';
+
+      var standaloneCard = document.getElementById('book-info-card');
+      standaloneCard.classList.add('hidden');
+      document.querySelectorAll('.book-candidate-detail').forEach(function(detail) {
+        detail.classList.add('hidden');
+        detail.innerHTML = '';
+      });
+      document.querySelectorAll('.book-candidate').forEach(function(candidate) {
+        candidate.classList.remove('border-sky-400', 'bg-sky-50');
+      });
+      var candidateEl = document.querySelector('[data-book-isbn="' + cleanIsbn + '"]');
+      var cardEl = candidateEl ? candidateEl.querySelector('.book-candidate-detail') : standaloneCard;
+      if (candidateEl) {
+        candidateEl.classList.add('border-sky-400', 'bg-sky-50');
+      }
+      document.getElementById('book-post-progress').classList.add('hidden');
+      document.getElementById('book-post-result').classList.add('hidden');
+      document.getElementById('book-error').classList.add('hidden');
+      cardEl.innerHTML = ctaHtml;
+      cardEl.classList.remove('hidden');
+    }
+
+    async function lookupIsbn() {
+      var isbn = document.getElementById('book-isbn').value.trim().replace(/\D/g, '');
+      var errEl = document.getElementById('book-error');
+      var cardEl = document.getElementById('book-info-card');
+
+      document.getElementById('book-query').value = isbn;
+      errEl.classList.add('hidden');
+      cardEl.classList.add('hidden');
+      document.getElementById('book-post-progress').classList.add('hidden');
+      document.getElementById('book-post-result').classList.add('hidden');
+      if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+
+      if (!isbn || !/^\d{10,13}$/.test(isbn)) {
+        errEl.textContent = 'ISBN은 10~13자리 숫자여야 합니다.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      _currentIsbn = null;
+      cardEl.innerHTML = '<div class="p-4 bg-gray-50 rounded-xl text-sm text-gray-400 text-center">도서 정보 조회 중...</div>';
+      cardEl.classList.remove('hidden');
+
+      try {
+        var res = await fetch(API + '/book-search?isbn=' + isbn);
+        if (!res.ok) {
+          var body = await res.json().catch(function() { return {}; });
+          throw new Error(body.error || '도서 정보를 찾을 수 없습니다.');
+        }
+        var book = await res.json();
+        _currentIsbn = book.isbn || isbn;
+        cardEl.innerHTML = buildBookCard(book);
+        cardEl.classList.remove('hidden');
+      } catch (e) {
+        cardEl.classList.add('hidden');
+        errEl.textContent = e.message;
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    function buildBookCard(book) {
+      var post = ISBN_MAP[book.isbn] || ISBN_MAP[(book.isbn || '').replace(/\D/g, '')];
+      var ctaHtml = post
+        ? '<a href="/learn/english/books/' + post.slug + '/" target="_blank" ' +
+          'class="inline-block mt-3 px-4 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 active:scale-95 transition-all">리뷰 보기</a>'
+        : '<button onclick="startPostPolling()" ' +
+          'class="js-book-post-button mt-3 w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">포스트 생성하기</button>';
+
+      return '<div class="p-4 bg-white border border-gray-200 rounded-xl">' +
+        '<div class="flex gap-3">' +
+        (book.cover
+          ? '<img src="' + book.cover + '" alt="표지" class="w-14 h-20 object-cover rounded-lg shadow-sm flex-shrink-0" onerror="this.style.display=\\'none\\'">'
+          : '') +
+        '<div class="flex-1 min-w-0">' +
+        (post ? '<p class="text-xs font-semibold text-emerald-600 mb-0.5">리뷰 있음</p>' : '') +
+        '<p class="font-semibold text-gray-900 text-sm leading-snug">' + (book.title || '') + '</p>' +
+        (book.author ? '<p class="text-xs text-gray-500 mt-0.5">' + book.author + '</p>' : '') +
+        (book.series ? '<p class="text-xs text-gray-400 mt-0.5">' + book.series + '</p>' : '') +
+        bookMetaHtml(book.isbn, book.ar_level) +
+        '</div></div>' +
+        ctaHtml +
+        '</div>';
+    }
+
+    function setPostButtonState(label, disabled) {
+      document.querySelectorAll('.js-book-post-button').forEach(function(btn) {
+        btn.textContent = label;
+        btn.disabled = !!disabled;
+        btn.classList.toggle('opacity-70', !!disabled);
+        btn.classList.toggle('cursor-not-allowed', !!disabled);
+      });
+    }
+
+    function updatePostProgress(elapsed) {
+      var label = '포스트 요청 중입니다. (' + elapsed + '초)';
+      document.getElementById('book-post-progress-text').textContent = label;
+      setPostButtonState(label, true);
+    }
+
+    function showPostResult(data) {
+      document.getElementById('book-post-progress').classList.add('hidden');
+      document.getElementById('book-post-result').classList.remove('hidden');
+      setPostButtonState('포스트 생성 완료', true);
+      var linkEl = document.getElementById('book-post-result-link');
+      if (data && data.post_url) {
+        linkEl.href = data.post_url;
+        linkEl.classList.remove('hidden');
+      } else {
+        linkEl.classList.add('hidden');
+      }
+    }
+
+    function showPostError(message) {
+      if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+      document.getElementById('book-post-progress').classList.add('hidden');
+      document.getElementById('book-post-result').classList.add('hidden');
+      var errEl = document.getElementById('book-error');
+      errEl.textContent = message || '포스트 생성이 보류되었습니다. 잠시 후 다시 시도해주세요.';
+      errEl.classList.remove('hidden');
+      setPostButtonState('포스트 생성하기', false);
+    }
+
+    async function pollPostStatus(startedAt, deadline) {
+      var elapsed = Math.round((Date.now() - startedAt) / 1000);
+      updatePostProgress(elapsed);
+      document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
+
+      var res;
+      var data;
+      try {
+        res = await fetch(API + '/book-status?isbn=' + _currentIsbn);
+        data = await res.json().catch(function() { return {}; });
+      } catch (_) {
+        _pollErrorCount++;
+        document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
+        if (_pollErrorCount < 3) return false;
+        throw new Error('포스트 요청은 등록됐지만 상태 확인 연결이 불안정합니다. 잠시 후 다시 확인해주세요.');
+      }
+      if (!res.ok) {
+        _pollErrorCount++;
+        if (_pollErrorCount < 3) return false;
+        throw new Error(data.error || '포스트 상태를 확인할 수 없습니다.');
+      }
+      _pollErrorCount = 0;
+
+      if (data.status === 'completed' || data.display_status === 'posted') {
+        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+        showPostResult(data);
+        return true;
+      }
+
+      if (data.display_status === 'failed' || data.display_status === 'cancelled') {
+        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+        showPostError('자료가 부족해서 포스팅 실패했습니다.');
+        return true;
+      }
+
+      if (Date.now() >= deadline) {
+        if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+        showPostError('포스트 생성 요청은 등록됐지만 5분 안에 완료되지 않았습니다. 잠시 후 다시 확인해주세요.');
+        return true;
+      }
+      return false;
+    }
+
+    async function startPostPolling() {
+      if (!_currentIsbn) return;
+      if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+
+      document.getElementById('book-post-progress').classList.remove('hidden');
+      document.getElementById('book-post-result').classList.add('hidden');
+      document.getElementById('book-post-result-link').classList.add('hidden');
+      document.getElementById('book-error').classList.add('hidden');
+      updatePostProgress(0);
+      document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
+      _pollErrorCount = 0;
+
+      var startedAt = Date.now();
+      var deadline = Date.now() + POLL_TIMEOUT;
+
+      try {
+        var req = await fetch(API + '/post-request', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ isbn: _currentIsbn }),
+        });
+        var body = await req.json().catch(function() { return {}; });
+        if (!req.ok) throw new Error(body.error || '포스트 생성 요청에 실패했습니다.');
+
+        if (body.status === 'completed' || body.display_status === 'posted') {
+          showPostResult(body);
+          return;
+        }
+
+        updatePostProgress(Math.round((Date.now() - startedAt) / 1000));
+        var finished = await pollPostStatus(startedAt, deadline);
+        if (!finished && !_pollTimer) {
+          _pollTimer = setInterval(function() {
+            pollPostStatus(startedAt, deadline).catch(function(e) {
+              showPostError(e.message);
+            });
+          }, POLL_INTERVAL);
+        }
+      } catch (e) {
+        showPostError(e && e.message === 'Failed to fetch'
+          ? '포스트 요청 API에 연결하지 못했습니다. 잠시 후 다시 시도해주세요.'
+          : e.message);
+      }
+    }
+
+    window.searchByTitle = searchByTitle;
+    window.selectCandidate = selectCandidate;
+    window.startPostPolling = startPostPolling;
+
+    document.getElementById('book-query').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') searchByTitle(false);
     });
   </script>
 

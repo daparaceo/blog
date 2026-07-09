@@ -555,7 +555,7 @@ for (const post of posts) {
           'class="block mt-3 w-full py-2.5 bg-emerald-600 text-white text-sm font-semibold text-center ' +
           'rounded-xl hover:bg-emerald-700 active:scale-95 transition-all">포스트 보러가기</a>'
         : '<button onclick="startPostPolling()" ' +
-          'class="mt-3 w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl ' +
+          'class="js-book-post-button mt-3 w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl ' +
           'hover:bg-sky-700 active:scale-95 transition-all">포스트 생성하기</button>';
 
       var standaloneCard = document.getElementById('book-info-card');
@@ -627,7 +627,7 @@ for (const post of posts) {
           'class="inline-block mt-3 px-4 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 active:scale-95 transition-all">' +
           '리뷰 보기</a>'
         : '<button onclick="startPostPolling()" ' +
-          'class="mt-3 w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">' +
+          'class="js-book-post-button mt-3 w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">' +
           '포스트 생성하기</button>';
 
       return '<div class="p-4 bg-white border border-gray-200 rounded-xl">' +
@@ -648,11 +648,27 @@ for (const post of posts) {
 
     // ── 포스트 생성 폴링 ─────────────────────────────────────
     var POLL_INTERVAL = 10000;
-    var POLL_TIMEOUT  = 900000;
+    var POLL_TIMEOUT  = 300000;
+
+    function setPostButtonState(label, disabled) {
+      document.querySelectorAll('.js-book-post-button').forEach(function(btn) {
+        btn.textContent = label;
+        btn.disabled = !!disabled;
+        btn.classList.toggle('opacity-70', !!disabled);
+        btn.classList.toggle('cursor-not-allowed', !!disabled);
+      });
+    }
+
+    function updatePostProgress(elapsed) {
+      var label = '포스트 요청 중입니다. (' + elapsed + '초)';
+      document.getElementById('book-post-progress-text').textContent = label;
+      setPostButtonState(label, true);
+    }
 
     function showPostResult(data) {
       document.getElementById('book-post-progress').classList.add('hidden');
       document.getElementById('book-post-result').classList.remove('hidden');
+      setPostButtonState('포스트 생성 완료', true);
       var linkEl = document.getElementById('book-post-result-link');
       if (data && data.post_url) {
         linkEl.href = data.post_url;
@@ -669,11 +685,13 @@ for (const post of posts) {
       var errEl = document.getElementById('book-error');
       errEl.textContent = message || '포스트 생성이 보류되었습니다. 잠시 후 다시 시도해주세요.';
       errEl.classList.remove('hidden');
+      setPostButtonState('포스트 생성하기', false);
     }
 
     async function pollPostStatus(startedAt, deadline) {
       var elapsed = Math.round((Date.now() - startedAt) / 1000);
-      document.getElementById('book-poll-elapsed').textContent = elapsed + '초 경과 · 10초마다 상태 확인 중';
+      updatePostProgress(elapsed);
+      document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
 
       var res;
       var data;
@@ -682,8 +700,7 @@ for (const post of posts) {
         data = await res.json().catch(function() { return {}; });
       } catch (_) {
         _pollErrorCount++;
-        document.getElementById('book-poll-elapsed').textContent =
-          elapsed + '초 경과 · 상태 확인 재시도 중';
+        document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
         if (_pollErrorCount < 3) return false;
         throw new Error('포스트 요청은 등록됐지만 상태 확인 연결이 불안정합니다. 잠시 후 다시 확인해주세요.');
       }
@@ -702,13 +719,13 @@ for (const post of posts) {
 
       if (data.display_status === 'failed' || data.display_status === 'cancelled') {
         if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
-        showPostError(data.last_error || '포스트 생성이 보류되었습니다.');
+        showPostError('자료가 부족해서 포스팅 실패했습니다.');
         return true;
       }
 
       if (Date.now() >= deadline) {
         if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
-        showPostError('포스트 생성 요청은 등록됐지만 아직 완료되지 않았습니다. 잠시 후 다시 확인해주세요.');
+        showPostError('포스트 생성 요청은 등록됐지만 5분 안에 완료되지 않았습니다. 잠시 후 다시 확인해주세요.');
         return true;
       }
       return false;
@@ -722,8 +739,8 @@ for (const post of posts) {
       document.getElementById('book-post-result').classList.add('hidden');
       document.getElementById('book-post-result-link').classList.add('hidden');
       document.getElementById('book-error').classList.add('hidden');
-      document.getElementById('book-post-progress-text').textContent = '포스트 요청 중입니다.';
-      document.getElementById('book-poll-elapsed').textContent = '';
+      updatePostProgress(0);
+      document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
       _pollErrorCount = 0;
 
       var startedAt = Date.now();
@@ -743,7 +760,7 @@ for (const post of posts) {
           return;
         }
 
-        document.getElementById('book-post-progress-text').textContent = '포스트 요청 중입니다.';
+        updatePostProgress(Math.round((Date.now() - startedAt) / 1000));
         var finished = await pollPostStatus(startedAt, deadline);
         if (!finished && !_pollTimer) {
           _pollTimer = setInterval(function() {
