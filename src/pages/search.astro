@@ -135,6 +135,46 @@ for (const post of posts) {
       document.getElementById('book-error').classList.add('hidden');
     }
 
+    function buildBookSearchQueries(q) {
+      var queries = [q];
+      var cleaned = q
+        .replace(/\s*\(\s*by\s+[^)]*\)\s*/gi, ' ')
+        .replace(/\s+by\s+[A-Za-z .,'-]+$/i, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (cleaned && cleaned.toLowerCase() !== q.toLowerCase()) {
+        queries.push(cleaned);
+      }
+
+      return queries.filter(function(query, index) {
+        return query && queries.findIndex(function(item) {
+          return item.toLowerCase() === query.toLowerCase();
+        }) === index;
+      });
+    }
+
+    async function fetchBookSearchResults(queries, size, page) {
+      var lastData = { results: [] };
+
+      for (var i = 0; i < queries.length; i++) {
+        var query = queries[i];
+        var res = await fetch(
+          API + '/book-search?q=' + encodeURIComponent(query) +
+          '&size=' + size + '&lang=en&page=' + page
+        );
+        if (!res.ok) throw new Error('검색 실패 (' + res.status + ')');
+
+        var data = await res.json();
+        lastData = data;
+        if ((data.results || []).length || i === queries.length - 1) {
+          return { query: query, data: data };
+        }
+      }
+
+      return { query: queries[0], data: lastData };
+    }
+
     async function searchByTitle(extended) {
       var inputEl = document.getElementById('book-query');
       var q = extended ? _lastQuery : inputEl.value.trim();
@@ -171,13 +211,14 @@ for (const post of posts) {
       }
 
       try {
-        var res = await fetch(
-          API + '/book-search?q=' + encodeURIComponent(q) +
-          '&size=' + size + '&lang=en&page=' + _lastPage
+        var searchResult = await fetchBookSearchResults(
+          extended ? [_lastQuery] : buildBookSearchQueries(q),
+          size,
+          _lastPage
         );
-        if (!res.ok) throw new Error('검색 실패 (' + res.status + ')');
-        var data = await res.json();
+        var data = searchResult.data;
         var results = data.results || [];
+        _lastQuery = searchResult.query;
 
         var loadingEl = document.getElementById('more-loading');
         if (loadingEl) loadingEl.remove();
