@@ -75,7 +75,7 @@ for (const post of posts) {
           </div>
           <div id="book-scan-guide" class="hidden absolute inset-0 pointer-events-none">
             <div class="absolute inset-0 flex items-center justify-center">
-              <div class="relative w-4/5" style="height:80px">
+              <div class="relative w-4/5" style="height:120px">
                 <div class="absolute inset-0 border border-sky-400/60 rounded"></div>
                 <div class="absolute -top-px -left-px w-6 h-6 border-t-2 border-l-2 border-sky-400 rounded-tl-sm"></div>
                 <div class="absolute -top-px -right-px w-6 h-6 border-t-2 border-r-2 border-sky-400 rounded-tr-sm"></div>
@@ -219,10 +219,10 @@ for (const post of posts) {
         _bookQrCode = new Html5Qrcode('book-qr-reader');
         _bookScanning = true;
         await _bookQrCode.start(
-          { facingMode: 'environment' },
+          { facingMode: { ideal: 'environment' }, focusMode: 'continuous' },
           {
             fps: 10,
-            qrbox: { width: 260, height: 90 },
+            qrbox: { width: 300, height: 130 },
             formatsToSupport: [
               Html5QrcodeSupportedFormats.EAN_13,
               Html5QrcodeSupportedFormats.EAN_8,
@@ -711,5 +711,11 @@ for (const post of posts) {
       color: #6b7280;
       font-size: 0.9rem;
     }
+    #book-qr-reader                  { border: none !important; padding: 0 !important; background: transparent !important; }
+    #book-qr-reader video            { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; position: absolute !important; inset: 0 !important; }
+    #book-qr-reader__dashboard       { display: none !important; }
+    #book-qr-reader__status_span     { display: none !important; }
+    #book-qr-reader__scan_region     { background: transparent !important; border: none !important; }
+    #book-qr-reader__scan_region img { display: none !important; }
   </style>
 </BaseLayout>
