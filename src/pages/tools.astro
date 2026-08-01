@@ -340,7 +340,7 @@ for (const post of posts) {
         _bookQrCode = new Html5Qrcode('book-qr-reader');
         _bookScanning = true;
         await _bookQrCode.start(
-          { facingMode: { ideal: 'environment' } },
+          { facingMode: 'environment' },
           {
             fps: 10,
             qrbox: { width: 300, height: 130 },
