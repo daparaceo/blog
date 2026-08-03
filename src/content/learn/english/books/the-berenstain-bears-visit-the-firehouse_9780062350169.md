@@ -1,9 +1,9 @@
 ---
-title: "[AR 2.9] The Berenstain Bears® visit the firehouse - 소방서를 찾아간 베렌스타인 곰 가족"
+title: "[AR 2.9] The Berenstain Bears visit the firehouse - 소방서를 찾아간 베렌스타인 곰 가족"
 description: "베렌스타인 곰 가족이 실제 소방관인 윌버 사촌을 만나기 위해 소방서를 방문합니다. 아이들은 소방차와 장비, 소방서 생활을 둘러보며 소방관이 하는 일을 흥미롭게 배웁니다."
 publishedAt: 2026-08-02
 category: "english-reading"
-en_title: "The Berenstain Bears® visit the firehouse"
+en_title: "The Berenstain Bears visit the firehouse"
 author: "Mike Berenstain"
 ar_level: 2.9
 series: "Berenstain Bears"
@@ -12,9 +12,9 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/2
 ---
 
 <div class="book-container" translate="no">
-<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/213c133d2c0dc44068463812.jpg" alt="The Berenstain Bears® visit the firehouse (cover)" />
+<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/213c133d2c0dc44068463812.jpg" alt="The Berenstain Bears visit the firehouse (cover)" />
 <table class="book-table">
-  <tr><td class="label">Title</td><td>The Berenstain Bears® visit the firehouse</td></tr>
+  <tr><td class="label">Title</td><td>The Berenstain Bears visit the firehouse</td></tr>
   <tr><td class="label">Author</td><td>Mike Berenstain</td></tr>
   <tr><td class="label">ISBN</td><td>9780062350169</td></tr>
   <tr><td class="label">Series</td><td>Berenstain Bears</td></tr>
@@ -137,7 +137,7 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/2
 <div class="review-en">
 
 <p><b>Introduction</b></p>
-<p style="text-indent: 1em;"><i>The Berenstain Bears® visit the firehouse</i> by Mike Berenstain is a fun story about the Bear family visiting a real firehouse. Brother, Sister, and Honey learn about firefighters, fire trucks, and special fire-fighting gear.</p>
+<p style="text-indent: 1em;"><i>The Berenstain Bears visit the firehouse</i> by Mike Berenstain is a fun story about the Bear family visiting a real firehouse. Brother, Sister, and Honey learn about firefighters, fire trucks, and special fire-fighting gear.</p>
 
 <p><b>Body</b></p>
 <p style="text-indent: 1em;">I liked this book because it teaches useful information in a story. The children can learn words such as pumper, fire hydrant, and gear while following the Bear family’s exciting visit. The firehouse tour also shows that firefighters must be brave, careful, and ready to help others.</p>
@@ -149,7 +149,7 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/2
 <div class="review-ko">
 
 <p><b>리뷰 번역</b></p>
-<p style="text-indent: 1em;">마이크 베렌스타인의 <i>The Berenstain Bears® visit the firehouse</i>는 곰 가족이 실제 소방서를 방문하는 재미있는 이야기입니다. 브라더, 시스터, 허니는 소방관, 소방차, 그리고 불을 끄는 데 필요한 특별한 장비에 대해 배웁니다.</p>
+<p style="text-indent: 1em;">마이크 베렌스타인의 <i>The Berenstain Bears visit the firehouse</i>는 곰 가족이 실제 소방서를 방문하는 재미있는 이야기입니다. 브라더, 시스터, 허니는 소방관, 소방차, 그리고 불을 끄는 데 필요한 특별한 장비에 대해 배웁니다.</p>
 
 <p style="text-indent: 1em;">이 책이 좋은 이유는 유익한 정보를 이야기 속에서 자연스럽게 알려 주기 때문입니다. 아이들은 곰 가족의 신나는 소방서 견학을 따라가며 pumper, fire hydrant, gear 같은 단어를 배울 수 있습니다. 또한 소방서 견학을 통해 소방관이 용감하고 조심스러우며 언제든 다른 사람을 도울 준비가 되어 있어야 한다는 점도 알 수 있습니다.</p>
 
