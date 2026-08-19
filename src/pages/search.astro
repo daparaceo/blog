@@ -378,9 +378,10 @@ for (const post of posts) {
 
       for (var i = 0; i < queries.length; i++) {
         var query = queries[i];
+        var langParam = /[가-힣]/.test(query) ? '' : '&lang=en';
         var res = await fetch(
           API + '/book-search?q=' + encodeURIComponent(query) +
-          '&size=' + size + '&lang=en&page=' + page
+          '&size=' + size + langParam + '&page=' + page
         );
         if (!res.ok) throw new Error('검색 실패 (' + res.status + ')');
 
