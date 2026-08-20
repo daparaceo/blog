@@ -1,0 +1,183 @@
+---
+import TestLayout from '../../layouts/TestLayout.astro';
+import { getCollection } from 'astro:content';
+
+// AR 밴드 정의 — 낮은 순으로 진행
+const BANDS = [
+  { id: 'b1', label: 'AR 1점대', min: 0,   max: 1.99 },
+  { id: 'b2', label: 'AR 2점대', min: 2.0, max: 2.99 },
+  { id: 'b3', label: 'AR 3점대', min: 3.0, max: 3.99 },
+  { id: 'b4', label: 'AR 4점 이상', min: 4.0, max: 99 },
+];
+
+type WordItem = { word: string; meaning: string; example: string };
+type BandData = {
+  id: string;
+  label: string;
+  words: WordItem[];
+  books: { slug: string; title: string }[];
+};
+
+const posts = await getCollection('learn', (p) => !p.draft && p.data.category === 'english-reading' && typeof p.data.ar_level === 'number');
+
+const bandMap: Record<string, BandData> = {};
+for (const b of BANDS) bandMap[b.id] = { id: b.id, label: b.label, words: [], books: [] };
+
+const VOCAB_RE = /<div class="vocab-item" data-word="([^"]+)"[^>]*>[\s\S]*?<div class="vocab-meaning">([^<]+)<\/div>\s*<div class="vocab-example"[^>]*>([^<]+)<\/div>/g;
+
+for (const post of posts) {
+  const ar = post.data.ar_level as number;
+  const band = BANDS.find((b) => ar >= b.min && ar <= b.max);
+  if (!band) continue;
+
+  const slug = post.slug.includes('/') ? post.slug.split('/').pop()! : post.slug;
+  bandMap[band.id].books.push({ slug, title: post.data.title });
+
+  let m: RegExpExecArray | null;
+  const re = new RegExp(VOCAB_RE);
+  while ((m = re.exec(post.body)) !== null) {
+    bandMap[band.id].words.push({
+      word: m[1],
+      meaning: m[2].trim(),
+      example: m[3].trim(),
+    });
+  }
+}
+
+// 밴드별 단어 셔플 후 최대 8개만 사용 (결정적 셔플 — 빌드마다 동일)
+function seededShuffle<T>(arr: T[], seed: number): T[] {
+  const a = [...arr];
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 9301 + 49297) % 233280;
+    const j = Math.floor((s / 233280) * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const bands = BANDS.map((b) => {
+  const data = bandMap[b.id];
+  const words = seededShuffle(data.words, 42 + b.min).slice(0, 8);
+  const books = seededShuffle(data.books, 7 + b.min).slice(0, 3);
+  return { id: b.id, label: b.label, words, books };
+}).filter((b) => b.words.length >= 4); // 표본 부족한 밴드는 제외
+
+const bandsJson = JSON.stringify(bands);
+---
+
+<TestLayout title="AR 자가진단 테스트" description="핵심 어휘를 기준으로 나의 영어 원서 읽기 레벨(AR)을 추정합니다.">
+  <h1 class="text-xl font-bold text-gray-900 mb-2">나의 AR 레벨 자가진단</h1>
+  <p class="text-sm text-gray-500 mb-8">
+    쉬운 단계부터 순서대로 단어를 보여드립니다. 아는 단어만 체크해 주세요 — 대략적인 추정치이며 정확한 레벨 테스트가 아닙니다.
+  </p>
+
+  <div id="ar-test-root" class="max-w-lg"></div>
+
+  <script type="application/json" id="ar-test-data" set:html={bandsJson} />
+
+  <script>
+    type WordItem = { word: string; meaning: string; example: string };
+    type Band = { id: string; label: string; words: WordItem[]; books: { slug: string; title: string }[] };
+
+    const dataEl = document.getElementById('ar-test-data');
+    const bands: Band[] = JSON.parse(dataEl?.textContent || '[]');
+    const root = document.getElementById('ar-test-root')!;
+
+    const ADVANCE_THRESHOLD = 0.7; // 이 비율 이상 알면 다음 밴드로
+    const STOP_THRESHOLD = 0.4;    // 이 비율 미만이면 여기서 멈춤
+
+    let bandIndex = 0;
+    let lastPassedBand: Band | null = null;
+    let knownWords: string[] = [];
+
+    function renderIntro() {
+      root.innerHTML = `
+        <button id="start-btn" class="w-full py-3 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">
+          진단 시작하기
+        </button>`;
+      document.getElementById('start-btn')?.addEventListener('click', () => {
+        bandIndex = 0;
+        lastPassedBand = null;
+        knownWords = [];
+        renderBand();
+      });
+    }
+
+    function renderBand() {
+      const band = bands[bandIndex];
+      if (!band) { renderResult(); return; }
+
+      const checked = new Set<number>();
+
+      root.innerHTML = `
+        <div class="mb-4 text-xs text-gray-400">${band.label} 어휘 (${bandIndex + 1} / ${bands.length}단계)</div>
+        <div class="space-y-3 mb-6">
+          ${band.words.map((w, i) => `
+            <label class="flex items-start gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:border-sky-300 transition-colors">
+              <input type="checkbox" data-idx="${i}" class="mt-1 word-check" />
+              <div>
+                <div class="text-sm font-semibold text-gray-900" translate="no">${w.word}</div>
+                <div class="text-xs text-gray-500 mt-0.5">${w.meaning}</div>
+              </div>
+            </label>
+          `).join('')}
+        </div>
+        <button id="next-btn" class="w-full py-3 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">
+          다음
+        </button>`;
+
+      document.querySelectorAll<HTMLInputElement>('.word-check').forEach((el) => {
+        el.addEventListener('change', () => {
+          const idx = Number(el.dataset.idx);
+          if (el.checked) checked.add(idx); else checked.delete(idx);
+        });
+      });
+
+      document.getElementById('next-btn')?.addEventListener('click', () => {
+        const ratio = checked.size / band.words.length;
+        checked.forEach((i) => knownWords.push(band.words[i].word));
+
+        if (ratio < STOP_THRESHOLD) {
+          renderResult();
+          return;
+        }
+        if (ratio >= ADVANCE_THRESHOLD) {
+          lastPassedBand = band;
+          bandIndex += 1;
+          renderBand();
+          return;
+        }
+        // 애매한 구간(40~70%) — 이 밴드를 최종 추정치로 보고 종료
+        lastPassedBand = band;
+        renderResult();
+      });
+    }
+
+    function renderResult() {
+      const estimated = lastPassedBand ?? bands[0];
+      const recommend = estimated.books.slice(0, 3);
+
+      root.innerHTML = `
+        <div class="p-5 bg-sky-50 border border-sky-200 rounded-2xl mb-6">
+          <div class="text-xs text-sky-600 font-medium mb-1">추정 결과</div>
+          <div class="text-2xl font-bold text-sky-800">${estimated.label}</div>
+          <p class="text-xs text-sky-700 mt-2">아는 단어 ${knownWords.length}개를 기준으로 추정한 대략적인 레벨입니다.</p>
+        </div>
+        ${recommend.length ? `
+          <div class="text-sm font-semibold text-gray-900 mb-2">이 레벨의 추천 원서</div>
+          <ul class="space-y-2 mb-6">
+            ${recommend.map((b) => `
+              <li><a href="/learn/english/books/${b.slug}/" class="text-sm text-sky-600 hover:underline">${b.title}</a></li>
+            `).join('')}
+          </ul>` : ''}
+        <button id="retry-btn" class="w-full py-2.5 border border-gray-200 text-gray-600 text-sm rounded-xl hover:bg-gray-50 transition-colors">
+          다시 진단하기
+        </button>`;
+
+      document.getElementById('retry-btn')?.addEventListener('click', renderIntro);
+    }
+
+    renderIntro();
+  </script>
+</TestLayout>
