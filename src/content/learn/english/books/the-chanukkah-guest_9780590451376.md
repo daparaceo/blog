@@ -1,9 +1,9 @@
 ---
-title: "[AR 2.6] The Chanukkah guest - 라트케 냄새를 따라온 특별한 손님"
+title: "[AR 2.6] The Chanukkah Guest - 라트케 냄새를 따라온 특별한 손님"
 description: "차누카 첫날 밤, 겨울잠에서 깬 Old Bear는 맛있는 냄새를 따라 Bubba Brayna의 집으로 갑니다. 눈이 어두운 Bubba Brayna는 뜻밖의 손님을 랍비로 착각하고 따뜻한 차누카 저녁을 함께 보냅니다."
 publishedAt: 2026-07-13
 category: "english-reading"
-en_title: "The Chanukkah guest"
+en_title: "The Chanukkah Guest"
 author: "Eric A. Kimmel"
 ar_level: 2.6
 isbn: "9780590451376"
@@ -11,9 +11,9 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/c
 ---
 
 <div class="book-container" translate="no">
-<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/cf77a9c2f58d3e4710ae663c.jpg" alt="The Chanukkah guest (cover)" />
+<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/cf77a9c2f58d3e4710ae663c.jpg" alt="The Chanukkah Guest (cover)" />
 <table class="book-table">
-  <tr><td class="label">Title</td><td>The Chanukkah guest</td></tr>
+  <tr><td class="label">Title</td><td>The Chanukkah Guest</td></tr>
   <tr><td class="label">Author</td><td>Eric A. Kimmel</td></tr>
   <tr><td class="label">ISBN</td><td>9780590451376</td></tr>
   <tr><td class="label">AR Level</td><td>2.6</td></tr>
@@ -135,7 +135,7 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/c
 <div class="review-en">
 
 <p><b>Introduction</b></p>
-<p style="text-indent: 1em;"><i>The Chanukkah guest</i> by Eric A. Kimmel is a warm and funny holiday story. It tells about Bubba Brayna, who prepares potato latkes for Chanukkah, and an unexpected visitor who follows the delicious smell to her house.</p>
+<p style="text-indent: 1em;"><i>The Chanukkah Guest</i> by Eric A. Kimmel is a warm and funny holiday story. It tells about Bubba Brayna, who prepares potato latkes for Chanukkah, and an unexpected visitor who follows the delicious smell to her house.</p>
 
 <p><b>Body</b></p>
 <p style="text-indent: 1em;">The best part of the story is the gentle humor. Bubba Brayna thinks Old Bear is the rabbi, so she treats him kindly and shares her food with him. Old Bear cannot speak like a person, but his growls and actions make the scene funny and easy to imagine. The story also introduces Chanukkah traditions such as lighting the menorah, playing dreidel, and eating latkes.</p>
@@ -147,7 +147,7 @@ ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/c
 <div class="review-ko">
 
 <p><b>리뷰 번역</b></p>
-<p style="text-indent: 1em;">Eric A. Kimmel의 <i>The Chanukkah guest</i>는 따뜻하고 재미있는 명절 이야기입니다. 차누카를 위해 감자 라트케를 준비하는 Bubba Brayna와, 맛있는 냄새를 따라 그녀의 집에 온 뜻밖의 손님에 관한 이야기입니다.</p>
+<p style="text-indent: 1em;">Eric A. Kimmel의 <i>The Chanukkah Guest</i>는 따뜻하고 재미있는 명절 이야기입니다. 차누카를 위해 감자 라트케를 준비하는 Bubba Brayna와, 맛있는 냄새를 따라 그녀의 집에 온 뜻밖의 손님에 관한 이야기입니다.</p>
 
 <p style="text-indent: 1em;">이 책에서 가장 좋은 부분은 부드러운 유머입니다. Bubba Brayna는 Old Bear를 랍비라고 생각해서 친절하게 대하고 음식을 나누어 줍니다. Old Bear는 사람처럼 말할 수 없지만, 으르렁거리는 소리와 행동 덕분에 장면이 재미있고 쉽게 상상됩니다. 이 이야기는 메노라에 불을 켜고, 드레이들을 하고, 라트케를 먹는 차누카 전통도 자연스럽게 소개합니다.</p>
 
