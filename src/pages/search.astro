@@ -103,15 +103,6 @@ for (const post of posts) {
       <div id="book-info-card" class="hidden mt-3"></div>
       <input id="book-isbn" type="hidden" />
 
-      <div id="book-post-result" class="hidden mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
-        <p class="text-sm font-semibold text-emerald-800">교육자료 생성 완료</p>
-        <p class="text-xs text-emerald-600 mt-1">블로그에서 확인해주세요.</p>
-        <a id="book-post-result-link" href="#" target="_blank"
-          class="hidden mt-3 w-full py-2.5 bg-emerald-600 text-white text-sm font-semibold text-center rounded-xl hover:bg-emerald-700 active:scale-95 transition-all">
-          포스트 보러가기
-        </a>
-      </div>
-
       <p id="book-error" class="hidden mt-3 text-sm text-red-500"></p>
       <div id="search" class="mt-8"></div>
     </section>
@@ -289,7 +280,6 @@ for (const post of posts) {
       document.getElementById('book-candidates').classList.add('hidden');
       document.getElementById('btn-more-search').classList.add('hidden');
       document.getElementById('book-info-card').classList.add('hidden');
-      document.getElementById('book-post-result').classList.add('hidden');
       document.getElementById('book-error').classList.add('hidden');
     }
 
@@ -535,7 +525,6 @@ for (const post of posts) {
       if (candidateEl) {
         candidateEl.classList.add('border-sky-400', 'bg-sky-50');
       }
-      document.getElementById('book-post-result').classList.add('hidden');
       document.getElementById('book-error').classList.add('hidden');
       cardEl.innerHTML = ctaHtml;
       cardEl.classList.remove('hidden');
@@ -550,7 +539,6 @@ for (const post of posts) {
       searchSiteContent(isbn);
       errEl.classList.add('hidden');
       cardEl.classList.add('hidden');
-      document.getElementById('book-post-result').classList.add('hidden');
       if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
 
       if (!isbn || !/^\d{10,13}$/.test(isbn)) {
@@ -630,21 +618,24 @@ for (const post of posts) {
     }
 
     function showPostResult(data) {
-      document.getElementById('book-post-result').classList.remove('hidden');
-      setPostButtonState('교육자료 생성 완료', true);
       setPostNoteVisible(false);
-      var linkEl = document.getElementById('book-post-result-link');
-      if (data && data.post_url) {
-        linkEl.href = data.post_url;
-        linkEl.classList.remove('hidden');
-      } else {
-        linkEl.classList.add('hidden');
-      }
+      document.querySelectorAll('.js-book-post-button').forEach(function(btn) {
+        btn.classList.remove('opacity-70', 'cursor-not-allowed', 'bg-sky-600', 'hover:bg-sky-700');
+        if (data && data.post_url) {
+          btn.textContent = '교육자료 생성 완료 보러가기';
+          btn.disabled = false;
+          btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+          btn.onclick = function() { window.open(data.post_url, '_blank'); };
+        } else {
+          btn.textContent = '교육자료 생성 완료';
+          btn.disabled = true;
+          btn.classList.add('opacity-70', 'cursor-not-allowed', 'bg-sky-600');
+        }
+      });
     }
 
     function showPostError(message) {
       if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
-      document.getElementById('book-post-result').classList.add('hidden');
       var errEl = document.getElementById('book-error');
       errEl.textContent = message || '교육자료 생성이 보류되었습니다. 잠시 후 다시 시도해주세요.';
       errEl.classList.remove('hidden');
@@ -696,8 +687,6 @@ for (const post of posts) {
     async function startPostPolling() {
       if (!_currentIsbn) return;
       if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
-      document.getElementById('book-post-result').classList.add('hidden');
-      document.getElementById('book-post-result-link').classList.add('hidden');
       document.getElementById('book-error').classList.add('hidden');
       updatePostProgress(0);
       _pollErrorCount = 0;
