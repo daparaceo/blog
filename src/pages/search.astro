@@ -617,6 +617,22 @@ for (const post of posts) {
       setPostNoteVisible(true);
     }
 
+    // 방금 완료된 포스트는 GitHub Pages 빌드/배포가 아직 안 끝났을 수 있어
+    // 클릭 시 먼저 살아있는지 확인하고, 아직이면 안내만 띄운다 (404 예방)
+    function openLiveLink(url) {
+      fetch(url, { method: 'HEAD' })
+        .then(function(res) {
+          if (res.ok) {
+            window.open(url, '_blank');
+          } else {
+            alert('아직 배포 중입니다. 1~2분 후 다시 눌러주세요.');
+          }
+        })
+        .catch(function() {
+          window.open(url, '_blank');
+        });
+    }
+
     function showPostResult(data) {
       setPostNoteVisible(false);
       document.querySelectorAll('.js-book-post-button').forEach(function(btn) {
@@ -625,7 +641,7 @@ for (const post of posts) {
           btn.textContent = '포스트 보러가기';
           btn.disabled = false;
           btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-          btn.onclick = function() { window.open(data.post_url, '_blank'); };
+          btn.onclick = function() { openLiveLink(data.post_url); };
         } else {
           btn.textContent = '교육자료 생성 완료';
           btn.disabled = true;
