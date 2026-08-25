@@ -7,11 +7,11 @@ en_title: "In the Small, Small Pond"
 author: "Denise Fleming"
 ar_level: 2
 isbn: "9780606155878"
-ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/d61bda4c31ec98fac21f2b5e.jpg"
+ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/0ac1b09492dafdd50e05b96c.jpg"
 ---
 
 <div class="book-container" translate="no">
-<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/d61bda4c31ec98fac21f2b5e.jpg" alt="In the Small, Small Pond (cover)" />
+<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/0ac1b09492dafdd50e05b96c.jpg" alt="In the Small, Small Pond (cover)" />
 <table class="book-table">
   <tr><td class="label">Title</td><td>In the Small, Small Pond</td></tr>
   <tr><td class="label">Author</td><td>Denise Fleming</td></tr>
