@@ -1,9 +1,9 @@
 ---
-title: "[AR 2.9] Lion Dancer: Ernie Wan's Chinese New Year (Reading Rainbow Books) - 뉴욕 차이나타운, 어니의 첫 사자춤과 설날 이야기"
+title: "[AR 2.9] Lion Dancer: Ernie Wan's Chinese New Year - 뉴욕 차이나타운, 어니의 첫 사자춤과 설날 이야기"
 description: "뉴욕 차이나타운에 사는 어니 완은 설날 아침, 처음으로 거리에서 사자춤을 추게 됩니다. 쿵후 학교에서의 연습, 온 가족이 함께하는 새해 음식, 한밤중의 눈뜨기 의식까지 중국계 미국인 가정의 설 풍습을 실제 사진과 함께 담은 논픽션 그림책입니다."
 publishedAt: 2026-09-06
 category: "english-reading"
-en_title: "Lion Dancer: Ernie Wan's Chinese New Year (Reading Rainbow Books)"
+en_title: "Lion Dancer: Ernie Wan's Chinese New Year"
 author: "Kate Waters"
 ar_level: 2.9
 series: "Reading Rainbow Books"
