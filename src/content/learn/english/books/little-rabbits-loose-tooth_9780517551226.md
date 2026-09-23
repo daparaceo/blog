@@ -7,11 +7,11 @@ en_title: "Little Rabbit's Loose Tooth"
 author: "Lucy Bate"
 ar_level: 3.2
 isbn: "9780517551226"
-ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/739b82ddbf73b16e94b7da5b.jpg"
+ogImage: "https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/c6400f940a48a3816ccfd4f2.jpg"
 ---
 
 <div class="book-container" translate="no">
-<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/739b82ddbf73b16e94b7da5b.jpg" alt="Little Rabbit's Loose Tooth (cover)" />
+<img class="book-cover" src="https://res.cloudinary.com/dtv8s65sa/image/upload/q_auto:best,f_auto/c6400f940a48a3816ccfd4f2.jpg" alt="Little Rabbit's Loose Tooth (cover)" />
 <table class="book-table">
   <tr><td class="label">Title</td><td>Little Rabbit's Loose Tooth</td></tr>
   <tr><td class="label">Author</td><td>Lucy Bate</td></tr>
