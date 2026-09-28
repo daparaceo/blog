@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import BookSearchBox from '../../../../components/BookSearchBox.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('learn', ({ data }) => !data.draft);
@@ -162,27 +163,36 @@ const ogImage = post.data.ogImage;
       </div>
     )}
 
-    {relatedPosts.length > 0 && (
+    {currentData.category === 'english-reading' ? (
       <section class="mt-12 pt-8 border-t border-gray-100">
         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <span>이런 글도 추천해요</span>
+          <span>다른 책도 검색해보세요</span>
         </h3>
-        <div class="flex flex-col gap-3">
-          {relatedPosts.map((related) => (
-            <a
-              href={`/learn/english/books/${related.slug.split('/').pop()}/`}
-              class="block bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg px-4 py-3 transition-all group"
-            >
-              <span class="text-blue-600 group-hover:underline text-sm font-medium">
-                {related.data.title}
-              </span>
-              {related.data.description && (
-                <p class="text-gray-500 text-xs mt-1 line-clamp-1">{related.data.description}</p>
-              )}
-            </a>
-          ))}
-        </div>
+        <BookSearchBox idPrefix="post-bsb" />
       </section>
+    ) : (
+      relatedPosts.length > 0 && (
+        <section class="mt-12 pt-8 border-t border-gray-100">
+          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span>이런 글도 추천해요</span>
+          </h3>
+          <div class="flex flex-col gap-3">
+            {relatedPosts.map((related) => (
+              <a
+                href={`/learn/english/books/${related.slug.split('/').pop()}/`}
+                class="block bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg px-4 py-3 transition-all group"
+              >
+                <span class="text-blue-600 group-hover:underline text-sm font-medium">
+                  {related.data.title}
+                </span>
+                {related.data.description && (
+                  <p class="text-gray-500 text-xs mt-1 line-clamp-1">{related.data.description}</p>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      )
     )}
 
     <nav class="mt-8 pt-6 border-t border-gray-100">
