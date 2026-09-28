@@ -32,10 +32,65 @@ for (const post of posts) {
 
 <div class="book-search-box" data-id-prefix={idPrefix}>
   <div class="flex gap-2">
+    <button type="button" id={`${idPrefix}-scan-open-btn`} class={`${idPrefix}-js-scan-open md:hidden flex-shrink-0 flex items-center justify-center w-10 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 active:scale-95 transition-all`}>
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="2" y="4" width="1.5" height="16"/>
+        <rect x="4.5" y="4" width="1" height="16"/>
+        <rect x="6.5" y="4" width="2" height="16"/>
+        <rect x="9.5" y="4" width="1" height="16"/>
+        <rect x="11.5" y="4" width="1.5" height="16"/>
+        <rect x="14" y="4" width="1" height="16"/>
+        <rect x="16" y="4" width="2" height="16"/>
+        <rect x="19" y="4" width="1" height="16"/>
+        <rect x="21" y="4" width="1.5" height="16"/>
+      </svg>
+    </button>
     <input id={`${idPrefix}-query`} type="text" placeholder="Harry Potter / J.K. Rowling / 9780439708180"
       class="flex-1 min-w-0 px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-sky-400 transition-colors bg-white" />
     <button type="button" class={`${idPrefix}-js-search-btn px-4 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 active:scale-95 transition-all`}>
       검색
+    </button>
+  </div>
+
+  <div id={`${idPrefix}-scanner-wrap`} class="hidden mt-3">
+    <div class="relative bg-gray-900 rounded-2xl overflow-hidden" style="aspect-ratio: 4/3;">
+      <div id={`${idPrefix}-qr-reader`} class="bsb-qr-reader absolute inset-0 w-full h-full"></div>
+      <div id={`${idPrefix}-start-overlay`} class="absolute inset-0 flex flex-col items-center justify-center gap-4">
+        <svg class="w-10 h-10 text-gray-600" viewBox="0 0 48 48" fill="currentColor">
+          <rect x="4" y="10" width="3" height="28"/>
+          <rect x="9" y="10" width="2" height="28"/>
+          <rect x="13" y="10" width="4" height="28"/>
+          <rect x="19" y="10" width="2" height="28"/>
+          <rect x="23" y="10" width="3" height="28"/>
+          <rect x="28" y="10" width="2" height="28"/>
+          <rect x="32" y="10" width="4" height="28"/>
+          <rect x="38" y="10" width="2" height="28"/>
+          <rect x="42" y="10" width="3" height="28"/>
+        </svg>
+        <button type="button" class={`${idPrefix}-js-scan-start px-6 py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all shadow-lg`}>
+          카메라 시작
+        </button>
+        <p class="text-xs text-gray-500 text-center px-4">카메라 권한 요청 시 허용을 눌러주세요</p>
+      </div>
+      <div id={`${idPrefix}-scan-guide`} class="hidden absolute inset-0 pointer-events-none">
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="relative w-4/5" style="height:120px">
+            <div class="absolute inset-0 border border-sky-400/60 rounded"></div>
+            <div class="absolute -top-px -left-px w-6 h-6 border-t-2 border-l-2 border-sky-400 rounded-tl-sm"></div>
+            <div class="absolute -top-px -right-px w-6 h-6 border-t-2 border-r-2 border-sky-400 rounded-tr-sm"></div>
+            <div class="absolute -bottom-px -left-px w-6 h-6 border-b-2 border-l-2 border-sky-400 rounded-bl-sm"></div>
+            <div class="absolute -bottom-px -right-px w-6 h-6 border-b-2 border-r-2 border-sky-400 rounded-br-sm"></div>
+            <div id={`${idPrefix}-scan-line`} class="absolute left-1 right-1 h-px bg-sky-400"></div>
+          </div>
+        </div>
+        <p class="absolute bottom-3 left-0 right-0 text-center text-white/70 text-xs">
+          책 뒷면 바코드를 박스 안에 맞춰주세요
+        </p>
+      </div>
+    </div>
+    <p id={`${idPrefix}-scan-status`} class="hidden mt-2 text-sm text-center text-gray-500"></p>
+    <button type="button" class={`${idPrefix}-js-scan-close mt-2 w-full py-2 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors`}>
+      닫기
     </button>
   </div>
 
@@ -50,6 +105,7 @@ for (const post of posts) {
   <p id={`${idPrefix}-error`} class="hidden mt-3 text-sm text-red-500"></p>
 </div>
 
+<script is:inline src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script define:vars={{ isbnPostMap, idPrefix }}>
   (function () {
     var API = 'https://api.daparapara.com';
@@ -91,6 +147,107 @@ for (const post of posts) {
         return base + ((10 - s2 % 10) % 10);
       }
       return d;
+    }
+
+    var _qrCode = null;
+    var _scanning = false;
+
+    function openScanner() {
+      el('scanner-wrap').classList.remove('hidden');
+      el('scanner-wrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function closeScanner() {
+      el('scanner-wrap').classList.add('hidden');
+      el('scan-guide').classList.add('hidden');
+      el('start-overlay').classList.remove('hidden');
+      el('scan-status').classList.add('hidden');
+      if (_qrCode) {
+        _qrCode.stop().catch(function() {});
+        _qrCode = null;
+      }
+      _scanning = false;
+    }
+
+    async function startBookScanner() {
+      if (_scanning) return;
+      var startOverlay = el('start-overlay');
+      var scanGuide = el('scan-guide');
+      var statusEl = el('scan-status');
+
+      if (typeof Html5Qrcode === 'undefined') {
+        statusEl.textContent = '바코드 스캐너를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
+        statusEl.className = 'mt-2 text-sm text-center text-red-500';
+        statusEl.classList.remove('hidden');
+        return;
+      }
+
+      startOverlay.classList.add('hidden');
+      statusEl.textContent = '카메라 초기화 중...';
+      statusEl.className = 'mt-2 text-sm text-center text-gray-500';
+      statusEl.classList.remove('hidden');
+
+      try {
+        _qrCode = new Html5Qrcode(P + '-qr-reader');
+        _scanning = true;
+        await _qrCode.start(
+          { facingMode: 'environment' },
+          {
+            fps: 10,
+            qrbox: { width: 300, height: 130 },
+            formatsToSupport: [
+              Html5QrcodeSupportedFormats.EAN_13,
+              Html5QrcodeSupportedFormats.EAN_8,
+              Html5QrcodeSupportedFormats.CODE_128,
+            ],
+            useBarCodeDetectorIfSupported: true,
+          },
+          function(decodedText) {
+            if (!_scanning) return;
+            var isbn = normalizeIsbn(decodedText);
+            resetSearchResults();
+            el('isbn').value = isbn;
+            el('query').value = isbn;
+            _scanning = false;
+            _qrCode.stop().catch(function() {});
+            if (navigator.vibrate) navigator.vibrate(120);
+            closeScanner();
+            lookupIsbn();
+          },
+          function() {}
+        );
+        statusEl.classList.add('hidden');
+        scanGuide.classList.remove('hidden');
+        startBookScanLine();
+      } catch (err) {
+        _scanning = false;
+        startOverlay.classList.remove('hidden');
+        var msg;
+        if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+          msg = '카메라 권한이 거부되었습니다. 주소창 자물쇠 아이콘에서 권한을 허용해주세요.';
+        } else if (err && (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError')) {
+          msg = '카메라를 찾을 수 없습니다.';
+        } else {
+          msg = '카메라를 시작할 수 없습니다. 브라우저 설정을 확인해주세요.';
+        }
+        statusEl.textContent = msg;
+        statusEl.className = 'mt-2 text-sm text-center text-red-500';
+        statusEl.classList.remove('hidden');
+      }
+    }
+
+    function startBookScanLine() {
+      var line = el('scan-line');
+      if (!line) return;
+      var start = Date.now();
+      function tick() {
+        if (!line || !_scanning) return;
+        var phase = ((Date.now() - start) % 1600) / 1600;
+        var y = 8 + Math.abs(phase * 2 - 1) * 62;
+        line.style.top = y + 'px';
+        requestAnimationFrame(tick);
+      }
+      tick();
     }
 
     function arBadgeHtml(ar) {
@@ -520,6 +677,15 @@ for (const post of posts) {
     document.querySelectorAll('.' + P + '-js-search-btn').forEach(function(btn) {
       btn.addEventListener('click', function() { searchByTitle(false); });
     });
+    document.querySelectorAll('.' + P + '-js-scan-open').forEach(function(btn) {
+      btn.addEventListener('click', openScanner);
+    });
+    document.querySelectorAll('.' + P + '-js-scan-start').forEach(function(btn) {
+      btn.addEventListener('click', startBookScanner);
+    });
+    document.querySelectorAll('.' + P + '-js-scan-close').forEach(function(btn) {
+      btn.addEventListener('click', closeScanner);
+    });
     el('more-search').addEventListener('click', function() { searchByTitle(true); });
     el('query').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') searchByTitle(false);
@@ -535,3 +701,13 @@ for (const post of posts) {
     });
   })();
 </script>
+
+<style is:global>
+  .bsb-qr-reader                  { border: none !important; padding: 0 !important; background: transparent !important; }
+  .bsb-qr-reader video            { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; position: absolute !important; inset: 0 !important; }
+  .bsb-qr-reader [id$="__dashboard"]       { display: none !important; }
+  .bsb-qr-reader [id$="__status_span"]     { display: none !important; }
+  .bsb-qr-reader [id$="__scan_region"]     { background: transparent !important; border: none !important; }
+  .bsb-qr-reader [id$="__scan_region"] img { display: none !important; }
+  .book-candidate-button p, .book-candidate-button span { user-select: text; }
+</style>
