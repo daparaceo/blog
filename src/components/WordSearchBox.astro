@@ -6,7 +6,7 @@
       class="flex-1 min-w-0 px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-sky-400 bg-white" />
     <button type="submit" class="shrink-0 px-4 py-2.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200">검색</button>
   </form>
-  <p id="word-search-status" role="status" class="mt-3 text-sm text-gray-500"></p>
+  <p id="word-search-status" role="status" class="mt-3 text-sm text-gray-500 empty:hidden"></p>
   <div id="word-search-result" class="space-y-3 text-sm break-words" aria-busy="false"></div>
 </section>
 
@@ -68,7 +68,7 @@
     const timeout = window.setTimeout(() => controller.abort(), 22000);
     result.replaceChildren();
     result.setAttribute('aria-busy', 'true');
-    status.textContent = '단어를 찾고 있습니다.';
+    status.textContent = '';
 
     const heading = addText(result, 'div', '', 'flex flex-wrap items-center gap-3');
     addText(heading, 'strong', word, 'text-base');
@@ -138,7 +138,7 @@
       }
       if (current !== revision) return;
       if (response.status === 404) {
-        status.textContent = local.length ? '이 글의 핵심 어휘' : '사전에서 찾지 못했습니다. 철자나 단어의 기본형을 확인해주세요.';
+        status.textContent = local.length ? '' : '사전에서 찾지 못했습니다. 철자나 단어의 기본형을 확인해주세요.';
         return;
       }
       if (!response.ok) throw new Error('dictionary');
@@ -153,6 +153,13 @@
         }));
       const senses: KoreanSense[] = fromApi && Array.isArray(data.ko_content) ? data.ko_content : [];
       const lemma = fromApi && typeof data.lemma === 'string' ? data.lemma : '';
+      const addSource = (parent: HTMLElement, text: string) => {
+        const source = addText(parent, 'a', text, 'inline-block text-xs text-gray-500 underline') as HTMLAnchorElement;
+        source.href = `https://en.wiktionary.org/wiki/${encodeURIComponent(resolvedWord)}#English`;
+        source.target = '_blank';
+        source.rel = 'noopener noreferrer';
+        source.lang = 'ko';
+      };
 
       if (lemma && lemma.toLowerCase() !== word.toLowerCase()) {
         const note = addText(korean, 'p', '', 'text-gray-600');
@@ -172,6 +179,8 @@
           addText(item, 'span', sense.words.join(', '), 'text-gray-900');
           if (sense.sense) addText(item, 'span', `(${sense.sense})`, 'text-xs text-gray-500').lang = 'en';
         }
+        // 검수하지 않은 한국어 뜻은 Wiktionary 번역표에서 온 것이라 라이선스 표시가 필요하다.
+        if (data.ko_source !== 'curated') addSource(korean, '번역 출처: Wiktionary · CC BY-SA 4.0');
       } else if (!local.length) {
         addText(korean, 'p', '등록된 한국어 뜻이 없습니다. 아래 영어 뜻을 확인해주세요.', 'text-gray-500');
       }
@@ -193,17 +202,11 @@
           count++;
         }
       }
-      if (count) result.append(english);
-
-      const source = document.createElement('a');
-      source.href = `https://en.wiktionary.org/wiki/${encodeURIComponent(resolvedWord)}#English`;
-      source.target = '_blank';
-      source.rel = 'noopener noreferrer';
-      source.textContent = fromApi && data.ko_source === 'curated' && senses.length
-        ? '한국어 뜻: daparapara 편집 · 영어 뜻: Wiktionary (CC BY-SA 4.0)' : '출처: Wiktionary · CC BY-SA 4.0';
-      source.className = 'inline-block text-xs text-gray-500 underline';
-      result.append(source);
-      status.textContent = count || senses.length || local.length ? '사전 검색 결과' : '등록된 뜻이 없습니다.';
+      if (count) {
+        addSource(body, '출처: Wiktionary · CC BY-SA 4.0');
+        result.append(english);
+      }
+      status.textContent = count || senses.length || local.length ? '' : '등록된 뜻이 없습니다.';
     } catch {
       if (current === revision) status.textContent = local.length ? '이 글의 핵심 어휘 · 사전에는 연결하지 못했습니다.' : '사전에 연결하지 못했습니다. 잠시 후 다시 검색해주세요.';
     } finally {
