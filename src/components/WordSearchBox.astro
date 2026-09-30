@@ -68,7 +68,7 @@
     const timeout = window.setTimeout(() => controller.abort(), 22000);
     result.replaceChildren();
     result.setAttribute('aria-busy', 'true');
-    status.textContent = '';
+    status.textContent = '단어를 찾고 있습니다.';
 
     const heading = addText(result, 'div', '', 'flex flex-wrap items-center gap-3');
     addText(heading, 'strong', word, 'text-base');
