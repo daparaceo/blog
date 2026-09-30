@@ -191,12 +191,14 @@
       if (hasLocal) { status.textContent = '이 글의 핵심 어휘'; selectLanguage('ko'); }
       let response: Response;
       let data;
+      let resolvedWord = word;
       try {
         response = await fetch(`${dictionaryApi}/dictionary?word=${encodeURIComponent(word)}`, {
           signal: AbortSignal.any([controller.signal, AbortSignal.timeout(11000)]),
         });
         if (!response.ok && response.status !== 404) throw new Error('dictionary');
         data = await response.json();
+        if (data.lookup_key) resolvedWord = data.lookup_key;
         if (data.id && data.content_hash) dictionaryEntry = { id: data.id, content_hash: data.content_hash };
         if (Array.isArray(data.content)) data.en = data.content.map((meaning) => ({
           partOfSpeech: meaning.partOfSpeech,
@@ -205,6 +207,11 @@
       } catch {
         response = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`, { signal: controller.signal });
         data = response.ok ? await response.json() : {};
+        if ((response.status === 404 || (response.ok && !data.en?.length)) && word !== word.toLowerCase()) {
+          resolvedWord = word.toLowerCase();
+          response = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(resolvedWord)}`, { signal: controller.signal });
+          data = response.ok ? await response.json() : {};
+        }
       }
       if (current !== revision) return;
       if (response.status === 404) { status.textContent = '사전에서 찾지 못했습니다. 철자나 단어의 기본형을 확인해주세요.'; return; }
@@ -234,7 +241,7 @@ example: definition.examples?.[0] ? (dictionaryEntry ? definition.examples[0] : 
         }
       }
       const source = document.createElement('a');
-source.href = `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}#English`;
+      source.href = `https://en.wiktionary.org/wiki/${encodeURIComponent(resolvedWord)}#English`;
       source.target = '_blank';
       source.rel = 'noopener noreferrer';
       source.textContent = '출처: Wiktionary · CC BY-SA 4.0';
