@@ -18,8 +18,8 @@ const postsData = posts.map((post) => ({
 ---
 
 <BaseLayout
-  title="영어원서 | daparapara"
-  description="영어원서 읽기 기록 — 어휘, 줄거리, 리뷰를 정리합니다."
+  title="영어원서 읽기 가이드 · AR 수준별 책과 핵심 어휘"
+  description="영어원서별 AR 수준, 핵심 어휘, 주요 문장과 리뷰를 확인하고 읽기 전후 학습에 활용하세요."
 >
   <div class="mb-6">
     <nav class="text-xs text-gray-400 mb-3">
@@ -57,15 +57,37 @@ const postsData = posts.map((post) => ({
 
     <!-- 설명 + 카운트 -->
     <div class="flex items-end justify-between">
-      <p class="text-gray-500 text-sm">어휘, 줄거리, 독후감을 함께 정리한 영어원서 읽기 기록입니다.</p>
-      <span id="post-count" class="text-xs text-gray-400 whitespace-nowrap ml-3 pb-0.5"></span>
+      <p class="text-gray-500 text-sm">영어원서별 AR 수준과 읽기 전에 알아둘 핵심 어휘, 주요 문장과 리뷰를 정리했습니다.</p>
+      <span id="post-count" class="text-xs text-gray-400 whitespace-nowrap ml-3 pb-0.5">{posts.length}권</span>
     </div>
   </div>
 
   {posts.length === 0 ? (
     <p class="text-gray-400 text-sm">아직 등록된 글이 없습니다.</p>
   ) : (
-    <ul id="book-list" class="divide-y divide-gray-100"></ul>
+    <ul id="book-list" class="divide-y divide-gray-100">
+      {postsData.map((post) => (
+        <li class="py-4 group">
+          <a href={`/learn/english/books/${post.slug}/`} class="flex items-start gap-3 sm:gap-4">
+            {post.ogImage && (
+              <img src={post.ogImage} alt="" loading="lazy" class="w-14 h-20 flex-shrink-0 rounded-md object-cover shadow-sm bg-gray-100" />
+            )}
+            <div class="flex-1 min-w-0">
+              <span class="text-base font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">{post.title}</span>
+              {post.description && <p class="text-gray-500 text-sm mt-0.5 line-clamp-1">{post.description}</p>}
+              {(post.author || post.ar_level !== null) && (
+                <p class="text-xs text-gray-400 mt-1">
+                  {post.author && <span>{post.author}</span>}
+                  {post.author && post.ar_level !== null && <span class="mx-1">·</span>}
+                  {post.ar_level !== null && <span>AR {post.ar_level}</span>}
+                </p>
+              )}
+            </div>
+            <time datetime={post.date} class="text-xs text-gray-400 whitespace-nowrap mt-1 ml-auto">{post.dateLabel}</time>
+          </a>
+        </li>
+      ))}
+    </ul>
   )}
 
   <script is:inline define:vars={{ postsData }}>
@@ -182,6 +204,5 @@ const postsData = posts.map((post) => ({
       renderList();
     });
 
-    renderList();
   </script>
 </BaseLayout>
