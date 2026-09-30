@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import BookSearchBox from '../../../../components/BookSearchBox.astro';
 import WordSearchBox from '../../../../components/WordSearchBox.astro';
+import ErrorReport from '../../../../components/ErrorReport.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('learn', ({ data }) => !data.draft);
@@ -198,6 +199,8 @@ const ogImage = post.data.ogImage;
         </section>
       )
     )}
+
+    <ErrorReport />
 
     <nav class="mt-8 pt-6 border-t border-gray-100">
       <a href="/learn/english/books/" class="text-sm text-brand-600 hover:underline">
