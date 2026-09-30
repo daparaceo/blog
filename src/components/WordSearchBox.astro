@@ -11,6 +11,7 @@
 </section>
 
 <script>
+  import { createElement, Volume2 } from 'lucide';
   const form = document.querySelector<HTMLFormElement>('#word-search-form');
   const input = document.querySelector<HTMLInputElement>('#word-search-query');
   const status = document.querySelector<HTMLElement>('#word-search-status');
@@ -18,6 +19,8 @@
   let request: AbortController | undefined;
   let audio: HTMLAudioElement | undefined;
   let revision = 0;
+  let translationRequest: AbortController | undefined;
+  const dictionaryApi = import.meta.env.PUBLIC_DICTIONARY_API_BASE || 'https://api.daparapara.com';
 
   function addText(parent: HTMLElement, tag: string, text: string, className = '') {
     const element = document.createElement(tag);
@@ -33,11 +36,12 @@
     const word = input.value.trim().replace(/\s+/g, ' ');
     if (!word) { input.focus(); return; }
     request?.abort();
+    translationRequest?.abort();
     audio?.pause();
     const current = ++revision;
     const controller = new AbortController();
     request = controller;
-    const timeout = window.setTimeout(() => controller.abort(), 12000);
+    const timeout = window.setTimeout(() => controller.abort(), 22000);
     result.replaceChildren();
     result.setAttribute('aria-busy', 'true');
     status.textContent = '단어를 찾고 있습니다.';
@@ -47,9 +51,111 @@
     addText(heading, 'strong', word, 'text-base');
     const play = document.createElement('button');
     play.type = 'button';
-    play.textContent = '발음 듣기';
-    play.className = 'text-sky-700 underline disabled:opacity-50';
+    play.setAttribute('aria-label', '발음 듣기');
+    play.title = '발음 듣기';
+    play.append(createElement(Volume2, { width: 20, height: 20, 'aria-hidden': 'true' }));
+    play.className = 'inline-flex items-center justify-center w-9 h-9 rounded-lg text-sky-700 hover:bg-sky-50 disabled:opacity-50';
     heading.append(play);
+    const tablist = addText(result, 'div', '', 'flex gap-4 border-b border-gray-200');
+    tablist.setAttribute('role', 'tablist');
+    tablist.setAttribute('aria-label', '설명 언어');
+    const panels = { ko: addText(result, 'div', '', 'space-y-3'), en: addText(result, 'div', '', 'space-y-3') };
+    const tabs: HTMLButtonElement[] = [];
+    let englishReady = false;
+    let translated = false;
+    let translating = false;
+    let dictionaryEntry: { id: string; content_hash: string } | undefined;
+    const selectLanguage = (language: 'ko' | 'en') => {
+      for (const button of tabs) {
+        const active = button.dataset.language === language;
+        button.setAttribute('aria-selected', String(active));
+        button.tabIndex = active ? 0 : -1;
+        button.className = `pb-2 text-sm border-b-2 ${active ? 'border-sky-600 text-sky-700 font-semibold' : 'border-transparent text-gray-500'}`;
+      }
+      panels.ko.hidden = language !== 'ko';
+      panels.en.hidden = language !== 'en';
+      if (language === 'ko' && !hasLocal && englishReady && !translated && !translating) void translateKorean();
+    };
+    const translateKorean = async () => {
+      translating = true;
+      panels.ko.replaceChildren();
+      panels.ko.setAttribute('aria-busy', 'true');
+      addText(panels.ko, 'p', '한국어로 번역하고 있습니다.', 'text-gray-500');
+      const translationController = new AbortController();
+      translationRequest = translationController;
+      const translationTimeout = window.setTimeout(() => translationController.abort(), 30000);
+      try {
+        if (!dictionaryEntry) throw new Error('disabled');
+        let content: { partOfSpeech: string; definitions: { definition: string; example: string }[] }[] | undefined;
+        for (let attempt = 0; attempt < 4; attempt++) {
+          translationController.signal.throwIfAborted();
+          const response = await fetch(`${dictionaryApi}/dictionary/translate`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entry_id: dictionaryEntry.id, content_hash: dictionaryEntry.content_hash }),
+            signal: translationController.signal,
+          });
+          const data = await response.json();
+          if (response.status === 202) {
+            await new Promise(resolve => window.setTimeout(resolve, 3000));
+            continue;
+          }
+          if (!response.ok || data.status !== 'ready') throw new Error(data.status || data.error || 'translation');
+          content = data.content;
+          break;
+        }
+        if (!content) throw new Error('processing');
+        if (current !== revision) return;
+        panels.ko.replaceChildren();
+        for (const meaning of content) {
+          const group = addText(panels.ko, 'div', '', 'space-y-1');
+          addText(group, 'strong', meaning.partOfSpeech);
+          const list = addText(group, 'ol', '', 'list-decimal pl-5 space-y-2');
+          for (const definition of meaning.definitions) {
+            const item = addText(list, 'li', definition.definition);
+            if (definition.example) addText(item, 'p', definition.example, 'mt-1 text-gray-500');
+          }
+        }
+        addText(panels.ko, 'p', '자동 번역 · 정확한 표현은 영어 원문을 확인해주세요.', 'text-xs text-gray-500');
+        translated = true;
+      } catch (error) {
+        if (current !== revision) return;
+        panels.ko.replaceChildren();
+        const code = error instanceof Error ? error.message : '';
+        const message = code === 'disabled' ? '한국어 번역은 준비 중입니다.'
+          : code === 'limit' ? '현재 번역 사용 한도에 도달했습니다.'
+          : code === 'changed' ? '사전 내용이 갱신되었습니다. 단어를 다시 검색해주세요.'
+          : code === 'processing' ? '번역을 처리 중입니다. 잠시 후 다시 시도해주세요.'
+          : '번역을 불러오지 못했습니다.';
+        addText(panels.ko, 'p', `${message} 영어 탭에서 원문을 볼 수 있습니다.`, 'text-gray-500');
+        const retry = addText(panels.ko, 'button', '다시 시도', 'text-sky-700 underline') as HTMLButtonElement;
+        retry.type = 'button';
+        retry.addEventListener('click', () => { if (!translating) void translateKorean(); });
+      } finally { clearTimeout(translationTimeout); translating = false; panels.ko.setAttribute('aria-busy', 'false'); }
+    };
+    for (const language of ['ko', 'en'] as const) {
+      const button = addText(tablist, 'button', language === 'ko' ? '한국어' : 'English') as HTMLButtonElement;
+      button.type = 'button';
+      button.id = `word-tab-${language}`;
+      button.dataset.language = language;
+      button.setAttribute('role', 'tab');
+      button.setAttribute('aria-controls', `word-panel-${language}`);
+      panels[language].id = `word-panel-${language}`;
+      panels[language].lang = language;
+      panels[language].tabIndex = 0;
+      panels[language].setAttribute('role', 'tabpanel');
+      panels[language].setAttribute('aria-labelledby', button.id);
+      button.addEventListener('click', () => selectLanguage(language));
+      button.addEventListener('keydown', (event) => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const next = event.key === 'Home' ? 'ko' : event.key === 'End' ? 'en' : language === 'ko' ? 'en' : 'ko';
+        selectLanguage(next);
+        tabs.find((tab) => tab.dataset.language === next)?.focus();
+      });
+      tabs.push(button);
+    }
+    selectLanguage('en');
+    addText(panels.ko, 'p', '영어 뜻을 불러온 뒤 한국어 탭을 선택해주세요.', 'text-gray-500');
     let audioUrl = '';
     play.addEventListener('click', async () => {
       play.disabled = true;
@@ -74,33 +180,49 @@
       if (item.dataset.word?.trim().toLowerCase() !== word.toLowerCase()) return;
       const meaning = item.querySelector('.vocab-meaning')?.textContent?.trim();
       if (!meaning) return;
+      if (!hasLocal) panels.ko.replaceChildren();
       hasLocal = true;
-      addText(result, 'p', meaning);
+      addText(panels.ko, 'p', meaning);
       const example = item.querySelector('.vocab-example')?.textContent?.trim();
-      if (example) addText(result, 'p', example, 'text-gray-600');
+      if (example) addText(panels.ko, 'p', example, 'text-gray-600');
     });
 
     try {
-      if (hasLocal) { status.textContent = '이 글의 핵심 어휘'; return; }
-      const response = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word.toLowerCase())}`, { signal: controller.signal });
+      if (hasLocal) { status.textContent = '이 글의 핵심 어휘'; selectLanguage('ko'); }
+      let response: Response;
+      let data;
+      try {
+        response = await fetch(`${dictionaryApi}/dictionary?word=${encodeURIComponent(word)}`, {
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(11000)]),
+        });
+        if (!response.ok && response.status !== 404) throw new Error('dictionary');
+        data = await response.json();
+        if (data.id && data.content_hash) dictionaryEntry = { id: data.id, content_hash: data.content_hash };
+        if (Array.isArray(data.content)) data.en = data.content.map((meaning) => ({
+          partOfSpeech: meaning.partOfSpeech,
+          definitions: meaning.definitions.map((item) => ({ definition: item.definition, examples: [item.example] })),
+        }));
+      } catch {
+        response = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`, { signal: controller.signal });
+        data = response.ok ? await response.json() : {};
+      }
       if (current !== revision) return;
       if (response.status === 404) { status.textContent = '사전에서 찾지 못했습니다. 철자나 단어의 기본형을 확인해주세요.'; return; }
       if (!response.ok) throw new Error('dictionary');
-      const data = await response.json();
       if (current !== revision) return;
       if (!Array.isArray(data.en) || !data.en.length) { status.textContent = '등록된 영어 뜻이 없습니다.'; return; }
       const plainText = (html: string) => new DOMParser().parseFromString(html, 'text/html').body.textContent ?? '';
       const entries = [{ meanings: data.en.map((meaning) => ({
         partOfSpeech: meaning.partOfSpeech,
         definitions: meaning.definitions.map((definition) => ({
-          definition: plainText(definition.definition),
-          example: definition.examples?.[0] ? plainText(definition.examples[0]) : '',
+definition: dictionaryEntry ? definition.definition : plainText(definition.definition),
+example: definition.examples?.[0] ? (dictionaryEntry ? definition.examples[0] : plainText(definition.examples[0])) : '',
         })),
       })) }];
       let count = 0;
       for (const entry of entries.slice(0, 3)) {
         for (const meaning of entry.meanings ?? []) {
-          const group = addText(result, 'div', '', 'space-y-1');
+          const group = addText(panels.en, 'div', '', 'space-y-1');
           addText(group, 'strong', meaning.partOfSpeech ?? '');
           const list = addText(group, 'ol', '', 'list-decimal pl-5 space-y-2');
           for (const definition of (meaning.definitions ?? []).slice(0, 3)) {
@@ -112,12 +234,14 @@
         }
       }
       const source = document.createElement('a');
-      source.href = `https://en.wiktionary.org/wiki/${encodeURIComponent(word.toLowerCase())}#English`;
+source.href = `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}#English`;
       source.target = '_blank';
       source.rel = 'noopener noreferrer';
       source.textContent = '출처: Wiktionary · CC BY-SA 4.0';
       source.className = 'inline-block text-xs text-gray-500 underline';
       result.append(source);
+      englishReady = count > 0;
+      if (!hasLocal && tabs[0].getAttribute('aria-selected') === 'true') void translateKorean();
       status.textContent = count ? '영영사전 검색 결과' : '등록된 뜻이 없습니다.';
     } catch {
       if (current === revision) status.textContent = '사전에 연결하지 못했습니다. 잠시 후 다시 검색해주세요.';
