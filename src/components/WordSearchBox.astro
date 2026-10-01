@@ -120,7 +120,7 @@
     const current = ++revision;
     const controller = new AbortController();
     request = controller;
-    const timeout = window.setTimeout(() => controller.abort(), 22000);
+    const timeout = window.setTimeout(() => controller.abort(), 30000);
     result.replaceChildren();
     result.setAttribute('aria-busy', 'true');
     status.textContent = '단어를 찾고 있습니다.';
@@ -175,7 +175,7 @@
       let fromApi = false;
       try {
         response = await fetch(`${dictionaryApi}/dictionary?word=${encodeURIComponent(word)}`, {
-          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(11000)]),
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(25000)]),
         });
         if (!response.ok && response.status !== 404) throw new Error('dictionary');
         data = await response.json();
@@ -234,8 +234,8 @@
           addText(item, 'span', sense.words.join(', '), 'text-gray-900');
           if (sense.sense) addText(item, 'span', `(${sense.sense})`, 'text-xs text-gray-500').lang = 'en';
         }
-        // 검수하지 않은 한국어 뜻은 Wiktionary 번역표에서 온 것이라 라이선스 표시가 필요하다.
-        if (data.ko_source !== 'curated') addSource(korean, '번역 출처: Wiktionary · CC BY-SA 4.0');
+        // Wiktionary 번역표에서 가져온 한국어 뜻은 라이선스 표시가 필요하다. (검수한 뜻과 AI가 만든 뜻은 표시하지 않는다.)
+        if (data.ko_source === 'wiktionary') addSource(korean, '번역 출처: Wiktionary · CC BY-SA 4.0');
       } else if (!local.length) {
         addText(korean, 'p', '등록된 한국어 뜻이 없습니다. 아래 영어 뜻을 확인해주세요.', 'text-gray-500');
       }
