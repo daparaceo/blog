@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import ErrorReport from '../components/ErrorReport.astro';
 
 const learnPosts = await getCollection('learn', ({ data }) => !data.draft);
 const hasEnglish = learnPosts.length > 0;
@@ -110,11 +111,18 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
           </svg>
           <span class="text-xl font-bold text-gray-900">{SITE_NAME}</span>
         </a>
-        <a href="/search/" class="hover:text-brand-600 transition-colors text-gray-600" aria-label="검색">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
-          </svg>
-        </a>
+        <div class="flex items-center gap-4">
+          <button type="button" data-error-report-open class="hover:text-brand-600 transition-colors text-gray-600" aria-label="오류 신고" title="오류 신고">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 22V4m0 0h12l-2 4 2 4H4" />
+            </svg>
+          </button>
+          <a href="/search/" class="hover:text-brand-600 transition-colors text-gray-600" aria-label="검색">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+            </svg>
+          </a>
+        </div>
       </div>
 
       <!-- 포탈 네비게이션 -->
@@ -179,9 +187,13 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
         <a href="/privacy/" class="hover:text-brand-600 underline">개인정보처리방침</a>
         &nbsp;·&nbsp;
         <a href="/about/" class="hover:text-brand-600 underline">소개</a>
+        &nbsp;·&nbsp;
+        <button type="button" data-error-report-open class="hover:text-brand-600 underline">오류 신고</button>
       </p>
     </div>
   </footer>
+
+  <ErrorReport />
 
   <script>
     const shortcutBanner = document.getElementById('install-shortcut');

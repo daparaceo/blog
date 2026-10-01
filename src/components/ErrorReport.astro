@@ -1,16 +1,16 @@
-<div class="mt-10 flex justify-end" data-pagefind-ignore>
-  <button id="error-report-open" type="button"
-    class="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2">
-    글에 오류가 있나요? 신고하기
-  </button>
-</div>
-
+<!-- 여는 버튼은 BaseLayout 헤더·푸터에 있다. [data-error-report-open] 요소면 어디서든 연다. -->
 <dialog id="error-report-dialog" aria-labelledby="error-report-heading" data-pagefind-ignore
   class="w-[calc(100%-2rem)] max-w-md rounded-xl p-0 shadow-xl backdrop:bg-black/40">
   <form id="error-report-form" class="p-5 space-y-4" novalidate>
     <div class="flex items-center justify-between">
       <h2 id="error-report-heading" class="text-base font-bold text-gray-900">오류 신고</h2>
       <button type="button" data-close class="w-8 h-8 -mr-2 rounded-lg text-gray-400 hover:bg-gray-100" aria-label="닫기">&times;</button>
+    </div>
+
+    <div class="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2 space-y-0.5">
+      <p class="font-medium text-gray-600">신고 페이지 (자동 첨부)</p>
+      <p id="error-report-page-title" class="text-gray-700 break-words"></p>
+      <p id="error-report-page-meta" class="break-all"></p>
     </div>
 
     <fieldset>
@@ -63,7 +63,8 @@
 
 <script>
   const api = import.meta.env.PUBLIC_DICTIONARY_API_BASE || 'https://api.daparapara.com';
-  const openButton = document.querySelector<HTMLButtonElement>('#error-report-open');
+  const pageTitle = document.querySelector<HTMLElement>('#error-report-page-title');
+  const pageMeta = document.querySelector<HTMLElement>('#error-report-page-meta');
   const dialog = document.querySelector<HTMLDialogElement>('#error-report-dialog');
   const form = document.querySelector<HTMLFormElement>('#error-report-form');
   const message = document.querySelector<HTMLTextAreaElement>('#error-report-message');
@@ -73,6 +74,7 @@
   const submit = document.querySelector<HTMLButtonElement>('#error-report-submit');
   let lastSelection = '';
   let quote = '';
+  let context = { page_path: '/', page_title: '', section: '', viewport: '' };
 
   // 버튼을 누르면 선택이 풀리므로, 본문에서 마지막으로 선택한 문장을 미리 기억해 둔다.
   document.addEventListener('selectionchange', () => {
@@ -97,8 +99,59 @@
     quoteWrap?.classList.toggle('hidden', !text);
   }
 
-  openButton?.addEventListener('click', () => {
-    if (!dialog || !form) return;
+  function isPinned(element: Element) {
+    for (let node: Element | null = element; node && node !== document.body; node = node.parentElement) {
+      const position = getComputedStyle(node).position;
+      if (position === 'fixed' || position === 'sticky') return true;
+    }
+    return false;
+  }
+
+  // 팝업을 연 순간 읽고 있던 본문 소제목
+  function currentSection() {
+    // 기준선: 고정 헤더 아래 보이는 영역의 위쪽 30% 지점. 막 화면에 들어온 소제목도 '읽는 중'으로 본다.
+    const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0;
+    const viewHeight = window.innerHeight || document.documentElement.clientHeight;
+    const top = headerBottom + Math.max(0, viewHeight - headerBottom) * 0.3;
+    // DOM 순서와 화면 순서가 다를 수 있어 위치로만 고른다: 기준선 위에 있는 소제목 중 가장 아래 것
+    let found = '';
+    let foundTop = -Infinity;
+    for (const heading of document.querySelectorAll<HTMLElement>('main h2, main h3')) {
+      // 단어 검색 도크처럼 화면에 고정된 UI의 소제목은 본문 위치와 무관하므로 제외
+      if (heading.closest('[data-pagefind-ignore]') || isPinned(heading)) continue;
+      const headingTop = heading.getBoundingClientRect().top;
+      if (headingTop <= top && headingTop > foundTop) { found = heading.textContent ?? ''; foundTop = headingTop; }
+    }
+    return found.replace(/\s+/g, ' ').trim().slice(0, 200);
+  }
+
+  // 측정값이 비정상(숨김 탭 등)이면 보내지 않는다. 서버는 형식이 틀린 값을 거부한다.
+  function currentViewport() {
+    // innerWidth는 내용이 넘친 페이지에서 늘어난 레이아웃 폭을 돌려주므로, 실제 보이는 폭(clientWidth)을 우선한다.
+    const width = Math.round(document.documentElement.clientWidth || window.innerWidth);
+    const height = Math.round(document.documentElement.clientHeight || window.innerHeight);
+    const value = `${width}x${height}`;
+    return /^[0-9]{2,5}x[0-9]{2,5}$/.test(value) ? value : '';
+  }
+
+  function captureContext() {
+    context = {
+      page_path: location.pathname,
+      page_title: document.title.replace(/\s+/g, ' ').trim().slice(0, 200),
+      section: currentSection(),
+      viewport: currentViewport(),
+    };
+    if (pageTitle) pageTitle.textContent = context.page_title || context.page_path;
+    let readablePath = context.page_path;
+    try { readablePath = decodeURI(readablePath); } catch { /* 잘못된 인코딩이면 원문 표시 */ }
+    if (pageMeta) pageMeta.textContent = [readablePath, context.section && `섹션: ${context.section}`, context.viewport && `화면: ${context.viewport}`].filter(Boolean).join(' · ');
+  }
+
+  document.addEventListener('click', (event) => {
+    const trigger = (event.target as Element | null)?.closest('[data-error-report-open]');
+    if (!trigger || !dialog || !form) return;
+    event.preventDefault();
+    captureContext();
     form.reset();
     setStatus('');
     if (submit) { submit.disabled = false; submit.textContent = '보내기'; }
@@ -125,11 +178,13 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          page_path: location.pathname,
-          page_title: document.title.slice(0, 200),
+          page_path: context.page_path,
+          page_title: context.page_title || undefined,
           report_type: data.get('report_type'),
           message: text,
           quote: quote || undefined,
+          section: context.section || undefined,
+          viewport: context.viewport || undefined,
           website: data.get('website') || undefined,
         }),
         signal: AbortSignal.timeout(15000),

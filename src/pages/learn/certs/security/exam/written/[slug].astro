@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
-import ErrorReport from '../../../../../../components/ErrorReport.astro';
 import { CHAPTERS } from '../../../../../../data/certs/security/chapters';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -217,7 +216,6 @@ function getRelatedChapters(q: any) {
     </div>
 
   </div>
-  <ErrorReport />
 </BaseLayout>
 
 <style>

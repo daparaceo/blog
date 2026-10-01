@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import ErrorReport from '../../../../../components/ErrorReport.astro';
 import { CHAPTERS } from '../../../../../data/certs/security/chapters';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -245,7 +244,6 @@ function formatSecurityText(value: string) {
     </div>
 
   </div>
-  <ErrorReport />
 </BaseLayout>
 
 <style>
@@ -253,10 +251,13 @@ function formatSecurityText(value: string) {
   .option-label.wrong   { background-color: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c; }
   .option-label.correct span, .option-label.wrong span { font-weight: 500; }
   .quiz-item code { overflow-wrap: anywhere; word-break: break-word; }
-  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 1rem; border-radius: 0.375rem; }
-  .table-scroll table { min-width: 480px; margin-bottom: 0; }
-  .table-scroll th, .table-scroll td { min-width: 5rem; word-break: keep-all; overflow-wrap: normal; }
-  .table-scroll code { overflow-wrap: anywhere; word-break: break-word; }
+  /* .table-scroll은 아래 스크립트가 런타임에 만들어 scoped 속성이 없으므로 :global로 지정한다. */
+  :global(.table-scroll) { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 1rem; border-radius: 0.375rem; }
+  :global(.table-scroll table) { min-width: 480px; margin-bottom: 0; }
+  :global(.table-scroll th), :global(.table-scroll td) { min-width: 5rem; word-break: keep-all; overflow-wrap: normal; }
+  :global(.table-scroll code) { overflow-wrap: anywhere; word-break: break-word; }
+  /* 레지스트리 경로처럼 끊을 곳 없는 긴 인라인 코드가 모바일 폭을 넘지 않게 한다. */
+  article :global(:not(pre) > code) { overflow-wrap: anywhere; }
 </style>
 
 <script is:inline>
