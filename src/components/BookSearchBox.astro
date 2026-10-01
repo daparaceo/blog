@@ -119,7 +119,8 @@ for (const post of posts) {
     var _shownIsbns = new Set();
     var _searchSeq = 0;
     var POLL_INTERVAL = 10000;
-    var POLL_TIMEOUT = 300000;
+    var POLL_TIMEOUT = 600000;
+    var POST_DELAY_MESSAGE = '요청건이 많아 처리 지연 중입니다. 잠시 후 재 확인 부탁 드리겠습니다.';
 
     function el(id) { return document.getElementById(P + '-' + id); }
 
@@ -444,7 +445,7 @@ for (const post of posts) {
         : !canCreatePost
           ? '<p class="mt-3 text-xs text-gray-400 text-center">영어 원서만 교육자료 생성을 지원합니다.</p>'
         : '<button type="button" class="' + P + '-js-post-btn js-book-post-button mt-3 w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">교육자료 만들기</button>' +
-          '<p class="js-book-post-note hidden mt-2 text-xs text-gray-400 text-center">교육자료 생성까지 평균 3~4분, 최대 5분 소요됩니다.</p>';
+          '<p class="js-book-post-note hidden mt-2 text-xs text-gray-400 text-center">교육자료 생성까지 평균 3~4분 소요되며, 최대 10분 동안 완료 여부를 확인합니다.</p>';
 
       var standaloneCard = el('info-card');
       standaloneCard.classList.add('hidden');
@@ -511,7 +512,7 @@ for (const post of posts) {
         : !canCreatePost
           ? '<p class="mt-3 text-xs text-gray-400 text-center">영어 원서만 교육자료 생성을 지원합니다.</p>'
         : '<button type="button" class="' + P + '-js-post-btn js-book-post-button mt-3 w-full py-2.5 bg-sky-600 text-white text-sm font-semibold rounded-xl hover:bg-sky-700 active:scale-95 transition-all">교육자료 만들기</button>' +
-          '<p class="js-book-post-note hidden mt-2 text-xs text-gray-400 text-center">교육자료 생성까지 평균 3~4분, 최대 5분 소요됩니다.</p>';
+          '<p class="js-book-post-note hidden mt-2 text-xs text-gray-400 text-center">교육자료 생성까지 평균 3~4분 소요되며, 최대 10분 동안 완료 여부를 확인합니다.</p>';
 
       return '<div class="p-4 bg-white border border-gray-200 rounded-xl">' +
         '<div class="flex gap-3">' +
@@ -619,7 +620,11 @@ for (const post of posts) {
         return true;
       }
 
-      if (data.display_status === 'failed' || data.display_status === 'cancelled') {
+      if (data.display_status === 'failed' || data.job_status === 'failed') {
+        showPostError(POST_DELAY_MESSAGE);
+        return true;
+      }
+      if (data.display_status === 'cancelled') {
         if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
         showPostError('자료가 부족해서 교육자료 생성에 실패했습니다.');
         return true;
@@ -627,7 +632,7 @@ for (const post of posts) {
 
       if (Date.now() >= deadline) {
         if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
-        showPostError('교육자료 생성 요청은 등록됐지만 5분 안에 완료되지 않았습니다. 잠시 후 다시 확인해주세요.');
+        showPostError(POST_DELAY_MESSAGE);
         return true;
       }
       return false;
@@ -650,6 +655,10 @@ for (const post of posts) {
           body: JSON.stringify({ isbn: _currentIsbn }),
         });
         var body = await req.json().catch(function() { return {}; });
+        if (body.display_status === 'failed' || body.job_status === 'failed') {
+          showPostError(POST_DELAY_MESSAGE);
+          return;
+        }
         if (!req.ok) throw new Error(body.error || '교육자료 생성 요청에 실패했습니다.');
 
         if (body.status === 'completed' || body.display_status === 'posted') {

@@ -658,7 +658,8 @@ for (const post of posts) {
 
     // ── 포스트 생성 폴링 ─────────────────────────────────────
     var POLL_INTERVAL = 10000;
-    var POLL_TIMEOUT  = 300000;
+    var POLL_TIMEOUT  = 600000;
+    var POST_DELAY_MESSAGE = '요청건이 많아 처리 지연 중입니다. 잠시 후 재 확인 부탁 드리겠습니다.';
 
     function setPostButtonState(label, disabled) {
       document.querySelectorAll('.js-book-post-button').forEach(function(btn) {
@@ -727,7 +728,11 @@ for (const post of posts) {
         return true;
       }
 
-      if (data.display_status === 'failed' || data.display_status === 'cancelled') {
+      if (data.display_status === 'failed' || data.job_status === 'failed') {
+        showPostError(POST_DELAY_MESSAGE);
+        return true;
+      }
+      if (data.display_status === 'cancelled') {
         if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
         showPostError('자료가 부족해서 포스팅 실패했습니다.');
         return true;
@@ -735,7 +740,7 @@ for (const post of posts) {
 
       if (Date.now() >= deadline) {
         if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
-        showPostError('포스트 생성 요청은 등록됐지만 5분 안에 완료되지 않았습니다. 잠시 후 다시 확인해주세요.');
+        showPostError(POST_DELAY_MESSAGE);
         return true;
       }
       return false;
@@ -763,6 +768,10 @@ for (const post of posts) {
           body: JSON.stringify({ isbn: _currentIsbn }),
         });
         var body = await req.json().catch(function() { return {}; });
+        if (body.display_status === 'failed' || body.job_status === 'failed') {
+          showPostError(POST_DELAY_MESSAGE);
+          return;
+        }
         if (!req.ok) throw new Error(body.error || '포스트 생성 요청에 실패했습니다.');
 
         if (body.status === 'completed' || body.display_status === 'posted') {
