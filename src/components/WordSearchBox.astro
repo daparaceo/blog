@@ -43,12 +43,21 @@
     padding: 12px 16px 16px;
     box-shadow: 0 -4px 16px rgb(0 0 0 / 8%);
   }
+  /* 재생 진행 표시: 왼쪽부터 채워지는 배경. 버튼은 런타임에 만들어지므로 :global */
+  :global(.tts-fill) {
+    position: absolute;
+    inset: 0;
+    background: #bae6fd;
+    transform: scaleX(0);
+    transform-origin: left;
+    pointer-events: none;
+  }
   :global(body:has(#word-search-dock)) { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
   :global(body:has(#word-search-dock) #install-shortcut) { bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
 </style>
 
 <script>
-  import { createElement, Volume2, X } from 'lucide';
+  import { createElement, LoaderCircle, Volume2, X } from 'lucide';
   const form = document.querySelector<HTMLFormElement>('#word-search-form');
   const input = document.querySelector<HTMLInputElement>('#word-search-query');
   const status = document.querySelector<HTMLElement>('#word-search-status');
@@ -131,12 +140,50 @@
     play.type = 'button';
     play.setAttribute('aria-label', '발음 듣기');
     play.title = '발음 듣기';
-    play.append(createElement(Volume2, { width: 20, height: 20, 'aria-hidden': 'true' }));
-    play.className = 'inline-flex items-center justify-center w-9 h-9 rounded-lg text-sky-700 hover:bg-sky-50 disabled:opacity-50';
     heading.append(play);
+    // 재생 상태를 버튼 모양으로 보여준다: 대기 → 불러오는 중(회전) → 재생 중(왼쪽부터 채움) → 대기
+    // 채움 시간은 발음 길이와 2초 중 긴 쪽. 짧은 단어도 재생됐다는 것이 보이도록 최소 시간을 보장한다.
+    const MIN_FILL_MS = 2000;
+    const fill = document.createElement('span');
+    fill.className = 'tts-fill';
+    fill.setAttribute('aria-hidden', 'true');
+    let fillTimer = 0;
+    let fillDone = false;
+    let audioDone = false;
+    const setPlayState = (state: 'idle' | 'loading' | 'playing') => {
+      play.dataset.state = state;
+      const icon = createElement(state === 'loading' ? LoaderCircle : Volume2, {
+        width: 20, height: 20, 'aria-hidden': 'true', class: 'relative' + (state === 'loading' ? ' animate-spin' : ''),
+      });
+      play.replaceChildren(fill, icon);
+      const label = { idle: '발음 듣기', loading: '발음 불러오는 중', playing: '재생 중 (누르면 멈춤)' }[state];
+      play.setAttribute('aria-label', label);
+      play.title = label;
+      play.setAttribute('aria-pressed', String(state === 'playing'));
+      if (state !== 'playing') {
+        window.clearTimeout(fillTimer);
+        fill.style.transition = 'none';
+        fill.style.transform = 'scaleX(0)';
+      }
+    };
+    const finishIfDone = () => { if (fillDone && audioDone && play.dataset.state === 'playing') setPlayState('idle'); };
+    const startFill = (durationMs: number) => {
+      fillDone = false;
+      fill.style.transition = 'none';
+      fill.style.transform = 'scaleX(0)';
+      void fill.offsetWidth; // 0에서 다시 시작하도록 강제 리플로우
+      fill.style.transition = `transform ${durationMs}ms linear`;
+      fill.style.transform = 'scaleX(1)';
+      fillTimer = window.setTimeout(() => { fillDone = true; finishIfDone(); }, durationMs);
+    };
+    play.className = 'tts-play relative overflow-hidden inline-flex items-center justify-center w-9 h-9 rounded-lg text-sky-700 hover:text-sky-900';
+    setPlayState('idle');
     let audioUrl = '';
     play.addEventListener('click', async () => {
-      play.disabled = true;
+      if (play.dataset.state === 'loading') return;
+      // 재생 중에 누르면 즉시 멈추고 초기화한다.
+      if (play.dataset.state === 'playing') { audio?.pause(); setPlayState('idle'); return; }
+      setPlayState('loading');
       try {
         let url = audioUrl;
         if (!url) {
@@ -144,14 +191,28 @@
           if (!response.ok) throw new Error('tts');
           url = audioUrl = (await response.json()).url;
         }
-        if (current !== revision) return;
+        if (current !== revision) { setPlayState('idle'); return; }
         if (!url || new URL(url).protocol !== 'https:') throw new Error('audio');
         audio?.pause();
-        audio = new Audio(url);
-        await audio.play();
+        const clip = new Audio(url);
+        audio = clip;
+        clip.addEventListener('playing', () => {
+          if (audio !== clip || play.dataset.state === 'playing') return;
+          audioDone = false;
+          setPlayState('playing');
+          const clipMs = Number.isFinite(clip.duration) ? clip.duration * 1000 : 0;
+          startFill(Math.max(MIN_FILL_MS, clipMs));
+        });
+        clip.addEventListener('ended', () => { if (audio === clip) { audioDone = true; finishIfDone(); } });
+        for (const type of ['pause', 'error']) {
+          // ended 직전에도 pause가 오므로, 끝까지 재생된 경우는 ended 처리에 맡긴다.
+          clip.addEventListener(type, () => { if (audio === clip && !clip.ended) setPlayState('idle'); });
+        }
+        await clip.play();
       } catch {
+        setPlayState('idle');
         if (current === revision) status.textContent = '발음을 재생하지 못했습니다. 다시 눌러주세요.';
-      } finally { play.disabled = false; }
+      }
     });
 
     const korean = addText(result, 'div', '', 'space-y-3');
