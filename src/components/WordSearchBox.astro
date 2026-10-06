@@ -142,8 +142,8 @@
     play.title = '발음 듣기';
     heading.append(play);
     // 재생 상태를 버튼 모양으로 보여준다: 대기 → 불러오는 중(회전) → 재생 중(왼쪽부터 채움) → 대기
-    // 채움 시간은 발음 길이와 2초 중 긴 쪽. 짧은 단어도 재생됐다는 것이 보이도록 최소 시간을 보장한다.
-    const MIN_FILL_MS = 2000;
+    // 채움 시간은 발음 길이와 1초 중 긴 쪽. 짧은 단어도 재생됐다는 것이 보이도록 최소 시간을 보장한다.
+    const MIN_FILL_MS = 1000;
     const fill = document.createElement('span');
     fill.className = 'tts-fill';
     fill.setAttribute('aria-hidden', 'true');
