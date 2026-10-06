@@ -702,7 +702,7 @@ for (const post of posts) {
     async function pollPostStatus(startedAt, deadline) {
       var elapsed = Math.round((Date.now() - startedAt) / 1000);
       updatePostProgress(elapsed);
-      document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
+      document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 5~6분 소요 됩니다.';
 
       var res;
       var data;
@@ -711,7 +711,7 @@ for (const post of posts) {
         data = await res.json().catch(function() { return {}; });
       } catch (_) {
         _pollErrorCount++;
-        document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
+        document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 5~6분 소요 됩니다.';
         if (_pollErrorCount < 3) return false;
         throw new Error('포스트 요청은 등록됐지만 상태 확인 연결이 불안정합니다. 잠시 후 다시 확인해주세요.');
       }
@@ -755,7 +755,7 @@ for (const post of posts) {
       document.getElementById('book-post-result-link').classList.add('hidden');
       document.getElementById('book-error').classList.add('hidden');
       updatePostProgress(0);
-      document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 3~4분 소요 됩니다.';
+      document.getElementById('book-poll-elapsed').textContent = '포스트 생성까지 평균 5~6분 소요 됩니다.';
       _pollErrorCount = 0;
 
       var startedAt = Date.now();
