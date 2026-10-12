@@ -248,7 +248,10 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       });
     });
 
-    var DEFAULT_LAT = 36.5, DEFAULT_LNG = 127.8, DEFAULT_LEVEL = 8;
+    var isMobile = window.innerWidth < 1024;
+    var DEFAULT_LAT = isMobile ? 36.8 : 36.5;
+    var DEFAULT_LNG = 127.8;
+    var DEFAULT_LEVEL = isMobile ? 12 : 8;
 
     // 카카오맵 SDK 로드 후 지도·마커 초기화
     function initMap() {
@@ -263,9 +266,20 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         tooltip.classList.add('hidden');
       });
 
+      var svgIcon = 'data:image/svg+xml,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">' +
+        '<circle cx="9" cy="9" r="7" fill="#0ea5e9" stroke="white" stroke-width="2"/>' +
+        '</svg>'
+      );
+      var markerImage = new kakao.maps.MarkerImage(
+        svgIcon,
+        new kakao.maps.Size(18, 18),
+        { offset: new kakao.maps.Point(9, 9) }
+      );
+
       mountains.forEach(function(m) {
         var pos = new kakao.maps.LatLng(m.lat, m.lng);
-        var marker = new kakao.maps.Marker({ map: map, position: pos, title: m.t });
+        var marker = new kakao.maps.Marker({ map: map, position: pos, title: m.t, image: markerImage });
         kakao.maps.event.addListener(marker, 'click', function() {
           map.setCenter(pos);
           showTooltip(m, pos);
