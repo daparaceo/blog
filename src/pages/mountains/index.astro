@@ -138,23 +138,30 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
   </div>
 
   <!-- 툴팁 -->
-  <div id="tooltip" class="fixed z-50 hidden bg-white rounded-xl shadow-xl border border-gray-100 p-4 w-72 max-w-[90vw]">
-    <button id="tooltip-close" class="absolute top-2 right-3 text-gray-400 hover:text-gray-600 text-lg leading-none">&times;</button>
-    <h2 id="tt-name" class="text-base font-bold text-gray-900 pr-5"></h2>
-    <p id="tt-addr" class="text-xs text-gray-500 mt-0.5"></p>
-    <div class="flex items-center gap-3 mt-2 text-xs text-gray-600">
+  <div id="tooltip" class="fixed z-50 hidden bg-white rounded-lg shadow-lg border border-gray-100 p-3 w-56 max-w-[85vw]">
+    <button id="tooltip-close" class="absolute top-1.5 right-2.5 text-gray-400 hover:text-gray-600 text-base leading-none">&times;</button>
+    <h2 id="tt-name" class="text-sm font-bold text-gray-900 pr-5 leading-tight"></h2>
+    <p id="tt-addr" class="text-xs text-gray-400 mt-0.5 leading-tight"></p>
+    <div class="flex items-center gap-2 mt-1 text-xs text-gray-500">
       <span id="tt-height" class="font-medium"></span>
-      <span id="tt-gps" class="text-gray-400"></span>
+      <span id="tt-gps" class="text-gray-300 text-[10px]"></span>
     </div>
-    <div class="mt-3 flex gap-2">
-      <a id="tt-naver" href="#" target="_blank"
-        class="flex-1 text-center text-xs font-medium px-3 py-2 rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors">
-        네이버 지도에서 보기
-      </a>
-      <a id="tt-nmap" href="#"
-        class="flex-1 text-center text-xs font-medium px-3 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors">
-        위치 저장
-      </a>
+    <div class="mt-2 flex items-center gap-2">
+      <span class="text-[10px] text-gray-400">지도 앱으로 보기</span>
+      <div class="flex gap-1.5 ml-auto">
+        <!-- 네이버 -->
+        <button id="tt-naver" title="네이버 지도" class="w-8 h-8 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#03C75A">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M13.35 12.77L10.43 8H8v8h2.65l2.92-4.77L16 16h2.43V8H16z"/></svg>
+        </button>
+        <!-- 카카오맵 -->
+        <button id="tt-kakao" title="카카오맵" class="w-8 h-8 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#FEE500">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#3A1D1D"><path d="M12 3C7.03 3 3 6.36 3 10.5c0 2.67 1.63 5.01 4.1 6.37l-1.05 3.88 4.54-2.96c.46.06.93.09 1.41.09 4.97 0 9-3.36 9-7.5S16.97 3 12 3z"/></svg>
+        </button>
+        <!-- 구글맵 -->
+        <button id="tt-google" title="구글 지도" class="w-8 h-8 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#4285F4">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -171,8 +178,6 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     var ttAddr = document.getElementById('tt-addr');
     var ttHeight = document.getElementById('tt-height');
     var ttGps = document.getElementById('tt-gps');
-    var ttNaver = document.getElementById('tt-naver');
-    var ttNmap = document.getElementById('tt-nmap');
     document.getElementById('tooltip-close').addEventListener('click', function() {
       tooltip.classList.add('hidden');
     });
@@ -182,20 +187,33 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       }
     });
 
-    function showTooltip(m, markerPos) {
+    function showTooltip(m) {
       ttName.textContent = m.t;
       ttAddr.textContent = m.a;
       ttHeight.textContent = m.h + 'm';
-      ttGps.textContent = m.lat.toFixed(5) + ', ' + m.lng.toFixed(5);
+      ttGps.textContent = m.lat.toFixed(4) + ', ' + m.lng.toFixed(4);
 
-      var naverUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent(m.t);
-      ttNaver.href = naverUrl;
+      var isAndroid = /Android/i.test(navigator.userAgent);
+      var isIOS = /iPhone|iPad/i.test(navigator.userAgent);
+      var isMobileUA = isAndroid || isIOS;
+      var name = encodeURIComponent(m.t);
 
-      var nmapUrl = 'nmap://place?lat=' + m.lat + '&lng=' + m.lng + '&name=' + encodeURIComponent(m.t) + '&appname=com.daparapara.blog';
-      ttNmap.onclick = function(e) {
-        e.preventDefault();
-        var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-        window.location.href = isMobile ? nmapUrl : naverUrl;
+      document.getElementById('tt-naver').onclick = function() {
+        window.location.href = isMobileUA
+          ? 'nmap://place?lat=' + m.lat + '&lng=' + m.lng + '&name=' + name + '&appname=com.daparapara.blog'
+          : 'https://map.naver.com/v5/search/' + name;
+      };
+      document.getElementById('tt-kakao').onclick = function() {
+        window.location.href = isMobileUA
+          ? 'kakaomap://look?p=' + m.lat + ',' + m.lng
+          : 'https://map.kakao.com/link/map/' + name + ',' + m.lat + ',' + m.lng;
+      };
+      document.getElementById('tt-google').onclick = function() {
+        window.location.href = isAndroid
+          ? 'geo:' + m.lat + ',' + m.lng + '?q=' + name
+          : isIOS
+            ? 'comgooglemaps://?q=' + m.lat + ',' + m.lng
+            : 'https://www.google.com/maps/search/?q=' + m.lat + ',' + m.lng;
       };
 
       var btnRect = document.getElementById('reset-view').getBoundingClientRect();
@@ -220,9 +238,9 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         '<span class="text-xs text-gray-400 ml-2 flex-shrink-0">' + m.h + 'm</span>';
       li.addEventListener('click', function(e) {
         e.stopPropagation();
-        if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); }
+        if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); map.setLevel(9); }
         if (selectMarkerFn && markers[i]) selectMarkerFn(i);
-        showTooltip(m, null);
+        showTooltip(m);
       });
       listEl.appendChild(li);
     });
@@ -291,7 +309,8 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         var clickHandler = function() {
           selectMarkerFn(i);
           map.setCenter(pos);
-          showTooltip(m, pos);
+          map.setLevel(9);
+          showTooltip(m);
         };
         kakao.maps.event.addListener(normalMarker, 'click', clickHandler);
         kakao.maps.event.addListener(activeMarker, 'click', clickHandler);
