@@ -123,18 +123,20 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       <h1 class="text-sm font-bold text-gray-800">블랙야크 명산100</h1>
       <span id="mountain-count-mob" class="text-xs text-gray-500"></span>
     </div>
-    <input
-      id="search-mob"
-      type="text"
-      placeholder="산 이름 검색..."
-      class="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-sky-400 mb-1.5"
-    />
-    <div id="filter-chips-mob" class="flex gap-1.5 overflow-x-auto pb-1.5 scrollbar-hide"></div>
-    <div class="flex gap-1">
-      <button data-sort="name"     class="sort-btn flex-1 text-xs py-1 rounded border transition-colors bg-sky-500 text-white border-sky-500">이름순</button>
-      <button data-sort="height"   class="sort-btn flex-1 text-xs py-1 rounded border transition-colors bg-white text-gray-600 border-gray-200">높이순</button>
-      <button data-sort="distance" class="sort-btn flex-1 text-xs py-1 rounded border transition-colors bg-white text-gray-600 border-gray-200">거리순</button>
+    <div class="flex gap-2 mb-1.5">
+      <input
+        id="search-mob"
+        type="text"
+        placeholder="산 이름 검색..."
+        class="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-sky-400"
+      />
+      <select id="sort-select-mob" class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-400 bg-white text-gray-700 flex-shrink-0">
+        <option value="name">이름순</option>
+        <option value="height">높이순</option>
+        <option value="distance">거리순</option>
+      </select>
     </div>
+    <div id="filter-chips-mob" class="flex gap-1.5 overflow-x-auto scrollbar-hide"></div>
   </div>
 
   <!-- 지도 + 목록 -->
@@ -154,18 +156,20 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
           <h1 class="text-base font-bold text-gray-800">블랙야크 명산100</h1>
           <span id="mountain-count" class="text-xs text-gray-500"></span>
         </div>
-        <input
-          id="search"
-          type="text"
-          placeholder="산 이름 검색..."
-          class="mt-2 w-full px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-sky-400"
-        />
-        <div id="filter-chips" class="flex gap-1.5 overflow-x-auto py-2 scrollbar-hide"></div>
-        <div class="flex gap-1 pb-1">
-          <button data-sort="name"     class="sort-btn flex-1 text-xs py-1 rounded border transition-colors bg-sky-500 text-white border-sky-500">이름순</button>
-          <button data-sort="height"   class="sort-btn flex-1 text-xs py-1 rounded border transition-colors bg-white text-gray-600 border-gray-200">높이순</button>
-          <button data-sort="distance" class="sort-btn flex-1 text-xs py-1 rounded border transition-colors bg-white text-gray-600 border-gray-200">거리순</button>
+        <div class="flex gap-2 mt-2">
+          <input
+            id="search"
+            type="text"
+            placeholder="산 이름 검색..."
+            class="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-sky-400"
+          />
+          <select id="sort-select" class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-sky-400 bg-white text-gray-700 flex-shrink-0">
+            <option value="name">이름순</option>
+            <option value="height">높이순</option>
+            <option value="distance">거리순</option>
+          </select>
         </div>
+        <div id="filter-chips" class="flex gap-1.5 overflow-x-auto py-2 scrollbar-hide"></div>
       </div>
       <ul id="mountain-list" class="overflow-y-auto flex-1 divide-y divide-gray-100"></ul>
     </div>
@@ -296,13 +300,9 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
           (active ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-gray-600 border-gray-200');
       });
     }
-    // 정렬 버튼 업데이트 (모바일 + PC 동시)
-    function updateSortBtns() {
-      document.querySelectorAll('.sort-btn').forEach(function(b) {
-        var active = b.dataset.sort === currentSort;
-        b.className = 'sort-btn flex-1 text-xs py-1 rounded border transition-colors ' +
-          (active ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-gray-600 border-gray-200');
-      });
+    // 정렬 select 동기화
+    function updateSortSelects() {
+      document.querySelectorAll('.sort-select').forEach(function(s) { s.value = currentSort; });
     }
 
     // 목록 렌더링
@@ -374,15 +374,20 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       });
     });
 
-    // 정렬 버튼 이벤트
-    document.querySelectorAll('.sort-btn').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        currentSort = btn.dataset.sort;
-        updateSortBtns();
+    // 정렬 select 이벤트 (모바일/PC 동기화)
+    function bindSortSelect(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('sort-select');
+      el.addEventListener('change', function() {
+        currentSort = el.value;
+        updateSortSelects();
         if (currentSort === 'distance') requestLocation();
         else renderList();
       });
-    });
+    }
+    bindSortSelect('sort-select');
+    bindSortSelect('sort-select-mob');
 
     // 검색 (모바일/PC 동기화)
     function syncSearch(srcId, dstId) {
