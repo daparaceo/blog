@@ -198,25 +198,12 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         window.location.href = isMobile ? nmapUrl : naverUrl;
       };
 
+      var btnRect = document.getElementById('reset-view').getBoundingClientRect();
+      tooltip.style.top = (btnRect.bottom + 8) + 'px';
+      tooltip.style.right = (window.innerWidth - btnRect.right) + 'px';
+      tooltip.style.left = 'auto';
+      tooltip.style.transform = '';
       tooltip.classList.remove('hidden');
-
-      if (markerPos && map) {
-        var proj = map.getProjection();
-        var point = proj.pointFromCoords(markerPos);
-        var rect = mapEl.getBoundingClientRect();
-        var top = rect.top + point.y - 180;
-        var left = rect.left + point.x - 144;
-        if (top < 8) top = rect.top + point.y + 16;
-        if (left < 8) left = 8;
-        if (left + 288 > window.innerWidth - 8) left = window.innerWidth - 296;
-        tooltip.style.top = top + 'px';
-        tooltip.style.left = left + 'px';
-        tooltip.style.transform = '';
-      } else {
-        tooltip.style.top = '50%';
-        tooltip.style.left = '50%';
-        tooltip.style.transform = 'translate(-50%,-50%)';
-      }
     }
 
     // 목록은 SDK와 무관하게 즉시 생성
