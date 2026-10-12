@@ -261,10 +261,8 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     }
 
     var script = document.createElement('script');
-    script.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + kakaoKey + '&autoload=false';
-    script.onload = function() {
-      kakao.maps.load(initMap);
-    };
+    script.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + kakaoKey;
+    script.onload = initMap;
     document.head.appendChild(script);
   })();
   </script>
