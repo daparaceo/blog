@@ -249,11 +249,20 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       document.getElementById('tt-google').onclick = function() {
         window.open('https://www.google.com/maps/search/?q=' + m.lat + ',' + m.lng, '_blank');
       };
-      var btnRect = document.getElementById('reset-view').getBoundingClientRect();
-      tooltip.style.top = (btnRect.bottom + 8) + 'px';
-      tooltip.style.right = (window.innerWidth - btnRect.right) + 'px';
-      tooltip.style.left = 'auto';
-      tooltip.style.transform = '';
+      var mapRect = document.getElementById('map').getBoundingClientRect();
+      var isMobile = window.innerWidth < 1024;
+      if (isMobile) {
+        tooltip.style.top = Math.max(8, mapRect.top + 8) + 'px';
+        tooltip.style.right = '8px';
+        tooltip.style.left = 'auto';
+        tooltip.style.transform = '';
+      } else {
+        var rightOff = (window.innerWidth - mapRect.right) + 8;
+        tooltip.style.top = (mapRect.top + 50) + 'px';
+        tooltip.style.right = rightOff + 'px';
+        tooltip.style.left = 'auto';
+        tooltip.style.transform = '';
+      }
       tooltip.classList.remove('hidden');
     }
 
@@ -302,6 +311,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
           '<span class="text-xs text-gray-400 ml-2 flex-shrink-0">' + rightText + '</span>';
         li.addEventListener('click', function(e) {
           e.stopPropagation();
+          if (window.innerWidth < 1024) window.scrollTo({ top: 0, behavior: 'smooth' });
           if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); map.setLevel(9); }
           if (selectMarkerFn && markers[i]) selectMarkerFn(i);
           showTooltip(m);
