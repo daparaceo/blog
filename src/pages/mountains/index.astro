@@ -110,14 +110,15 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
 <BaseLayout
   title="블랙야크 명산 100"
   description="블랙야크 명산100 챌린지 산 목록과 위치를 지도에서 확인하세요. 각 산의 위치를 네이버 지도에 저장할 수 있습니다."
+  noPadding={true}
 >
   <Fragment set:html={`<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}"><\/script>`} slot="head" />
-  <div class="flex flex-col lg:flex-row h-[calc(100vh-4rem)] overflow-hidden">
+  <div class="flex flex-col lg:flex-row h-[calc(100dvh-var(--header-h,4rem))] lg:h-[calc(100vh-4rem)] overflow-hidden">
 
     <!-- 지도 영역 -->
-    <div class="relative w-full lg:w-2/3 h-[45vh] lg:h-full z-0">
+    <div class="relative w-full lg:w-2/3 flex-shrink-0 h-[55dvh] lg:h-full lg:flex-shrink z-0">
       <div id="map" class="w-full h-full"></div>
-      <button id="reset-view" class="absolute top-2 right-2 z-10 bg-white text-xs font-medium px-2.5 py-1 rounded shadow-md border border-gray-200 hover:bg-gray-50 transition-colors">전체</button>
+      <button id="reset-view" class="absolute top-2 right-2 z-10 bg-white text-xs font-medium px-2.5 py-1.5 rounded shadow-md border border-gray-200 hover:bg-gray-50 transition-colors">전체</button>
     </div>
 
     <!-- 목록 패널 -->

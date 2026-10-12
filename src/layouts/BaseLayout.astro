@@ -17,6 +17,7 @@ interface Props {
   isArticle?: boolean;
   publishedDate?: string;
   noindex?: boolean;
+  noPadding?: boolean;
 }
 
 const {
@@ -26,6 +27,7 @@ const {
   isArticle = false,
   publishedDate,
   noindex = false,
+  noPadding = false,
 } = Astro.props;
 
 const SITE_NAME = 'daparapara';           // ← 블로그 이름 (변경 가능)
@@ -175,7 +177,7 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
   </div>
 
   <!-- 메인 콘텐츠 -->
-  <main class="flex-grow max-w-3xl mx-auto w-full px-4 py-10">
+  <main class={noPadding ? 'flex-grow overflow-hidden' : 'flex-grow max-w-3xl mx-auto w-full px-4 py-10'}>
     <slot />
   </main>
 
