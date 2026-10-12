@@ -221,7 +221,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       li.addEventListener('click', function(e) {
         e.stopPropagation();
         if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); }
-        if (selectMarkerFn && markers[i]) selectMarkerFn(markers[i]);
+        if (selectMarkerFn && markers[i]) selectMarkerFn(i);
         showTooltip(m, null);
       });
       listEl.appendChild(li);
@@ -272,22 +272,29 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         ), mkSize, mkOpt
       );
 
-      var selectedMarker = null;
-      selectMarkerFn = function(marker) {
-        if (selectedMarker) selectedMarker.setImage(normalImage);
-        marker.setImage(activeImage);
-        selectedMarker = marker;
+      var selectedIdx = null;
+      selectMarkerFn = function(idx) {
+        if (selectedIdx !== null) {
+          markers[selectedIdx].active.setMap(null);
+          markers[selectedIdx].normal.setMap(map);
+        }
+        markers[idx].normal.setMap(null);
+        markers[idx].active.setMap(map);
+        selectedIdx = idx;
       };
 
       mountains.forEach(function(m, i) {
         var pos = new kakao.maps.LatLng(m.lat, m.lng);
-        var marker = new kakao.maps.Marker({ map: map, position: pos, title: m.t, image: normalImage });
-        markers[i] = marker;
-        kakao.maps.event.addListener(marker, 'click', function() {
-          selectMarkerFn(marker);
+        var normalMarker = new kakao.maps.Marker({ map: map, position: pos, title: m.t, image: normalImage });
+        var activeMarker = new kakao.maps.Marker({ position: pos, title: m.t, image: activeImage });
+        markers[i] = { normal: normalMarker, active: activeMarker };
+        var clickHandler = function() {
+          selectMarkerFn(i);
           map.setCenter(pos);
           showTooltip(m, pos);
-        });
+        };
+        kakao.maps.event.addListener(normalMarker, 'click', clickHandler);
+        kakao.maps.event.addListener(activeMarker, 'click', clickHandler);
       });
     }
 
