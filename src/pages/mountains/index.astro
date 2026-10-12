@@ -221,6 +221,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       li.addEventListener('click', function(e) {
         e.stopPropagation();
         if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); map.setLevel(5); }
+        if (selectMarkerFn && markers[i]) selectMarkerFn(markers[i]);
         showTooltip(m, null);
       });
       listEl.appendChild(li);
@@ -234,6 +235,9 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         li.style.display = visible ? '' : 'none';
       });
     });
+
+    var markers = [];
+    var selectMarkerFn = null;
 
     var isMobile = window.innerWidth < 1024;
     var DEFAULT_LAT = isMobile ? 36.8 : 36.5;
@@ -253,21 +257,34 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         tooltip.classList.add('hidden');
       });
 
-      var svgIcon = 'data:image/svg+xml,' + encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">' +
-        '<circle cx="9" cy="9" r="7" fill="#0ea5e9" stroke="white" stroke-width="2"/>' +
-        '</svg>'
+      var mkSize = new kakao.maps.Size(18, 18);
+      var mkOpt = { offset: new kakao.maps.Point(9, 9) };
+      var normalImage = new kakao.maps.MarkerImage(
+        'data:image/svg+xml,' + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">' +
+          '<circle cx="9" cy="9" r="7" fill="#0ea5e9" stroke="white" stroke-width="2"/></svg>'
+        ), mkSize, mkOpt
       );
-      var markerImage = new kakao.maps.MarkerImage(
-        svgIcon,
-        new kakao.maps.Size(18, 18),
-        { offset: new kakao.maps.Point(9, 9) }
+      var activeImage = new kakao.maps.MarkerImage(
+        'data:image/svg+xml,' + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">' +
+          '<circle cx="9" cy="9" r="7" fill="#0c4a6e" stroke="white" stroke-width="2"/></svg>'
+        ), mkSize, mkOpt
       );
 
-      mountains.forEach(function(m) {
+      var selectedMarker = null;
+      selectMarkerFn = function(marker) {
+        if (selectedMarker) selectedMarker.setImage(normalImage);
+        marker.setImage(activeImage);
+        selectedMarker = marker;
+      };
+
+      mountains.forEach(function(m, i) {
         var pos = new kakao.maps.LatLng(m.lat, m.lng);
-        var marker = new kakao.maps.Marker({ map: map, position: pos, title: m.t, image: markerImage });
+        var marker = new kakao.maps.Marker({ map: map, position: pos, title: m.t, image: normalImage });
+        markers[i] = marker;
         kakao.maps.event.addListener(marker, 'click', function() {
+          selectMarkerFn(marker);
           map.setCenter(pos);
           showTooltip(m, pos);
         });
