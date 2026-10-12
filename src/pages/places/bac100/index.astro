@@ -261,7 +261,12 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     function renderList() {
       var q = document.getElementById('search').value.trim();
       var filtered = mountains.filter(function(m) {
-        var matchFilter = currentFilter === '전체' || getProvince(m.a) === currentFilter;
+        var activeGroup = null;
+        for (var gi = 0; gi < filterGroups.length; gi++) {
+          if (filterGroups[gi].label === currentFilter) { activeGroup = filterGroups[gi]; break; }
+        }
+        var matchFilter = !activeGroup || !activeGroup.provinces ||
+          activeGroup.provinces.indexOf(getProvince(m.a)) !== -1;
         var matchSearch = !q || m.t.indexOf(q) !== -1 || m.a.indexOf(q) !== -1;
         return matchFilter && matchSearch;
       });
@@ -347,34 +352,36 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       );
     }
 
-    // 시/도 필터 칩 생성
-    var provinces = ['전체'];
-    mountains.forEach(function(m) {
-      var p = getProvince(m.a);
-      if (provinces.indexOf(p) === -1) provinces.push(p);
-    });
-    provinces.sort(function(a, b) {
-      if (a === '전체') return -1;
-      if (b === '전체') return 1;
-      return a.localeCompare(b, 'ko');
-    });
+    // 시/도 필터 그룹 (광역시는 인접 도에 포함)
+    var filterGroups = [
+      { label: '전체',      provinces: null },
+      { label: '강원',      provinces: ['강원'] },
+      { label: '경기·서울', provinces: ['경기', '서울', '인천'] },
+      { label: '경남',      provinces: ['경남', '울산', '부산'] },
+      { label: '경북',      provinces: ['경북', '대구'] },
+      { label: '전남',      provinces: ['전남', '광주'] },
+      { label: '전북',      provinces: ['전북'] },
+      { label: '제주',      provinces: ['제주'] },
+      { label: '충남',      provinces: ['충남'] },
+      { label: '충북',      provinces: ['충북'] },
+    ];
 
     var filterEl = document.getElementById('filter-chips');
     function updateFilterChips() {
       filterEl.querySelectorAll('.filter-chip').forEach(function(c) {
-        var active = c.dataset.province === currentFilter;
+        var active = c.dataset.label === currentFilter;
         c.className = 'filter-chip flex-shrink-0 text-xs px-2.5 py-1 rounded-full border transition-colors ' +
           (active ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-gray-600 border-gray-200 hover:border-sky-300');
       });
     }
-    provinces.forEach(function(p) {
+    filterGroups.forEach(function(g) {
       var btn = document.createElement('button');
-      btn.textContent = p;
-      btn.dataset.province = p;
+      btn.textContent = g.label;
+      btn.dataset.label = g.label;
       btn.className = 'filter-chip flex-shrink-0 text-xs px-2.5 py-1 rounded-full border transition-colors ' +
-        (p === '전체' ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-gray-600 border-gray-200 hover:border-sky-300');
+        (g.label === '전체' ? 'bg-sky-500 text-white border-sky-500' : 'bg-white text-gray-600 border-gray-200 hover:border-sky-300');
       btn.addEventListener('click', function() {
-        currentFilter = p;
+        currentFilter = g.label;
         updateFilterChips();
         renderList();
       });
