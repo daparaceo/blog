@@ -48,10 +48,8 @@ jobs:
       - name: Build with Astro
         run: npm run build
         env:
-          # GitHub Pages 기본 URL 자동 주입 (커스텀 도메인 없을 때 사용)
-          # SITE: ${{ steps.pages.outputs.origin }}
-          # BASE_PATH: ${{ steps.pages.outputs.base_path }}
           NODE_ENV: production
+          KAKAO_JAVASCRIPT_KEY: ${{ secrets.KAKAO_JAVASCRIPT_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

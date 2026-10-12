@@ -103,6 +103,7 @@ const mountains = [
   {t:"황악산(김천)",a:"경북 김천시 대항면",lat:36.118076,lng:127.966822,h:"1,111"},
 ];
 
+const kakaoKey = import.meta.env.KAKAO_JAVASCRIPT_KEY ?? '';
 const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/script>');
 ---
 
@@ -110,12 +111,10 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
   title="블랙야크 명산 100"
   description="블랙야크 명산100 챌린지 산 목록과 위치를 지도에서 확인하세요. 각 산의 위치를 네이버 지도에 저장할 수 있습니다."
 >
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" slot="head" />
-
   <div class="flex flex-col lg:flex-row h-[calc(100vh-4rem)] overflow-hidden">
 
     <!-- 지도 영역 -->
-    <div id="map" class="w-full lg:w-2/3 h-64 lg:h-full z-0"></div>
+    <div id="map" class="w-full lg:w-2/3 h-[45vh] lg:h-full z-0"></div>
 
     <!-- 목록 패널 -->
     <div class="w-full lg:w-1/3 flex flex-col border-t lg:border-t-0 lg:border-l border-gray-200 overflow-hidden">
@@ -154,23 +153,17 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     </div>
   </div>
 
-  <Fragment set:html={`<script>window.__M__=${mountainsJson};<\/script>`} />
+  <Fragment set:html={`<script>window.__M__=${mountainsJson};window.__KK__='${kakaoKey}';<\/script>`} />
   <script is:inline>
   (function() {
     var mountains = window.__M__;
+    var kakaoKey = window.__KK__;
 
     function initMap() {
-      var map = L.map('map', { zoomControl: true }).setView([36.5, 127.8], 7);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 18,
-      }).addTo(map);
-
-      var markerIcon = L.divIcon({
-        className: '',
-        html: '<div style="width:10px;height:10px;background:#0ea5e9;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>',
-        iconSize: [10, 10],
-        iconAnchor: [5, 5],
+      var mapEl = document.getElementById('map');
+      var map = new kakao.maps.Map(mapEl, {
+        center: new kakao.maps.LatLng(36.5, 127.8),
+        level: 8,
       });
 
       var tooltip = document.getElementById('tooltip');
@@ -180,9 +173,11 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       var ttGps = document.getElementById('tt-gps');
       var ttNaver = document.getElementById('tt-naver');
       var ttNmap = document.getElementById('tt-nmap');
-      document.getElementById('tooltip-close').addEventListener('click', function() { tooltip.classList.add('hidden'); });
+      document.getElementById('tooltip-close').addEventListener('click', function() {
+        tooltip.classList.add('hidden');
+      });
 
-      function showTooltip(m, fromMarker) {
+      function showTooltip(m, markerPos) {
         ttName.textContent = m.t;
         ttAddr.textContent = m.a;
         ttHeight.textContent = m.h + 'm';
@@ -192,22 +187,17 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         ttNaver.href = naverUrl;
 
         var nmapUrl = 'nmap://place?lat=' + m.lat + '&lng=' + m.lng + '&name=' + encodeURIComponent(m.t) + '&appname=com.daparapara.blog';
-        ttNmap.href = nmapUrl;
         ttNmap.onclick = function(e) {
           e.preventDefault();
           var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-          if (isMobile) {
-            window.location.href = nmapUrl;
-          } else {
-            window.open(naverUrl, '_blank');
-          }
+          window.location.href = isMobile ? nmapUrl : naverUrl;
         };
 
         tooltip.classList.remove('hidden');
 
-        if (fromMarker) {
-          var point = map.latLngToContainerPoint([m.lat, m.lng]);
-          var mapEl = document.getElementById('map');
+        if (markerPos) {
+          var proj = map.getProjection();
+          var point = proj.pointFromCoords(markerPos);
           var rect = mapEl.getBoundingClientRect();
           var top = rect.top + point.y - 180;
           var left = rect.left + point.x - 144;
@@ -225,12 +215,18 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       }
 
       var listEl = document.getElementById('mountain-list');
+      var markerImage = new kakao.maps.MarkerImage(
+        'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
+        new kakao.maps.Size(24, 35)
+      );
 
       mountains.forEach(function(m, i) {
-        var marker = L.marker([m.lat, m.lng], { icon: markerIcon }).addTo(map);
-        marker.on('click', function() {
-          showTooltip(m, true);
-          map.setView([m.lat, m.lng], Math.max(map.getZoom(), 10));
+        var pos = new kakao.maps.LatLng(m.lat, m.lng);
+        var marker = new kakao.maps.Marker({ map: map, position: pos, title: m.t });
+
+        kakao.maps.event.addListener(marker, 'click', function() {
+          map.setCenter(pos);
+          showTooltip(m, pos);
         });
 
         var li = document.createElement('li');
@@ -244,8 +240,9 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
           '<span class="text-xs text-gray-400 ml-2 flex-shrink-0">' + m.h + 'm</span>';
         li.addEventListener('click', function(e) {
           e.stopPropagation();
-          map.setView([m.lat, m.lng], 12);
-          showTooltip(m, false);
+          map.setCenter(pos);
+          map.setLevel(5);
+          showTooltip(m, null);
         });
         listEl.appendChild(li);
       });
@@ -267,8 +264,10 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     }
 
     var script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
-    script.onload = initMap;
+    script.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + kakaoKey + '&autoload=false';
+    script.onload = function() {
+      kakao.maps.load(initMap);
+    };
     document.head.appendChild(script);
   })();
   </script>
