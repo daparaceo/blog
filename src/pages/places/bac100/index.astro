@@ -449,7 +449,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         map.setLevel(DEFAULT_LEVEL);
       } else {
         map.setBounds(bounds);
-        setTimeout(function() { map.setLevel(map.getLevel() + 1); }, 50);
+        setTimeout(function() { map.setLevel(DEFAULT_LEVEL + 1); }, 50);
       }
     }
 
