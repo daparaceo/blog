@@ -111,6 +111,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
   title="블랙야크 명산 100"
   description="블랙야크 명산100 챌린지 산 목록과 위치를 지도에서 확인하세요. 각 산의 위치를 네이버 지도에 저장할 수 있습니다."
 >
+  <Fragment set:html={`<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}"><\/script>`} slot="head" />
   <div class="flex flex-col lg:flex-row h-[calc(100vh-4rem)] overflow-hidden">
 
     <!-- 지도 영역 -->
@@ -260,10 +261,11 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       });
     }
 
-    var script = document.createElement('script');
-    script.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=' + kakaoKey;
-    script.onload = initMap;
-    document.head.appendChild(script);
+    if (typeof kakao !== 'undefined') {
+      initMap();
+    } else {
+      window.addEventListener('load', initMap);
+    }
   })();
   </script>
 </BaseLayout>
