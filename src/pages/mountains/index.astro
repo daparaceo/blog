@@ -151,7 +151,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       <div class="flex gap-1.5 ml-auto">
         <!-- 네이버 -->
         <button id="tt-naver" title="네이버 지도" class="w-6 h-6 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#03C75A">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M13.35 12.77L10.43 8H8v8h2.65l2.92-4.77L16 16h2.43V8H16z"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M13.35 12.77L10.43 8H8v8h2.65l2.92-4.77L16 16h2.43V8H16z"/></svg>
         </button>
         <!-- 카카오맵 -->
         <button id="tt-kakao" title="카카오맵" class="w-6 h-6 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity" style="background:#FEE500">
@@ -210,27 +210,16 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       ttHeight.textContent = m.h + 'm';
       ttGps.textContent = m.lat.toFixed(4) + ', ' + m.lng.toFixed(4);
 
-      var isAndroid = /Android/i.test(navigator.userAgent);
-      var isIOS = /iPhone|iPad/i.test(navigator.userAgent);
-      var isMobileUA = isAndroid || isIOS;
       var name = encodeURIComponent(sn);
 
       document.getElementById('tt-naver').onclick = function() {
-        window.location.href = isMobileUA
-          ? 'nmap://place?lat=' + m.lat + '&lng=' + m.lng + '&name=' + name + '&appname=com.daparapara.blog'
-          : 'https://map.naver.com/v5/search/' + name;
+        window.open('https://map.naver.com/v5/search/' + name, '_blank');
       };
       document.getElementById('tt-kakao').onclick = function() {
-        window.location.href = isMobileUA
-          ? 'kakaomap://look?p=' + m.lat + ',' + m.lng
-          : 'https://map.kakao.com/link/map/' + name + ',' + m.lat + ',' + m.lng;
+        window.open('https://map.kakao.com/link/map/' + name + ',' + m.lat + ',' + m.lng, '_blank');
       };
       document.getElementById('tt-google').onclick = function() {
-        window.location.href = isAndroid
-          ? 'geo:' + m.lat + ',' + m.lng + '?q=' + name
-          : isIOS
-            ? 'comgooglemaps://?q=' + m.lat + ',' + m.lng
-            : 'https://www.google.com/maps/search/?q=' + m.lat + ',' + m.lng;
+        window.open('https://www.google.com/maps/search/?q=' + m.lat + ',' + m.lng, '_blank');
       };
 
       var btnRect = document.getElementById('reset-view').getBoundingClientRect();
