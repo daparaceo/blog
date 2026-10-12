@@ -250,7 +250,18 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       document.getElementById('tt-height').textContent = '해발 ' + m.h + 'm';
       var name = encodeURIComponent(sn);
       document.getElementById('tt-naver').onclick = function(e) { e.stopPropagation(); window.open('https://map.naver.com/p/?c=' + m.lng + ',' + m.lat + ',15,0,0,0,dh', '_blank'); };
-      document.getElementById('tt-kakao').onclick = function(e) { e.stopPropagation(); window.open('https://map.kakao.com/link/map/' + name + ',' + m.lat + ',' + m.lng, '_blank'); };
+      document.getElementById('tt-kakao').onclick = function(e) {
+        e.stopPropagation();
+        var webUrl = 'https://map.kakao.com/link/map/' + name + ',' + m.lat + ',' + m.lng;
+        var appUrl = 'kakaomap://look?p=' + m.lat + ',' + m.lng;
+        if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+          var t = setTimeout(function() { window.open(webUrl, '_blank'); }, 1200);
+          window.addEventListener('blur', function() { clearTimeout(t); }, { once: true });
+          window.location.href = appUrl;
+        } else {
+          window.open(webUrl, '_blank');
+        }
+      };
       document.getElementById('tt-google').onclick = function(e) { e.stopPropagation(); window.open('https://maps.google.com/?q=' + m.lat + ',' + m.lng, '_blank'); };
       var mapRect = document.getElementById('map').getBoundingClientRect();
       var isMob = window.innerWidth < 1024;
