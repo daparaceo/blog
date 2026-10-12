@@ -145,7 +145,6 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     <!-- 지도 -->
     <div class="relative w-full lg:w-2/3 flex-shrink-0 h-[45dvh] lg:h-full lg:flex-shrink z-0">
       <div id="map" class="w-full h-full"></div>
-      <button id="reset-view" class="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white text-gray-700 text-xs font-medium px-2.5 py-1 rounded shadow border border-gray-200 transition-colors">전체</button>
     </div>
 
     <!-- 목록 패널 -->
@@ -518,15 +517,6 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       });
       if (userLat !== null) placeMyMarker(userLat, userLng, false);
     }
-
-    // 전체 버튼
-    document.getElementById('reset-view').addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (!map) return;
-      map.setCenter(new kakao.maps.LatLng(DEFAULT_LAT, DEFAULT_LNG));
-      map.setLevel(DEFAULT_LEVEL);
-      hideTooltip();
-    });
 
     // 초기 실행
     renderList();
