@@ -182,7 +182,7 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
   </main>
 
   <!-- 푸터 -->
-  <footer class="border-t border-gray-200 mt-auto">
+  <footer class={`border-t border-gray-200 mt-auto${noPadding ? ' hidden lg:block' : ''}`}>
     <div class="max-w-3xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
       <p>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</p>
       <p class="mt-1 text-gray-400">오래가는 가치를 만듭니다.</p>

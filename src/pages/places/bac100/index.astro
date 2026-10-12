@@ -171,7 +171,18 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         </div>
         <div id="filter-chips" class="flex gap-1.5 overflow-x-auto py-2 scrollbar-hide"></div>
       </div>
-      <ul id="mountain-list" class="overflow-y-auto flex-1 divide-y divide-gray-100"></ul>
+      <div class="overflow-y-auto flex-1">
+        <ul id="mountain-list" class="divide-y divide-gray-100"></ul>
+        <footer class="lg:hidden border-t border-gray-200 px-4 py-6 text-center text-sm text-gray-500">
+          <p>&copy; {new Date().getFullYear()} daparapara. All rights reserved.</p>
+          <p class="mt-1 text-gray-400 text-xs">오래가는 가치를 만듭니다.</p>
+          <p class="mt-2 text-xs">
+            <a href="/privacy/" class="hover:text-sky-600 underline">개인정보처리방침</a>
+            &nbsp;·&nbsp;
+            <a href="/about/" class="hover:text-sky-600 underline">소개</a>
+          </p>
+        </footer>
+      </div>
     </div>
   </div>
 
