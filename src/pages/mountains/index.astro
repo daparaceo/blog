@@ -220,7 +220,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         '<span class="text-xs text-gray-400 ml-2 flex-shrink-0">' + m.h + 'm</span>';
       li.addEventListener('click', function(e) {
         e.stopPropagation();
-        if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); map.setLevel(5); }
+        if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); }
         if (selectMarkerFn && markers[i]) selectMarkerFn(markers[i]);
         showTooltip(m, null);
       });
