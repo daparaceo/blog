@@ -173,6 +173,22 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     var map = null;
     var mapEl = document.getElementById('map');
 
+    function extractCity(addr) {
+      var parts = addr.split(/\s+/);
+      for (var i = 0; i < parts.length; i++) {
+        var p = parts[i];
+        if (/[시군]$/.test(p) && !/광역시$/.test(p) && !/특별시$/.test(p) && !/특별자치시$/.test(p)) {
+          return p.replace(/[시군]$/, '');
+        }
+        if (/구$/.test(p) && i > 0) return p.replace(/구$/, '');
+      }
+      return parts[0];
+    }
+
+    function shortName(m) {
+      return m.t.replace(/\(.*?\)/, '').trim() + ' ' + extractCity(m.a);
+    }
+
     var tooltip = document.getElementById('tooltip');
     var ttName = document.getElementById('tt-name');
     var ttAddr = document.getElementById('tt-addr');
@@ -188,7 +204,8 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     });
 
     function showTooltip(m) {
-      ttName.textContent = m.t;
+      var sn = shortName(m);
+      ttName.textContent = sn;
       ttAddr.textContent = m.a;
       ttHeight.textContent = m.h + 'm';
       ttGps.textContent = m.lat.toFixed(4) + ', ' + m.lng.toFixed(4);
@@ -196,7 +213,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       var isAndroid = /Android/i.test(navigator.userAgent);
       var isIOS = /iPhone|iPad/i.test(navigator.userAgent);
       var isMobileUA = isAndroid || isIOS;
-      var name = encodeURIComponent(m.t);
+      var name = encodeURIComponent(sn);
 
       document.getElementById('tt-naver').onclick = function() {
         window.location.href = isMobileUA
@@ -232,7 +249,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       li.className = 'px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-sky-50 transition-colors';
       li.innerHTML =
         '<div>' +
-          '<span class="text-sm font-medium text-gray-800">' + m.t + '</span>' +
+          '<span class="text-sm font-medium text-gray-800">' + shortName(m) + '</span>' +
           '<span class="block text-xs text-gray-400 mt-0.5">' + m.a + '</span>' +
         '</div>' +
         '<span class="text-xs text-gray-400 ml-2 flex-shrink-0">' + m.h + 'm</span>';
