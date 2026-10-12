@@ -320,8 +320,8 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
 
       mountains.forEach(function(m, i) {
         var pos = new kakao.maps.LatLng(m.lat, m.lng);
-        var normalMarker = new kakao.maps.Marker({ map: map, position: pos, title: m.t, image: normalImage });
-        var activeMarker = new kakao.maps.Marker({ position: pos, title: m.t, image: activeImage });
+        var normalMarker = new kakao.maps.Marker({ map: map, position: pos, title: shortName(m), image: normalImage });
+        var activeMarker = new kakao.maps.Marker({ position: pos, title: shortName(m), image: activeImage });
         markers[i] = { normal: normalMarker, active: activeMarker };
         var clickHandler = function() {
           selectMarkerFn(i);
