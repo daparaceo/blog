@@ -179,6 +179,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     var map = null;
     var markers = [];
     var selectMarkerFn = null;
+    var selectedIdx = null;
     var myMarker = null;
     var userLat = null;
     var userLng = null;
@@ -376,6 +377,41 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       { label: '충북',      provinces: ['충북'] },
     ];
 
+    function applyFilterToMap() {
+      if (!map) return;
+      var activeGroup = null;
+      for (var gi = 0; gi < filterGroups.length; gi++) {
+        if (filterGroups[gi].label === currentFilter) { activeGroup = filterGroups[gi]; break; }
+      }
+      var bounds = new kakao.maps.LatLngBounds();
+      mountains.forEach(function(m, i) {
+        if (!markers[i]) return;
+        var visible = !activeGroup || !activeGroup.provinces ||
+          activeGroup.provinces.indexOf(getProvince(m.a)) !== -1;
+        if (visible) {
+          if (i === selectedIdx) {
+            markers[i].normal.setMap(null);
+            markers[i].active.setMap(map);
+          } else {
+            markers[i].normal.setMap(map);
+            markers[i].active.setMap(null);
+          }
+          bounds.extend(new kakao.maps.LatLng(m.lat, m.lng));
+        } else {
+          markers[i].normal.setMap(null);
+          markers[i].active.setMap(null);
+          if (i === selectedIdx) selectedIdx = null;
+        }
+      });
+      if (currentFilter === '전체') {
+        map.setCenter(new kakao.maps.LatLng(DEFAULT_LAT, DEFAULT_LNG));
+        map.setLevel(DEFAULT_LEVEL);
+      } else {
+        map.setBounds(bounds);
+        setTimeout(function() { map.setLevel(map.getLevel() + 1); }, 50);
+      }
+    }
+
     var filterEl = document.getElementById('filter-chips');
     function updateFilterChips() {
       filterEl.querySelectorAll('.filter-chip').forEach(function(c) {
@@ -394,6 +430,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         currentFilter = g.label;
         updateFilterChips();
         renderList();
+        applyFilterToMap();
       });
       filterEl.appendChild(btn);
     });
@@ -457,7 +494,6 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         ), mkSize, mkOpt
       );
 
-      var selectedIdx = null;
       selectMarkerFn = function(idx) {
         if (selectedIdx !== null) {
           markers[selectedIdx].active.setMap(null);
