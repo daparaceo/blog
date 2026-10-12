@@ -249,7 +249,7 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       document.getElementById('tt-addr').textContent = m.a;
       document.getElementById('tt-height').textContent = '해발 ' + m.h + 'm';
       var name = encodeURIComponent(sn);
-      document.getElementById('tt-naver').onclick = function(e) { e.stopPropagation(); window.open('https://map.naver.com/v5/search/' + name, '_blank'); };
+      document.getElementById('tt-naver').onclick = function(e) { e.stopPropagation(); window.open('https://map.naver.com/p/?c=' + m.lng + ',' + m.lat + ',15,0,0,0,dh', '_blank'); };
       document.getElementById('tt-kakao').onclick = function(e) { e.stopPropagation(); window.open('https://map.kakao.com/link/map/' + name + ',' + m.lat + ',' + m.lng, '_blank'); };
       document.getElementById('tt-google').onclick = function(e) { e.stopPropagation(); window.open('https://www.google.com/maps/search/?q=' + m.lat + ',' + m.lng, '_blank'); };
       var mapRect = document.getElementById('map').getBoundingClientRect();
