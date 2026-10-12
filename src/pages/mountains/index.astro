@@ -158,108 +158,105 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
   (function() {
     var mountains = window.__M__;
     var kakaoKey = window.__KK__;
+    var map = null;
+    var mapEl = document.getElementById('map');
 
+    var tooltip = document.getElementById('tooltip');
+    var ttName = document.getElementById('tt-name');
+    var ttAddr = document.getElementById('tt-addr');
+    var ttHeight = document.getElementById('tt-height');
+    var ttGps = document.getElementById('tt-gps');
+    var ttNaver = document.getElementById('tt-naver');
+    var ttNmap = document.getElementById('tt-nmap');
+    document.getElementById('tooltip-close').addEventListener('click', function() {
+      tooltip.classList.add('hidden');
+    });
+    document.addEventListener('click', function(e) {
+      if (!tooltip.contains(e.target) && !e.target.closest('#map')) {
+        tooltip.classList.add('hidden');
+      }
+    });
+
+    function showTooltip(m, markerPos) {
+      ttName.textContent = m.t;
+      ttAddr.textContent = m.a;
+      ttHeight.textContent = m.h + 'm';
+      ttGps.textContent = m.lat.toFixed(5) + ', ' + m.lng.toFixed(5);
+
+      var naverUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent(m.t);
+      ttNaver.href = naverUrl;
+
+      var nmapUrl = 'nmap://place?lat=' + m.lat + '&lng=' + m.lng + '&name=' + encodeURIComponent(m.t) + '&appname=com.daparapara.blog';
+      ttNmap.onclick = function(e) {
+        e.preventDefault();
+        var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+        window.location.href = isMobile ? nmapUrl : naverUrl;
+      };
+
+      tooltip.classList.remove('hidden');
+
+      if (markerPos && map) {
+        var proj = map.getProjection();
+        var point = proj.pointFromCoords(markerPos);
+        var rect = mapEl.getBoundingClientRect();
+        var top = rect.top + point.y - 180;
+        var left = rect.left + point.x - 144;
+        if (top < 8) top = rect.top + point.y + 16;
+        if (left < 8) left = 8;
+        if (left + 288 > window.innerWidth - 8) left = window.innerWidth - 296;
+        tooltip.style.top = top + 'px';
+        tooltip.style.left = left + 'px';
+        tooltip.style.transform = '';
+      } else {
+        tooltip.style.top = '50%';
+        tooltip.style.left = '50%';
+        tooltip.style.transform = 'translate(-50%,-50%)';
+      }
+    }
+
+    // 목록은 SDK와 무관하게 즉시 생성
+    var listEl = document.getElementById('mountain-list');
+    mountains.forEach(function(m, i) {
+      var li = document.createElement('li');
+      li.dataset.idx = i;
+      li.className = 'px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-sky-50 transition-colors';
+      li.innerHTML =
+        '<div>' +
+          '<span class="text-sm font-medium text-gray-800">' + m.t + '</span>' +
+          '<span class="block text-xs text-gray-400 mt-0.5">' + m.a + '</span>' +
+        '</div>' +
+        '<span class="text-xs text-gray-400 ml-2 flex-shrink-0">' + m.h + 'm</span>';
+      li.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); map.setLevel(5); }
+        showTooltip(m, null);
+      });
+      listEl.appendChild(li);
+    });
+
+    document.getElementById('search').addEventListener('input', function(e) {
+      var q = e.target.value.trim();
+      listEl.querySelectorAll('li').forEach(function(li) {
+        var idx = parseInt(li.dataset.idx);
+        var visible = !q || mountains[idx].t.indexOf(q) !== -1 || mountains[idx].a.indexOf(q) !== -1;
+        li.style.display = visible ? '' : 'none';
+      });
+    });
+
+    // 카카오맵 SDK 로드 후 지도·마커 초기화
     function initMap() {
-      var mapEl = document.getElementById('map');
-      var map = new kakao.maps.Map(mapEl, {
+      map = new kakao.maps.Map(mapEl, {
         center: new kakao.maps.LatLng(36.5, 127.8),
         level: 8,
       });
 
-      var tooltip = document.getElementById('tooltip');
-      var ttName = document.getElementById('tt-name');
-      var ttAddr = document.getElementById('tt-addr');
-      var ttHeight = document.getElementById('tt-height');
-      var ttGps = document.getElementById('tt-gps');
-      var ttNaver = document.getElementById('tt-naver');
-      var ttNmap = document.getElementById('tt-nmap');
-      document.getElementById('tooltip-close').addEventListener('click', function() {
-        tooltip.classList.add('hidden');
-      });
-
-      function showTooltip(m, markerPos) {
-        ttName.textContent = m.t;
-        ttAddr.textContent = m.a;
-        ttHeight.textContent = m.h + 'm';
-        ttGps.textContent = m.lat.toFixed(5) + ', ' + m.lng.toFixed(5);
-
-        var naverUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent(m.t);
-        ttNaver.href = naverUrl;
-
-        var nmapUrl = 'nmap://place?lat=' + m.lat + '&lng=' + m.lng + '&name=' + encodeURIComponent(m.t) + '&appname=com.daparapara.blog';
-        ttNmap.onclick = function(e) {
-          e.preventDefault();
-          var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-          window.location.href = isMobile ? nmapUrl : naverUrl;
-        };
-
-        tooltip.classList.remove('hidden');
-
-        if (markerPos) {
-          var proj = map.getProjection();
-          var point = proj.pointFromCoords(markerPos);
-          var rect = mapEl.getBoundingClientRect();
-          var top = rect.top + point.y - 180;
-          var left = rect.left + point.x - 144;
-          if (top < 8) top = rect.top + point.y + 16;
-          if (left < 8) left = 8;
-          if (left + 288 > window.innerWidth - 8) left = window.innerWidth - 296;
-          tooltip.style.top = top + 'px';
-          tooltip.style.left = left + 'px';
-          tooltip.style.transform = '';
-        } else {
-          tooltip.style.top = '50%';
-          tooltip.style.left = '50%';
-          tooltip.style.transform = 'translate(-50%,-50%)';
-        }
-      }
-
-      var listEl = document.getElementById('mountain-list');
-      var markerImage = new kakao.maps.MarkerImage(
-        'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png',
-        new kakao.maps.Size(24, 35)
-      );
-
-      mountains.forEach(function(m, i) {
+      mountains.forEach(function(m) {
         var pos = new kakao.maps.LatLng(m.lat, m.lng);
         var marker = new kakao.maps.Marker({ map: map, position: pos, title: m.t });
-
         kakao.maps.event.addListener(marker, 'click', function() {
           map.setCenter(pos);
           showTooltip(m, pos);
         });
-
-        var li = document.createElement('li');
-        li.dataset.idx = i;
-        li.className = 'px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-sky-50 transition-colors';
-        li.innerHTML =
-          '<div>' +
-            '<span class="text-sm font-medium text-gray-800">' + m.t + '</span>' +
-            '<span class="block text-xs text-gray-400 mt-0.5">' + m.a + '</span>' +
-          '</div>' +
-          '<span class="text-xs text-gray-400 ml-2 flex-shrink-0">' + m.h + 'm</span>';
-        li.addEventListener('click', function(e) {
-          e.stopPropagation();
-          map.setCenter(pos);
-          map.setLevel(5);
-          showTooltip(m, null);
-        });
-        listEl.appendChild(li);
-      });
-
-      document.getElementById('search').addEventListener('input', function(e) {
-        var q = e.target.value.trim();
-        listEl.querySelectorAll('li').forEach(function(li) {
-          var idx = parseInt(li.dataset.idx);
-          var visible = !q || mountains[idx].t.indexOf(q) !== -1 || mountains[idx].a.indexOf(q) !== -1;
-          li.style.display = visible ? '' : 'none';
-        });
-      });
-
-      document.addEventListener('click', function(e) {
-        if (!tooltip.contains(e.target) && !e.target.closest('#map')) {
-          tooltip.classList.add('hidden');
-        }
       });
     }
 
