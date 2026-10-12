@@ -113,6 +113,11 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
   noPadding={true}
 >
   <Fragment set:html={`<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}"><\/script>`} slot="head" />
+  <style is:global>
+    @media (min-width: 1024px) {
+      html, body { overflow: hidden; height: 100%; }
+    }
+  </style>
 
   <!-- 모바일 전용 sticky 헤더 (검색 + 필터 + 정렬, 지도 위에 고정) -->
   <div class="lg:hidden sticky top-16 z-20 bg-white border-b border-gray-200 px-4 pt-2 pb-2 shadow-sm">
@@ -138,8 +143,9 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
   <div class="flex flex-col lg:flex-row lg:h-[calc(100vh-4rem)] lg:overflow-hidden">
 
     <!-- 지도 -->
-    <div class="w-full lg:w-2/3 flex-shrink-0 h-[45dvh] lg:h-full lg:flex-shrink z-0">
+    <div class="relative w-full lg:w-2/3 flex-shrink-0 h-[45dvh] lg:h-full lg:flex-shrink z-0">
       <div id="map" class="w-full h-full"></div>
+      <button id="reset-view" class="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white text-gray-700 text-xs font-medium px-2.5 py-1 rounded shadow border border-gray-200 transition-colors">전체</button>
     </div>
 
     <!-- 목록 패널 -->
@@ -167,6 +173,28 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     </div>
   </div>
 
+  <!-- 툴팁 -->
+  <div id="tooltip" class="fixed z-50 hidden bg-white rounded-xl shadow-lg border border-gray-100 p-3 w-52 pointer-events-auto">
+    <div class="flex items-start justify-between gap-1 mb-1">
+      <span id="tt-name" class="text-sm font-semibold text-gray-900 leading-tight"></span>
+      <button id="tt-close" class="flex-shrink-0 text-gray-400 hover:text-gray-600 text-base leading-none ml-1">✕</button>
+    </div>
+    <p id="tt-addr" class="text-[11px] text-gray-400 mb-1.5"></p>
+    <p id="tt-height" class="text-xs text-sky-600 font-medium mb-2"></p>
+    <div class="flex items-center gap-1.5">
+      <span class="text-[10px] text-gray-400 mr-auto">지도 앱</span>
+      <button id="tt-naver" class="w-6 h-6 rounded-full flex items-center justify-center hover:opacity-80" style="background:#03C75A" title="네이버 지도">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M13.35 12.77L10.43 8H8v8h2.65l2.92-4.77L16 16h2.43V8H16z"/></svg>
+      </button>
+      <button id="tt-kakao" class="w-6 h-6 rounded-full flex items-center justify-center hover:opacity-80" style="background:#FEE500" title="카카오맵">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#3A1D1D"><path d="M12 3C7.03 3 3 6.36 3 10.5c0 2.67 1.63 5.01 4.1 6.37l-1.05 3.88 4.54-2.96c.46.06.93.09 1.41.09 4.97 0 9-3.36 9-7.5S16.97 3 12 3z"/></svg>
+      </button>
+      <button id="tt-google" class="w-6 h-6 rounded-full flex items-center justify-center hover:opacity-80" style="background:#4285F4" title="구글 지도">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </button>
+    </div>
+  </div>
+
   <Fragment set:html={`<script>window.__M__=${mountainsJson};window.__KK__='${kakaoKey}';<\/script>`} />
   <script is:inline>
   (function() {
@@ -175,8 +203,8 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
     var markers = [];
     var selectMarkerFn = null;
     var selectedIdx = null;
-    var openIdx = null;
     var myMarker = null;
+    var tooltip = document.getElementById('tooltip');
     var userLat = null;
     var userLng = null;
     var currentFilter = '전체';
@@ -206,34 +234,48 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
     }
 
-    // 아코디언 열기/닫기
     var listEl = document.getElementById('mountain-list');
-    function openAccordion(idx) {
-      var prevOpen = openIdx;
-      // 이전 항목 닫기
-      if (prevOpen !== null) {
-        var prevLi = listEl.querySelector('[data-idx="' + prevOpen + '"]');
-        if (prevLi) prevLi.querySelector('.acc-body').classList.add('hidden');
+
+    // 툴팁 표시
+    function showTooltip(m, i) {
+      var sn = shortName(m);
+      document.getElementById('tt-name').textContent = sn;
+      document.getElementById('tt-addr').textContent = m.a;
+      document.getElementById('tt-height').textContent = '해발 ' + m.h + 'm';
+      var name = encodeURIComponent(sn);
+      document.getElementById('tt-naver').onclick = function(e) { e.stopPropagation(); window.open('https://map.naver.com/v5/search/' + name, '_blank'); };
+      document.getElementById('tt-kakao').onclick = function(e) { e.stopPropagation(); window.open('https://map.kakao.com/link/map/' + name + ',' + m.lat + ',' + m.lng, '_blank'); };
+      document.getElementById('tt-google').onclick = function(e) { e.stopPropagation(); window.open('https://www.google.com/maps/search/?q=' + m.lat + ',' + m.lng, '_blank'); };
+      var mapRect = document.getElementById('map').getBoundingClientRect();
+      var isMob = window.innerWidth < 1024;
+      tooltip.classList.remove('hidden');
+      if (isMob) {
+        tooltip.style.top = Math.max(8, mapRect.top + 8) + 'px';
+        tooltip.style.right = '8px';
+        tooltip.style.left = 'auto';
+      } else {
+        var rightOff = (window.innerWidth - mapRect.right) + 8;
+        tooltip.style.top = (mapRect.top + 50) + 'px';
+        tooltip.style.right = rightOff + 'px';
+        tooltip.style.left = 'auto';
       }
-      if (prevOpen === idx) { openIdx = null; return; }
-      var li = listEl.querySelector('[data-idx="' + idx + '"]');
+      // 목록 스크롤
+      var li = listEl.querySelector('[data-idx="' + i + '"]');
       if (li) {
-        li.querySelector('.acc-body').classList.remove('hidden');
-        var isMob = window.innerWidth < 1024;
         if (isMob) {
-          // 모바일: 페이지 스크롤 — sticky 헤더 높이 보정
           var stickyBar = document.querySelector('.lg\\:hidden.sticky');
           var stickyH = stickyBar ? stickyBar.offsetHeight : 0;
-          var headerH = 64; // top-16
           var liTop = li.getBoundingClientRect().top + window.scrollY;
-          window.scrollTo({ top: liTop - headerH - stickyH, behavior: 'smooth' });
+          window.scrollTo({ top: liTop - 64 - stickyH, behavior: 'smooth' });
         } else {
-          // PC: listEl 독립 스크롤 — li를 패널 최상단으로
           listEl.scrollTo({ top: li.offsetTop, behavior: 'smooth' });
         }
       }
-      openIdx = idx;
     }
+    function hideTooltip() { tooltip.classList.add('hidden'); }
+    document.getElementById('tt-close').addEventListener('click', function(e) { e.stopPropagation(); hideTooltip(); });
+    tooltip.addEventListener('click', function(e) { e.stopPropagation(); });
+    document.addEventListener('click', hideTooltip);
 
     // 필터 그룹
     var filterGroups = [
@@ -294,75 +336,31 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       if (cElMob) cElMob.textContent = countText;
 
       listEl.innerHTML = '';
-      openIdx = null;
 
       filtered.forEach(function(m) {
         var i = mountains.indexOf(m);
         var sn = shortName(m);
-        var name = encodeURIComponent(sn);
         var rightText = (currentSort === 'distance' && userLat !== null)
           ? haversine(userLat, userLng, m.lat, m.lng).toFixed(1) + 'km'
           : m.h + 'm';
 
         var li = document.createElement('li');
         li.dataset.idx = i;
-        li.className = 'divide-y divide-gray-100';
-
-        // 아코디언 헤더
-        var header = document.createElement('div');
-        header.className = 'px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-sky-50 transition-colors';
-        header.innerHTML =
+        li.className = 'px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-sky-50 transition-colors';
+        li.innerHTML =
           '<div>' +
             '<span class="text-sm font-medium text-gray-800">' + sn + '</span>' +
             '<span class="block text-xs text-gray-400 mt-0.5">' + m.a + '</span>' +
           '</div>' +
           '<span class="text-xs text-gray-400 ml-2 flex-shrink-0">' + rightText + '</span>';
 
-        // 아코디언 바디
-        var body = document.createElement('div');
-        body.className = 'acc-body hidden px-4 pb-3 pt-2 bg-sky-50 border-t border-sky-100';
-        body.innerHTML =
-          '<div class="flex items-center gap-3 text-xs text-gray-500">' +
-            '<span class="font-medium text-gray-700">' + m.h + 'm</span>' +
-            '<span class="text-gray-300">' + m.lat.toFixed(4) + ', ' + m.lng.toFixed(4) + '</span>' +
-          '</div>' +
-          '<div class="mt-2 flex items-center gap-2">' +
-            '<span class="text-[10px] text-gray-400">지도 앱에 저장</span>' +
-            '<div class="flex gap-1.5 ml-auto">' +
-              '<button class="btn-naver w-6 h-6 rounded-full flex items-center justify-center hover:opacity-80" style="background:#03C75A" title="네이버 지도">' +
-                '<svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M13.35 12.77L10.43 8H8v8h2.65l2.92-4.77L16 16h2.43V8H16z"/></svg>' +
-              '</button>' +
-              '<button class="btn-kakao w-6 h-6 rounded-full flex items-center justify-center hover:opacity-80" style="background:#FEE500" title="카카오맵">' +
-                '<svg width="12" height="12" viewBox="0 0 24 24" fill="#3A1D1D"><path d="M12 3C7.03 3 3 6.36 3 10.5c0 2.67 1.63 5.01 4.1 6.37l-1.05 3.88 4.54-2.96c.46.06.93.09 1.41.09 4.97 0 9-3.36 9-7.5S16.97 3 12 3z"/></svg>' +
-              '</button>' +
-              '<button class="btn-google w-6 h-6 rounded-full flex items-center justify-center hover:opacity-80" style="background:#4285F4" title="구글 지도">' +
-                '<svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' +
-              '</button>' +
-            '</div>' +
-          '</div>';
-
-        // 이벤트
-        header.addEventListener('click', function(e) {
+        li.addEventListener('click', function(e) {
           e.stopPropagation();
           if (map) { map.setCenter(new kakao.maps.LatLng(m.lat, m.lng)); map.setLevel(9); }
           if (selectMarkerFn && markers[i]) selectMarkerFn(i);
-          openAccordion(i);
-        });
-        body.querySelector('.btn-naver').addEventListener('click', function(e) {
-          e.stopPropagation();
-          window.open('https://map.naver.com/v5/search/' + name, '_blank');
-        });
-        body.querySelector('.btn-kakao').addEventListener('click', function(e) {
-          e.stopPropagation();
-          window.open('https://map.kakao.com/link/map/' + name + ',' + m.lat + ',' + m.lng, '_blank');
-        });
-        body.querySelector('.btn-google').addEventListener('click', function(e) {
-          e.stopPropagation();
-          window.open('https://www.google.com/maps/search/?q=' + m.lat + ',' + m.lng, '_blank');
+          showTooltip(m, i);
         });
 
-        li.appendChild(header);
-        li.appendChild(body);
         listEl.appendChild(li);
       });
     }
@@ -502,17 +500,28 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
         var nm = new kakao.maps.Marker({ map, position: pos, title: shortName(m), image: normalImage });
         var am = new kakao.maps.Marker({ position: pos, title: shortName(m), image: activeImage });
         markers[i] = { normal: nm, active: am };
-        var handler = function() {
-          selectMarkerFn(i);
-          map.setCenter(pos);
-          map.setLevel(9);
-          openAccordion(i);
-        };
+        var handler = (function(mi, pi, idx) {
+          return function() {
+            selectMarkerFn(idx);
+            map.setCenter(pi);
+            map.setLevel(9);
+            showTooltip(mi, idx);
+          };
+        })(m, pos, i);
         kakao.maps.event.addListener(nm, 'click', handler);
         kakao.maps.event.addListener(am, 'click', handler);
       });
       if (userLat !== null) placeMyMarker(userLat, userLng, false);
     }
+
+    // 전체 버튼
+    document.getElementById('reset-view').addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (!map) return;
+      map.setCenter(new kakao.maps.LatLng(DEFAULT_LAT, DEFAULT_LNG));
+      map.setLevel(DEFAULT_LEVEL);
+      hideTooltip();
+    });
 
     // 초기 실행
     renderList();
