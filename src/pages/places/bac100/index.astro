@@ -219,7 +219,18 @@ const mountainsJson = JSON.stringify(mountains).replace(/<\/script>/gi, '<\\/scr
       var li = listEl.querySelector('[data-idx="' + idx + '"]');
       if (li) {
         li.querySelector('.acc-body').classList.remove('hidden');
-        li.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        var isMob = window.innerWidth < 1024;
+        if (isMob) {
+          // 모바일: 페이지 스크롤 — sticky 헤더 높이 보정
+          var stickyBar = document.querySelector('.lg\\:hidden.sticky');
+          var stickyH = stickyBar ? stickyBar.offsetHeight : 0;
+          var headerH = 64; // top-16
+          var liTop = li.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top: liTop - headerH - stickyH, behavior: 'smooth' });
+        } else {
+          // PC: listEl 독립 스크롤 — li를 패널 최상단으로
+          listEl.scrollTo({ top: li.offsetTop, behavior: 'smooth' });
+        }
       }
       openIdx = idx;
     }
