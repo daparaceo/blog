@@ -66,7 +66,7 @@
     ],
     "answer": 4,
     "explanation": "/etc/shadow의 최소 변경 기간 필드는 비밀번호 변경 후 일정 기간 동안 재변경을 막는 값이다. 최소 변경 기간이 3일이면 3일 이내에는 변경할 수 없으므로, 3일 이내 변경 가능하다는 설명이 틀리다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -166,7 +166,7 @@
     ],
     "answer": 1,
     "explanation": "df 명령은 파일 시스템별 디스크 사용량과 남은 공간을 확인하는 유닉스 관리자용 명령이다. ps는 프로세스, file은 파일 유형, find는 파일 검색 명령이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -266,7 +266,7 @@
     ],
     "answer": 2,
     "explanation": "OAuth는 사용자의 비밀번호를 직접 공유하지 않고 제3자 애플리케이션에 제한된 접근 권한을 위임하는 인가 프레임워크이다. Kerberos는 티켓 기반 인증, RADIUS는 중앙 인증/과금 프로토콜이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -316,7 +316,7 @@
     ],
     "answer": 2,
     "explanation": "logrotate에서 보관할 로그 파일 세대 수를 지정하는 지시자는 rotate이다. 예를 들어 rotate 6은 6개 세대의 순환 로그를 보관한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -366,7 +366,7 @@
     ],
     "answer": 2,
     "explanation": "RADIUS는 원격 접속 사용자의 인증, 권한 부여, 과금(AAA)을 중앙 서버에서 처리하는 프로토콜이다. S/Key는 일회용 패스워드, Kerberos는 티켓 기반 인증 방식이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -391,7 +391,7 @@
     ],
     "answer": 2,
     "explanation": "문제의 보기 순서 기준으로 윈도우 부팅 과정의 올바른 배열은 2번이다. 부팅은 펌웨어 초기화 이후 부트로더, 커널 로딩, 세션/로그온 관련 단계로 이어진다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -416,7 +416,7 @@
     ],
     "answer": 3,
     "explanation": "Cyber Kill Chain은 정찰, 무기화, 전달, 취약점 악용, 설치, 명령 및 제어, 목적 달성 순서로 진행된다. 따라서 빈칸은 전달(Delivery)과 명령 및 제어(Command & Control)가 맞다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -441,7 +441,7 @@
     ],
     "answer": 4,
     "explanation": "CryptoJacking은 사용자의 시스템 자원을 몰래 이용해 암호화폐를 채굴하는 공격이다. 브라우저 스크립트나 악성코드를 통해 CPU/GPU 자원을 무단 사용한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -466,7 +466,7 @@
     ],
     "answer": 2,
     "explanation": "리눅스 실행 레벨에서 1은 단일 사용자 모드, 6은 재부팅, 3은 다중 사용자 텍스트 모드에 해당한다. 보기 조합 중 이 설명과 맞는 것은 2번이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "시스템보안",
@@ -566,7 +566,7 @@
     ],
     "answer": 3,
     "explanation": "Failover는 장애 발생 시 예비 장비나 경로로 자동 전환해 서비스를 지속하는 기술이다. Bypass는 우회, LLCF는 링크 상태 전달, DPDK는 고속 패킷 처리 프레임워크이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -616,7 +616,7 @@
     ],
     "answer": 2,
     "explanation": "SYN Flooding은 TCP 3-way handshake의 SYN 단계만 대량으로 발생시켜 서버의 연결 대기 큐를 고갈시키는 공격이다. SYN 쿠키나 연결 제한으로 대응한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -641,7 +641,7 @@
     ],
     "answer": 1,
     "explanation": "Smurf 공격은 ICMP Echo Request를 브로드캐스트 주소로 보내 다수의 응답이 피해자에게 향하게 하는 DoS 공격이다. 보기 복원 오류가 있지만 설명은 스머프 공격과 가장 가깝다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -666,7 +666,7 @@
     ],
     "answer": 3,
     "explanation": "정답은 3번 Teardrop이다. 이 공격은 IP 조각의 오프셋을 겹치거나 비정상적으로 만들어 수신 시스템의 재조립 과정에서 오류나 장애를 유발한다. 다만 공격 특징이 담긴 지문이나 이미지가 없어, 제공된 기존 해설을 기준으로만 판단할 수 있다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -691,7 +691,7 @@
     ],
     "answer": 3,
     "explanation": "Boink는 Teardrop 계열의 변종으로 조각화된 패킷의 오프셋을 조작해 시스템 장애를 유발한다. Land는 출발지와 목적지를 같게 만드는 공격이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -766,7 +766,7 @@
     ],
     "answer": 4,
     "explanation": "Stateful Inspection은 패킷의 상태 정보를 추적해 연결 맥락을 기준으로 허용 여부를 판단하는 방화벽 방식이다. 단순 패킷 필터링보다 세션 상태를 함께 본다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -791,7 +791,7 @@
     ],
     "answer": 3,
     "explanation": "DPI(Deep Packet Inspection)는 패킷의 헤더뿐 아니라 페이로드 내용까지 깊게 검사하는 기술이다. 보안 장비에서 애플리케이션 식별이나 악성 트래픽 탐지에 사용된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -841,7 +841,7 @@
     ],
     "answer": 2,
     "explanation": "Snort threshold의 type both는 limit와 threshold 특성을 함께 적용하는 방식이다. 일정 횟수 이상 발생 조건과 경보 제한 조건을 함께 사용할 때 쓰인다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -916,7 +916,7 @@
     ],
     "answer": 1,
     "explanation": "TLS Record 프로토콜은 상위 계층 데이터를 분할하고, 필요 시 압축한 뒤 MAC을 붙이고 암호화한 다음 레코드 헤더를 붙이는 흐름이다. 보기 중 이 순서에 맞는 배열이 1번이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -966,7 +966,7 @@
     ],
     "answer": 3,
     "explanation": "IPSec의 AH는 인증과 무결성을 제공하고, ESP는 암호화를 통한 기밀성과 선택적 인증을 제공한다. 무결성 검증에는 MAC과 해시 기반 값이 사용된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -991,7 +991,7 @@
     ],
     "answer": 4,
     "explanation": "NAC(Network Access Control)는 단말의 보안 상태와 사용자 인증을 확인해 네트워크 접속을 제어하는 솔루션이다. IPS/IDS는 침입 방지·탐지, DLP는 정보 유출 방지 중심이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "네트워크보안",
@@ -1066,7 +1066,7 @@
     ],
     "answer": 1,
     "explanation": "HSM(Hardware Security Module)은 암호키 생성·보관·연산을 안전한 하드웨어 안에서 수행하는 장비이다. 키 유출을 막고 전자서명·암호 연산의 신뢰성을 높인다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "어플리케이션보안",
@@ -1191,7 +1191,7 @@
     ],
     "answer": 2,
     "explanation": "TLS Handshake는 클라이언트/서버 hello, 인증서 및 키 교환, 암호 스위트 확정, Finished 메시지 순서로 진행된다. 보기 기준 올바른 흐름은 2번이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "어플리케이션보안",
@@ -1266,7 +1266,7 @@
     ],
     "answer": 3,
     "explanation": "HTTP 상태 코드는 2xx 성공, 3xx 리다이렉션, 4xx 클라이언트 오류, 5xx 서버 오류로 구분된다. 문제의 빈칸 흐름에 맞는 조합은 200, 500, 300이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "어플리케이션보안",
@@ -1366,7 +1366,7 @@
     ],
     "answer": 4,
     "explanation": "정답은 4번 공급망 공격이다. 지문은 공격자가 특정 회사를 직접 공격하지 않고 소수의 PC를 먼저 감염시킨 뒤, 유효한 인증서로 서명된 악성코드와 개발·업데이트 서버 침투 같은 정상 공급 경로를 이용한다고 설명한다. 이는 신뢰받는 협력사나 소프트웨어 공급망을 거쳐 최종 대상을 감염시키는 공급망 공격의 전형적인 특징이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "어플리케이션보안",
@@ -1391,7 +1391,7 @@
     ],
     "answer": 3,
     "explanation": "CSRF는 사용자가 인증된 상태를 악용해 공격자가 의도한 요청을 피해자 브라우저가 대신 보내게 하는 공격이다. 토큰 검증과 Referer/Origin 확인으로 완화한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "어플리케이션보안",
@@ -1416,7 +1416,7 @@
     ],
     "answer": 2,
     "explanation": "DOI(Digital Object Identifier)는 디지털 저작물이나 객체를 영구적으로 식별하기 위한 식별자 체계이다. DRM은 권한 통제, 워터마킹은 저작권 표시, 스테가노그래피는 은닉 기법이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "어플리케이션보안",
@@ -1516,7 +1516,7 @@
     ],
     "answer": 1,
     "explanation": "위협은 자산에 손해를 끼칠 수 있는 잠재적 원인이나 사건이다. 취약점은 약점, 자산은 보호 대상, 위험은 위협이 취약점을 이용해 손실이 발생할 가능성과 영향이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -1541,7 +1541,7 @@
     ],
     "answer": 4,
     "explanation": "직무 분리는 한 사람이 중요한 업무 전 과정을 단독으로 수행하지 못하게 역할을 나누는 원칙이다. 내부 부정과 오류를 줄이는 통제 원칙이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -1566,7 +1566,7 @@
     ],
     "answer": 4,
     "explanation": "선택 암호문 공격은 공격자가 선택한 암호문에 대한 평문 결과를 얻어 암호 체계를 분석하는 방식이다. 문제의 설명은 선택 암호문 공격 원리에 해당한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -1666,7 +1666,7 @@
     ],
     "answer": 3,
     "explanation": "정답은 3번 부인방지이다. 대칭키 암호는 기밀성을, MAC은 메시지 무결성과 공유키 보유자의 인증을 제공할 수 있다. 그러나 송수신자가 같은 키를 알고 있어 어느 쪽도 MAC을 만들 수 있으므로 제3자에게 특정 송신자의 행위를 증명하는 부인방지는 보장하지 못한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -1716,7 +1716,7 @@
     ],
     "answer": 4,
     "explanation": "임의적 접근통제(DAC)는 객체 소유자가 다른 사용자에게 접근 권한을 부여하거나 회수할 수 있는 모델이다. 유닉스 파일 권한이나 ACL이 대표적이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -1816,7 +1816,7 @@
     ],
     "answer": 3,
     "explanation": "지문의 첫 번째 괄호는 A의 개인키와 공개키 쌍, 두 번째 괄호는 B의 개인키와 공개키 쌍을 뜻한다. A가 B에게 비밀 메시지를 보낼 때는 B의 공개키로 암호화하고 B가 자신의 개인키로 복호화한다. 다만 현재 선택지 내용이 모두 ‘1’로 잘못 복원되어 있어 3번 선택지의 원문 표현 자체는 확인할 수 없다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -1866,7 +1866,7 @@
     ],
     "answer": 4,
     "explanation": "정답은 4번으로, ⓐ는 은닉서명이고 ⓑ는 이중서명이다. 은닉서명은 서명자가 원문을 알지 못한 채 서명하며, 이중서명은 SET에서 주문정보와 결제정보를 연결하면서 각 수신자에게 필요한 내용만 공개한다. 다만 ⓐ·ⓑ의 원문 설명이 없어 대응 관계는 기존 해설 기준이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -1966,7 +1966,7 @@
     ],
     "answer": 4,
     "explanation": "IDEA는 64비트 블록과 128비트 키를 사용하는 대칭키 블록 암호 알고리즘이다. SHA-1은 해시 함수이고, DES와 SEED는 별도의 대칭키 알고리즘이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -1991,7 +1991,7 @@
     ],
     "answer": 4,
     "explanation": "RSA와 Rabin은 큰 합성수의 소인수분해 어려움에 기반한다. p와 q는 소수이고 모듈러스는 p×q 형태로 구성된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안일반",
@@ -2066,7 +2066,7 @@
     ],
     "answer": 4,
     "explanation": "베이스라인 접근법은 세부 위험 산정보다 표준 보안 기준이나 체크리스트를 기준선으로 적용하는 방법이다. 빠르고 비용이 낮지만 조직 특수성 반영이 약하다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안관리및법규",
@@ -2216,7 +2216,7 @@
     ],
     "answer": 4,
     "explanation": "시나리오법은 가능한 사고 상황을 가정해 영향을 분석하고, 순위결정법은 위험 항목을 상대적 우선순위로 배열한다. 문제의 설명 조합은 시나리오법과 순위결정법에 해당한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안관리및법규",
@@ -2341,7 +2341,7 @@
     ],
     "answer": 4,
     "explanation": "핫 사이트는 시스템, 네트워크, 데이터가 거의 준비되어 있어 재해 발생 시 빠르게 전환 가능한 복구 사이트이다. 콜드 사이트는 공간 중심, 웜 사이트는 중간 수준의 준비 상태이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안관리및법규",
@@ -2366,7 +2366,7 @@
     ],
     "answer": 3,
     "explanation": "ISMS-P는 정보보호 관리체계(ISMS)와 개인정보보호 관리체계(PIMS)를 통합한 인증 체계이다. 정보보호와 개인정보보호를 함께 다룬다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안관리및법규",
@@ -2391,7 +2391,7 @@
     ],
     "answer": 1,
     "explanation": "정보통신망법의 용어 정의는 정보통신망, 정보통신서비스, 정보통신서비스 제공자 등 법률상 의미를 기준으로 판단한다. 문제 지문 기준으로 옳지 않은 설명 조합은 a, b이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안관리및법규",
@@ -2441,7 +2441,7 @@
     ],
     "answer": 4,
     "explanation": "정답은 4번 정보보호 사전점검 제도이다. 정보통신서비스나 정보시스템을 구축·운영하기 전에 보호 대책과 취약 요소를 점검하여 침해사고를 예방하는 제도이다. 다만 문제에 제도의 대상·시기 등을 설명한 지문이 누락되어 다른 검증 제도와 구분할 세부 근거는 확인할 수 없다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "정보보안기사",
       "정보보안관리및법규",

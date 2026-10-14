@@ -36,7 +36,7 @@
     ],
     "answer": 2,
     "explanation": "레이스 컨디션(Race Condition) 공격은 두 프로세스가 동일한 자원(주로 파일)을 사용하기 위해 경쟁하는 타이밍 취약점을 이용한다. TOCTOU(Time of Check to Time of Use) 공격이 대표적이며, SetUID 파일을 통해 root 권한 획득에 악용된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "레이스컨디션", "TOCTOU", "경쟁조건", "2021", "2021-2"]
   },
   {
@@ -76,7 +76,7 @@
     ],
     "answer": 2,
     "explanation": "미라이(Mirai)는 2016년 처음 발견된 IoT 기기를 대상으로 하는 봇넷 악성코드이다. 기본 자격증명(admin/admin 등)을 이용해 IP 카메라, 라우터 등 IoT 장치를 감염시켜 대규모 DDoS 공격을 수행한다. 2016년 Dyn DNS 서비스 공격이 대표적 피해 사례이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "미라이", "IoT", "봇넷", "DDoS", "악성코드", "2021", "2021-2"]
   },
   {
@@ -96,7 +96,7 @@
     ],
     "answer": 4,
     "explanation": "ARP 스푸핑(ARP Spoofing)은 ARP 프로토콜의 취약점을 이용하여 피해자의 ARP 캐시 테이블에 공격자의 MAC 주소를 정상 IP에 매핑하여 트래픽을 가로채는 공격이다. 이를 통해 중간자 공격(MITM), 세션 하이재킹, 도청 등이 가능하다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "ARP스푸핑", "MAC", "중간자공격", "2021", "2021-2"]
   },
   {
@@ -156,7 +156,7 @@
     ],
     "answer": 1,
     "explanation": "TPM(Trusted Platform Module)은 암호화 연산을 하드웨어에서 처리하는 보안 칩이다. 신뢰된 부트(Trusted Boot), 디스크 암호화 키 보관, 플랫폼 무결성 측정, 디지털 서명 등을 제공한다. 윈도우의 BitLocker 암호화 기능과 함께 사용된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "TPM", "하드웨어보안", "신뢰부트", "2021", "2021-2"]
   },
   {
@@ -176,7 +176,7 @@
     ],
     "answer": 3,
     "explanation": "가용성(Availability)은 정보시스템이 필요한 시점에 정상적으로 사용 가능한 상태를 의미한다. 가동시간(Up Time), 정지시간(Down Time), MTTF(Mean Time To Failure), MTTR(Mean Time To Repair)은 모두 시스템 가용성을 측정하는 척도이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "가용성", "MTTF", "MTTR", "정보보안3요소", "2021", "2021-2"]
   },
   {
@@ -236,7 +236,7 @@
     ],
     "answer": 2,
     "explanation": "섀도(Shadow) 패스워드 파일(/etc/shadow)은 암호화된 패스워드 정보를 일반 사용자가 읽을 수 없도록 root만 접근 가능한 별도 파일에 저장하는 방식이다. /etc/passwd는 누구나 읽을 수 있으나 /etc/shadow는 접근이 제한된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "shadow", "패스워드파일", "리눅스", "2021", "2021-2"]
   },
   {
@@ -277,7 +277,7 @@
     ],
     "answer": 4,
     "explanation": "/var/log/messages는 리눅스 시스템의 주요 로그 파일로, 시스템 부팅 메시지, 커널 메시지, 서비스 오류, 보안 관련 메시지 등 다양한 시스템 정보를 기록한다. btmp는 로그인 실패, wtmp는 로그인/로그아웃 이력, syslog는 시스템 데몬 로그를 기록한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "로그파일", "messages", "리눅스", "2021", "2021-2"]
   },
   {
@@ -337,7 +337,7 @@
     ],
     "answer": 2,
     "explanation": "PAM(Pluggable Authentication Module)은 리눅스에서 다양한 인증 메커니즘을 플러그인 방식으로 제공하는 공유 라이브러리이다. 애플리케이션을 재컴파일하지 않고 인증 방식을 변경할 수 있으며, /etc/pam.d/ 디렉터리의 설정 파일로 관리된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "PAM", "인증", "리눅스", "2021", "2021-2"]
   },
   {
@@ -397,7 +397,7 @@
     ],
     "answer": 4,
     "explanation": "PAM(Pluggable Authentication Module)은 리눅스/유닉스에서 인증 메커니즘을 모듈화하여 애플리케이션의 재컴파일 없이 인증 방식을 변경할 수 있도록 하는 공유 라이브러리 시스템이다. 17번 문제와 유사한 내용으로, 동일 개념이 반복 출제된 문항이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "시스템보안", "PAM", "인증", "리눅스", "2021", "2021-2"]
   },
   {
@@ -417,7 +417,7 @@
     ],
     "answer": 3,
     "explanation": "Promiscuous Mode(무차별 모드)는 NIC가 자신의 MAC 주소와 무관한 모든 패킷을 수신하는 모드이다. 스니퍼는 이 모드를 활성화하여 네트워크 트래픽을 도청한다. 스니퍼 탐지 도구는 네트워크 상의 NIC가 Promiscuous Mode로 동작 중인지 검사하여 스니퍼 실행 여부를 탐지한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "네트워크보안", "스니퍼", "Promiscuous", "NIC", "2021", "2021-2"]
   },
   {
@@ -437,7 +437,7 @@
     ],
     "answer": 4,
     "explanation": "DNS 싱크홀(DNS Sinkhole)은 악성 봇넷의 C&C(Command & Control) 서버 도메인을 싱크홀 서버로 리다이렉션하여 감염된 PC가 실제 C&C 서버와 통신하지 못하도록 차단하는 기술이다. 한국에서는 KISA가 DNS 싱크홀 서비스를 운영한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "네트워크보안", "DNS싱크홀", "봇넷", "C&C", "2021", "2021-2"]
   },
   {
@@ -478,7 +478,7 @@
     ],
     "answer": 1,
     "explanation": "HSM(Hardware Security Module)은 암호화 연산(암·복호화, 전자서명, 키 생성 등)을 전용 하드웨어에서 처리하고 암호키를 안전하게 보관하는 장치이다. 소프트웨어 방식보다 처리 속도가 빠르고 키를 외부에서 추출하기 어렵다. CA 서버, 결제 시스템 등에서 널리 사용된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "네트워크보안", "HSM", "하드웨어보안", "암호키", "2021", "2021-2"]
   },
   {
@@ -538,7 +538,7 @@
     ],
     "answer": 1,
     "explanation": "SIEM(Security Information and Event Management)은 다양한 보안 장비와 시스템에서 생성되는 로그와 이벤트를 실시간으로 수집·분석하여 위협을 탐지하고 대응하는 통합 보안 관리 플랫폼이다. 빅데이터 기반 분석, 상관관계 분석, 컴플라이언스 리포팅 등을 제공한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "네트워크보안", "SIEM", "로그관리", "보안관제", "2021", "2021-2"]
   },
   {
@@ -558,7 +558,7 @@
     ],
     "answer": 3,
     "explanation": "SYN Flooding: TCP 3-Way Handshake의 Half-Open 상태를 악용. LAND 공격: 출발지와 목적지 IP를 동일하게 설정한 패킷 전송. Smurf 공격: 피해자 IP를 출발지로 위장하여 브로드캐스트 주소로 ICMP Request를 보내 대량의 응답을 피해자에게 집중시키는 공격. 이 세 가지 모두 DoS 공격에 해당한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "네트워크보안", "SYNFlooding", "LAND", "Smurf", "DoS", "2021", "2021-2"]
   },
   {
@@ -618,7 +618,7 @@
     ],
     "answer": 1,
     "explanation": "Source Quench(Type 4)는 라우터나 목적지 호스트의 버퍼가 초과되어 패킷을 수신할 수 없을 때 송신측에 전송 속도를 줄이도록 요청하는 ICMP 메시지이다. 현재는 거의 사용되지 않으나 원래 흐름 제어 목적으로 설계되었다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "네트워크보안", "ICMP", "SourceQuench", "흐름제어", "2021", "2021-2"]
   },
   {
@@ -819,7 +819,7 @@
     ],
     "answer": 1,
     "explanation": "정답은 1번 WebCrypto API이다. 브라우저의 보안 컨텍스트에서 암호화·복호화, 해시, 서명 검증, 키 생성과 유도 같은 저수준 암호 연산을 제공하며 키를 추출 불가능한 형태로 관리할 수도 있다. REST·SOAP는 통신 인터페이스이고 Indexing API는 검색 색인용이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "WebCryptoAPI", "브라우저암호화", "2021", "2021-2"]
   },
   {
@@ -919,7 +919,7 @@
     ],
     "answer": 1,
     "explanation": "루팅(Android) 또는 탈옥(iOS)된 단말은 보안 제약이 해제된 상태로, 금융 앱 등 보안이 중요한 서비스는 루팅·탈옥 탐지 후 서비스를 거부해야 한다. 루팅·탈옥 단말에서 서비스가 정상 동작해서는 안 된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "모바일보안", "루팅", "탈옥", "2021", "2021-2"]
   },
   {
@@ -959,7 +959,7 @@
     ],
     "answer": 3,
     "explanation": "Cache-Control 헤더는 HTTP 요청/응답의 캐싱 동작을 제어한다. 'no-cache', 'no-store', 'max-age' 등의 지시자를 사용하며, 특정 리소스의 캐싱을 방지할 수 있다. 공격자는 Cache-Control 헤더를 조작하여 캐시 포이즈닝이나 서버 부하 공격에 악용할 수 있다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "HTTP", "CacheControl", "헤더", "2021", "2021-2"]
   },
   {
@@ -1059,7 +1059,7 @@
     ],
     "answer": 1,
     "explanation": "비트코인은 PoW(Proof of Work, 작업증명) 방식을 사용하여 새로운 블록을 생성한다. 채굴(Mining)은 복잡한 수학적 문제를 해결하여 새로운 트랜잭션을 검증하고 블록에 포함시키는 과정이다. 지분증명(PoS)과 스테이킹은 이더리움 등 다른 블록체인에서 사용하는 방식이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "블록체인", "비트코인", "작업증명", "채굴", "2021", "2021-2"]
   },
   {
@@ -1079,7 +1079,7 @@
     ],
     "answer": 2,
     "explanation": "DRM(Digital Rights Management, 디지털 저작권 관리)은 콘텐츠를 암호화하여 허가된 사용자만 접근할 수 있도록 하고, 파일의 무단 복사·배포·유출을 방지하는 기술이다. IRM(Information Rights Management)은 기업 내부 문서 보호에 특화된 개념으로, DRM의 기업용 버전으로 볼 수 있다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "DRM", "정보유출방지", "암호화", "2021", "2021-2"]
   },
   {
@@ -1119,7 +1119,7 @@
     ],
     "answer": 4,
     "explanation": "연계 보관성(Chain of Custody)의 원칙은 증거물이 수집된 시점부터 법정 제출까지 모든 이동 경로, 담당자, 취급 내역을 문서화하여 증거의 신뢰성과 무결성을 보장하는 원칙이다. 증거가 훼손되거나 오염되지 않았음을 증명하는 데 필수적이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "디지털포렌식", "연계보관성", "ChainOfCustody", "2021", "2021-2"]
   },
   {
@@ -1139,7 +1139,7 @@
     ],
     "answer": 3,
     "explanation": "CSRF(Cross-Site Request Forgery, 크로스사이트 요청 위조)는 인증된 사용자의 권한을 이용해 사용자가 의도하지 않은 요청을 서버에 전송하는 공격이다. 방어책으로는 CSRF 토큰, SameSite 쿠키 속성, Referer 헤더 검증 등이 있다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "CSRF", "웹공격", "크로스사이트요청위조", "2021", "2021-2"]
   },
   {
@@ -1159,7 +1159,7 @@
     ],
     "answer": 1,
     "explanation": "FDS(Fraud Detection System, 이상금융거래탐지시스템)는 전자금융거래에서 비정상적인 거래 패턴을 실시간으로 탐지하고 차단하는 시스템이다. 사용자의 거래 패턴, 접속 환경, 행위 분석 등을 통해 금융 사기를 예방한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "FDS", "이상금융거래탐지", "전자금융", "2021", "2021-2"]
   },
   {
@@ -1179,7 +1179,7 @@
     ],
     "answer": 3,
     "explanation": "전자봉투(Digital Envelope)는 대칭키 암호화와 공개키 암호화를 결합한 방식이다. 송신자(A)는 메시지를 임의의 비밀키(대칭키)로 암호화하고, 해당 비밀키를 수신자(B)의 공개키로 암호화하여 전자봉투를 생성한다. 수신자는 자신의 개인키로 봉투를 열어 비밀키를 얻고, 비밀키로 메시지를 복호화한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "SET", "전자봉투", "DigiralEnvelope", "2021", "2021-2"]
   },
   {
@@ -1199,7 +1199,7 @@
     ],
     "answer": 2,
     "explanation": "SOAR(Security Orchestration, Automation and Response)는 다양한 보안 도구를 통합하고 보안 대응 프로세스를 자동화하는 플랫폼이다. SIEM에서 수집된 경보를 바탕으로 자동화된 플레이북(Playbook)을 실행하여 위협에 신속하게 대응한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "SOAR", "보안운영", "자동화", "2021", "2021-2"]
   },
   {
@@ -1219,7 +1219,7 @@
     ],
     "answer": 3,
     "explanation": "선택 평문 공격(CPA, Chosen Plaintext Attack)은 공격자가 암호화 장치에 접근하여 자신이 선택한 평문을 암호화한 결과(암호문)를 얻을 수 있는 상황에서의 공격이다. 공격자는 암호 알고리즘의 특성을 분석하기 위해 전략적으로 평문을 선택한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "암호공격", "선택평문공격", "CPA", "2021", "2021-2"]
   },
   {
@@ -1340,7 +1340,7 @@
     ],
     "answer": 4,
     "explanation": "보안 커널(Security Kernel)은 TCB(Trusted Computing Base) 내에서 접근 통제 참조 모니터 개념을 구현한 소프트웨어 구성요소이다. 모든 주체의 객체 접근을 중재하고(완전한 중재), 변경될 수 없어야 하며(격리), 검증 가능해야 한다(검증 가능성)는 참조 모니터 요건을 구현한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "보안커널", "참조모니터", "TCB", "접근통제", "2021", "2021-2"]
   },
   {
@@ -1400,7 +1400,7 @@
     ],
     "answer": 2,
     "explanation": "해시 함수는 전자서명(메시지 다이제스트 생성), 메시지 인증(HMAC), 패스워드 기반 암호화(PBKDF2, bcrypt 등)에 사용된다. 스트림 암호화는 의사난수 키스트림을 생성하여 XOR하는 방식으로 해시 함수와 직접적인 연관이 없다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "해시함수", "전자서명", "메시지인증", "패스워드", "2021", "2021-2"]
   },
   {
@@ -1420,7 +1420,7 @@
     ],
     "answer": 1,
     "explanation": "전자서명을 이용한 메시지 인증에서 송신자(a)가 메시지의 해시값을 자신의 개인키(b)로 서명하여 전송한다. 수신자는 송신자(c)의 공개키(d)로 서명을 검증하여 메시지의 무결성과 송신자의 신원을 확인한다. 개인키로 서명하고 공개키로 검증하는 것이 전자서명의 기본 원리이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "메시지인증", "전자서명", "공개키", "개인키", "2021", "2021-2"]
   },
   {
@@ -1460,7 +1460,7 @@
     ],
     "answer": 4,
     "explanation": "사전 공격(Dictionary Attack)은 추측하기 쉬운 단어, 이름, 숫자 등으로 구성된 사전 파일을 이용하여 패스워드를 대입하는 공격이다. 모든 경우의 수를 시도하는 브루트포스와 달리, 사람들이 흔히 사용하는 패턴을 우선적으로 시도한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "패스워드공격", "사전공격", "DictionaryAttack", "2021", "2021-2"]
   },
   {
@@ -1500,7 +1500,7 @@
     ],
     "answer": 1,
     "explanation": "동형 암호화(Homomorphic Encryption)는 암호화된 데이터를 복호화하지 않고 연산을 수행할 수 있는 암호화 기법이다. 암호문에 대한 연산 결과를 복호화하면 평문에 동일한 연산을 적용한 결과와 일치한다. 클라우드 서버가 데이터를 처리하면서도 내용을 볼 수 없어 개인정보 보호에 활용된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "동형암호화", "HomomorphicEncryption", "클라우드보안", "2021", "2021-2"]
   },
   {
@@ -1580,7 +1580,7 @@
     ],
     "answer": 2,
     "explanation": "OAuth(Open Authorization)는 공개 API를 이용한 표준 인가(Authorization) 프로토콜로, 사용자가 자신의 자격증명(아이디·비밀번호)을 노출하지 않고 제3자 앱에 특정 자원에 대한 접근 권한을 부여한다. OAuth 1.0은 RFC 5849, OAuth 2.0은 RFC 6749에 정의되어 있다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "OAuth", "인가", "RFC5849", "2021", "2021-2"]
   },
   {
@@ -1600,7 +1600,7 @@
     ],
     "answer": 2,
     "explanation": "Shannon의 암호 설계 원칙 중 확산(Diffusion)은 평문의 한 비트 변화가 암호문 전체에 영향을 미치도록 하여, 평문과 암호키의 통계적 관계를 은닉하는 특성이다. 혼돈(Confusion)은 암호키와 암호문 사이의 관계를 복잡하게 만드는 특성이다. 치환(Substitution)은 혼돈, 전치(Permutation)는 확산을 구현한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "Shannon", "확산", "혼돈", "암호설계", "2021", "2021-2"]
   },
   {
@@ -1902,7 +1902,7 @@
     ],
     "answer": 1,
     "explanation": "사업영향평가(BIA, Business Impact Analysis)는 재난·장애 발생 시 각 업무 프로세스의 중단이 조직에 미치는 영향(재무적, 운영적, 법적 등)을 분석한다. RTO(목표복구시간), RPO(목표복구시점) 등 핵심 지표를 도출하고 복구 우선순위를 결정하는 데 사용된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안관리및법규", "BIA", "사업영향평가", "BCP", "2021", "2021-2"]
   },
   {
@@ -1962,7 +1962,7 @@
     ],
     "answer": 3,
     "explanation": "CC(Common Criteria, 공통 평가 기준)는 ISO/IEC 15408로 표준화된 국제 보안 제품 평가 기준이다. EAL(Evaluation Assurance Level) 1~7의 7단계로 보증 수준을 나타내며, EAL7이 가장 높은 수준이다. 각국 CC 인증기관(한국은 ITSCC)이 평가한 결과를 회원국 간에 상호 인정한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안관리및법규", "CC", "CommonCriteria", "EAL", "2021", "2021-2"]
   },
   {
@@ -1982,7 +1982,7 @@
     ],
     "answer": 1,
     "explanation": "정답은 1번 사업영향평가(BIA)이다. BIA는 업무 중단이 재무·운영에 미치는 영향을 분석해 핵심 업무와 MTPD, RTO, RPO 등 복구 목표를 도출한다. BCP와 DRP는 이 분석 결과를 바탕으로 업무 연속성과 정보시스템 복구 절차를 수립하는 계획이라는 점이 다르다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안관리및법규", "BIA", "사업영향평가", "RTO", "RPO", "MTPD", "2021", "2021-2"]
   },
   {

@@ -16,7 +16,7 @@
     ],
     "answer": 2,
     "explanation": "DLP(Data Loss Prevention, 데이터 유출 방지)는 PC에 에이전트를 설치하여 이메일, SNS, 웹 등 다양한 경로를 통한 기업 내부 정보 유출을 탐지하고 차단하는 보안 솔루션이다. DRM은 콘텐츠 암호화·접근제어, VDI는 가상 데스크톱, EDMS는 전자문서관리시스템이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "시스템보안",
@@ -126,7 +126,7 @@
     ],
     "answer": 1,
     "explanation": "exFAT(Extended File Allocation Table)은 마이크로소프트가 개발한 파일 시스템으로, FAT32의 한계(4GB 파일 크기 제한)를 극복하고 플래시 메모리 장치에 최적화되었다. Windows CE 6.0, Vista, 7, Server 2008에 도입되었으며 대용량 파일 처리에 효과적이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "시스템보안",
@@ -153,7 +153,7 @@
     ],
     "answer": 2,
     "explanation": "Windows 부팅 순서는 POST(하드웨어 자가진단) → CMOS(설정 읽기) → MBR(부팅 섹터 읽기) → NTLDR(부팅 로더) → NTDETECT.com(하드웨어 감지) → ntoskrnl.exe(커널 로드) 순이다. 즉 나-바-가-다-라-마 순서가 맞다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "시스템보안",
@@ -238,7 +238,7 @@
     ],
     "answer": 2,
     "explanation": "/etc/hosts 파일은 IP 주소와 호스트명을 정적으로 매핑하는 파일로, DNS 조회보다 우선 적용된다. 비인가자가 이 파일에 쓰기 권한을 가지면 악의적인 호스트명-IP 매핑을 추가하여 파밍(Pharming) 공격이 가능하다. hosts.equiv는 원격 접근 신뢰 호스트 파일이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "시스템보안",
@@ -266,7 +266,7 @@
     ],
     "answer": 2,
     "explanation": "Web Beacon(웹 비컨)은 1×1픽셀의 투명한 이미지로 웹페이지나 이메일에 삽입되어 사용자 행동을 추적한다. Web bug, pixel tag, tracking pixel 등으로도 불리며, 이메일 열람 여부, 방문 페이지 등을 수집한다. 쿠키와 함께 사용되면 광범위한 사용자 프로파일링이 가능하다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "시스템보안",
@@ -435,7 +435,7 @@
     ],
     "answer": 3,
     "explanation": "멜트다운(Meltdown)은 인텔 CPU의 비순차 실행(Out-of-Order Execution) 취약점을 이용해 커널 메모리를 사용자 공간에서 읽을 수 있는 공격이다. 스펙터(Spectre)는 분기 예측을 이용한 유사 취약점으로 더 광범위한 CPU에 영향을 미친다. 미라이는 IoT 봇넷 악성코드이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "시스템보안",
@@ -464,7 +464,7 @@
     ],
     "answer": 2,
     "explanation": "윈도우 시스템 로그(System Log)는 운영체제 구성요소(드라이버, 서비스 등)가 기록하는 이벤트 로그이다. 부팅 시 드라이버 로드 여부, 시스템 서비스 시작/중지 등이 기록된다. 응용 프로그램 로그는 앱이 기록, 보안 로그는 인증·접근 이벤트를 기록한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "시스템보안",
@@ -577,7 +577,7 @@
     ],
     "answer": 3,
     "explanation": "WEP는 RC4 스트림 암호와 IV(Initial Vector, 초기벡터)를 결합하여 키스트림을 생성한다. IV는 매 패킷마다 랜덤하게 생성하여 동일한 키로도 다른 암호문을 만들기 위한 목적이나, WEP의 24비트 IV는 너무 짧아 재사용이 발생하여 보안 취약점이 된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -634,7 +634,7 @@
     ],
     "answer": 4,
     "explanation": "SDN(Software Defined Networking)은 네트워크의 제어 평면(Control Plane)과 데이터 평면(Data Plane)을 분리하여 소프트웨어로 네트워크를 중앙에서 제어하는 기술이다. 트래픽 흐름 제어, QoS 보장, 유연한 네트워크 관리가 가능하다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -688,7 +688,7 @@
     ],
     "answer": 1,
     "explanation": "정답은 1번 ㉠ MAC, ㉡ 암호화이다. 무차별 모드(Promiscuous Mode)는 NIC가 자신의 MAC 주소가 아닌 패킷도 수신하는 모드로, 스니핑 공격에 활용된다. 스니핑은 통신 내용을 몰래 엿보는 수동적 공격이므로, 패킷을 보더라도 내용을 해석하지 못하게 하는 암호화(SSL/TLS, SSH 등)가 가장 직접적인 대책이다. 인증은 접속 주체를 확인하는 통제이지만 이미 흘러가는 패킷의 내용을 보호하는 대책은 아니므로 이 문항의 ㉡으로는 부적절하다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -717,7 +717,7 @@
     ],
     "answer": 1,
     "explanation": "전송 계층(Transport Layer, OSI 4계층)은 End-to-End 신뢰성 있는 데이터 전송을 담당한다. TCP는 오류 검출 및 재전송, 흐름 제어, 혼잡 제어를 제공한다. 네트워크 계층은 라우팅, 세션 계층은 세션 관리, 물리 계층은 비트 전송을 담당한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -802,7 +802,7 @@
     ],
     "answer": 2,
     "explanation": "SOAR(Security Orchestration, Automation and Response)는 보안 운영을 자동화하고 오케스트레이션하는 플랫폼이다. 낮은 수준의 이벤트는 자동으로 처리하고, 고수준 사고 발생 시 표준화된 플레이북으로 대응을 지원한다. SIEM은 로그 수집·분석, NGFW는 차세대 방화벽, UTM은 통합위협관리이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -829,7 +829,7 @@
     ],
     "answer": 1,
     "explanation": "traceroute(Windows: tracert)는 패킷이 목적지까지 이동하는 경로를 추적한다. TTL 값을 1씩 증가시켜 각 홉(라우터)에서 ICMP Time Exceeded 메시지를 수신하여 경로상의 라우터 IP를 확인한다. UDP, ICMP, IP TTL을 활용한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -969,7 +969,7 @@
     ],
     "answer": 2,
     "explanation": "SYN Flooding은 TCP 연결 과정에서 SYN 패킷만 대량 전송하여 서버의 TCP 백로그 큐를 고갈시키는 공격이다. 서버는 SYN-ACK를 보낸 후 응답을 기다리는 반열림(Half-Open) 연결 상태가 쌓여 정상 연결 불가 상태가 된다. PPS 제한, SYN Cookie, 방화벽 차단으로 대응한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -1026,7 +1026,7 @@
     ],
     "answer": 1,
     "explanation": "Proxy(프록시) 서버는 클라이언트와 서버 사이에서 중계 역할을 하며 캐싱 기능을 제공한다. 모든 HTTP 요청을 먼저 수신하여 캐시된 콘텐츠가 있으면 서버에 재요청 없이 응답한다. 웹 필터링, 로드 밸런싱, 익명화 등에도 활용된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -1110,7 +1110,7 @@
     ],
     "answer": 1,
     "explanation": "traceroute는 두 가지 ICMP 메시지를 활용한다. 첫째, TTL이 0이 되면 라우터가 보내는 'Time Exceeded(시간초과)' 메시지로 경로상 라우터를 파악한다. 둘째, 목적지 도달 여부 확인에 'Echo(메코)' 요청/응답을 활용한다. 송신지 억제와 타임스탬프는 traceroute와 무관하다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "네트워크보안",
@@ -1138,7 +1138,7 @@
     ],
     "answer": 4,
     "explanation": "워터마킹(Watermarking)은 디지털 콘텐츠에 저작권 정보를 담은 비트 패턴을 삽입하는 기술이다. 동일한 저작물에는 동일한 워터마크가 삽입된다. 핑거프린팅은 구매자별로 다른 패턴을 삽입하여 불법 유통 경로를 추적하는 기술이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1166,7 +1166,7 @@
     ],
     "answer": 3,
     "explanation": "웹셸(WebShell)은 공격자가 웹 서버에 업로드하는 악성 스크립트로, HTTP 요청을 통해 서버 명령을 원격 실행한다. '<% eval request(\"cmd\") %>'는 ASP 웹셸의 전형적인 패턴으로, 클라이언트가 보낸 'cmd' 파라미터를 서버에서 실행하는 구조이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1194,7 +1194,7 @@
     ],
     "answer": 4,
     "explanation": "리졸버(Resolver)는 DNS 클라이언트로서 네임서버에 도메인 이름 조회 요청을 보내고 응답을 받는 역할을 한다. 클라이언트의 DNS 쿼리를 처리하기 위해 여러 네임서버를 순차적으로 조회(재귀 또는 반복)한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1222,7 +1222,7 @@
     ],
     "answer": 2,
     "explanation": "POST 방식은 데이터를 HTTP 요청 바디(Body)에 담아 전송하므로 URL에 데이터가 노출되지 않는다. 파일 업로드, 로그인, 폼 데이터 제출에 주로 사용된다. GET은 URL 쿼리스트링에 데이터를 포함, HEAD는 헤더만 요청, CONNECT는 터널링에 사용한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1249,7 +1249,7 @@
     ],
     "answer": 2,
     "explanation": "FTP 바운스 공격(FTP Bounce Attack)은 FTP 서버의 PORT 명령이 데이터 전송 목적지를 검증하지 않는 취약점을 이용한다. 공격자는 FTP 서버를 중간 경유지(바운스)로 활용하여 목표 시스템을 스캔하거나 공격 출처를 숨긴다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1276,7 +1276,7 @@
     ],
     "answer": 2,
     "explanation": "서버가 클라이언트에 쿠키를 생성하게 하려면 HTTP 응답 헤더에 'Set-Cookie' 값을 설정한다. 이후 클라이언트는 동일 서버로의 요청에 'Cookie' 헤더에 해당 값을 포함시켜 전송한다. Set-Cookie는 서버→클라이언트, Cookie는 클라이언트→서버 방향이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1332,7 +1332,7 @@
     ],
     "answer": 1,
     "explanation": "이중 서명(Dual Signature)은 SET(Secure Electronic Transaction) 프로토콜에서 사용하는 기술이다. 구매 정보(상점용)와 지불 정보(은행용)를 각각 해시하여 연결한 후 서명한다. 상점은 지불 정보를, 은행은 구매 정보를 모르면서도 거래의 유효성을 검증할 수 있다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1416,7 +1416,7 @@
     ],
     "answer": 1,
     "explanation": "FTP Passive 모드에서 제어 채널은 21번/TCP를 사용하고, 데이터 채널은 1024번 이상의 임시 포트(Ephemeral Port)를 사용한다. 방화벽 정책에서 21번과 1024 이상의 TCP 포트를 허용해야 Passive FTP가 정상 작동한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1501,7 +1501,7 @@
     ],
     "answer": 4,
     "explanation": "연계 보관성(Chain of Custody)의 원칙은 디지털 증거가 수집부터 법정 제출까지 모든 과정의 취급자·이동 경로·처리 내역을 명확히 문서화하여 증거의 신뢰성을 보장하는 원칙이다. 무결성은 증거의 변형 방지, 재현은 동일 결과 재현 가능성이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1529,7 +1529,7 @@
     ],
     "answer": 2,
     "explanation": "CSRF(Cross-Site Request Forgery, 크로스사이트 요청 위조)는 인증된 사용자의 세션 쿠키 등 자동 인증 정보를 이용해 사용자가 의도하지 않은 요청을 서버로 전송하는 공격이다. 공격 대상은 서버이며, XSS와 달리 클라이언트 스크립트 실행이 아닌 요청 위조에 초점이 있다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1615,7 +1615,7 @@
     ],
     "answer": 3,
     "explanation": "DNS 하이재킹(DNS Hijacking)은 DNS 서버 자체를 해킹하거나 DNS 쿼리/응답 패킷을 조작하여 도메인에 매핑된 IP 주소를 공격자가 원하는 주소로 변조하는 공격이다. DNS 스푸핑은 캐시 포이즈닝을 포함하는 넓은 개념, DNS 터널링은 DNS를 C&C 통신에 악용한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "어플리케이션보안",
@@ -1840,7 +1840,7 @@
     ],
     "answer": 4,
     "explanation": "LEA(Lightweight Encryption Algorithm)는 국가보안기술연구소(NSRI)가 2013년 개발한 경량 블록 암호 알고리즘으로 2019년 ISO/IEC 29192-2 국제표준으로 제정되었다. AES 대비 높은 처리량과 낮은 전력소비로 IoT 환경에 적합하다. SEED와 ARIA도 국산 암호이나 LEA와 다르다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안일반",
@@ -1896,7 +1896,7 @@
     ],
     "answer": 3,
     "explanation": "선택 평문 공격(CPA, Chosen Plaintext Attack)은 공격자가 암호화 장치에 접근하여 원하는 평문을 선택해 암호화한 결과를 얻을 수 있는 상황에서 수행하는 공격이다. 기지 평문 공격은 이미 알려진 평문-암호문 쌍을 이용하고, 선택 암호문 공격은 복호화 장치에 접근한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안일반",
@@ -1952,7 +1952,7 @@
     ],
     "answer": 2,
     "explanation": "MD5(Message Digest 5)는 128비트(16바이트) 해시값을 출력하며, 512비트 블록 단위로 처리하고, 4라운드 64단계로 구성된다. SHA-1은 160비트, SHA-256은 256비트 출력이다. MD5는 충돌 취약점이 발견되어 보안용으로는 사용이 권장되지 않는다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안일반",
@@ -2008,7 +2008,7 @@
     ],
     "answer": 3,
     "explanation": "Diffie-Hellman 키 교환은 공개된 채널에서 직접 키를 교환하지 않고, 각자 임의의 개인값을 선택하여 공개값을 교환한 뒤 동일한 공유 비밀키를 독립적으로 계산하는 방식이다. 이산 대수 문제의 어려움에 기반하며 도청자는 공유키를 계산할 수 없다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안일반",
@@ -2064,7 +2064,7 @@
     ],
     "answer": 2,
     "explanation": "CFB(Cipher Feedback Mode, 암호 피드백 모드)는 이전 암호문 블록을 암호화한 값과 현재 평문 블록을 XOR하여 암호문을 생성한다. 암호화 시 전파 특성이 있으나 복호화 시 오류 영향은 국지적이다. CBC와 달리 블록 경계와 무관하게 스트림 암호처럼 동작 가능하다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안일반",
@@ -2149,7 +2149,7 @@
     ],
     "answer": 1,
     "explanation": "정답은 1번으로 ㉠ 취약점, ㉡ 위협, ㉢ 위험이다. 백신을 최신 상태로 유지하지 않은 것은 악용 가능한 보안 약점인 취약점이고, 이를 이용할 수 있는 바이러스는 위협이다. 위협이 취약점을 악용해 손실을 발생시킬 가능성과 영향의 조합이 위험이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안일반",
@@ -2207,7 +2207,7 @@
     ],
     "answer": 3,
     "explanation": "지문에서 설명하는 공격은 재전송 공격(Replay Attack)이다. 방어 기술로는 순서번호(Sequence Number), 타임스탬프(Timestamp, 유효 시간 제한), 비표(Nonce, 일회용 랜덤값)가 있다. 이 중 하나 이상을 메시지에 포함시켜 재전송된 메시지를 식별·거부한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안일반",
@@ -2236,7 +2236,7 @@
     ],
     "answer": 2,
     "explanation": "Diffie-Hellman은 이산 대수 문제(㉠)의 어려움에 기반한다. 키 분배 센터는 큰 소수(㉡) p와 원시근 g를 공개한다. 각 가입자는 비밀 개인키(㉢)를 선택하고, 이를 이용해 계산한 공개키(㉣)를 공개한다. 상대방의 공개키와 자신의 개인키로 공통 세션키를 계산한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안일반",
@@ -2595,7 +2595,7 @@
     ],
     "answer": 3,
     "explanation": "정보통신망법 제22조의2에 따른 선택적 접근권한 고지사항은 접근권한이 필요한 이유, 접근권한이 필요한 정보 및 기능 항목, 동의하지 않을 수 있다는 사실이다. '접근권한이 필요한 기간'은 고지 사항에 포함되지 않는다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안관리및법규",
@@ -2761,7 +2761,7 @@
     ],
     "answer": 4,
     "explanation": "베이스라인 접근법(Baseline Approach)은 모든 시스템에 대해 표준화된 최소 보안 요구사항(베이스라인)을 체크리스트 형태로 제시하고, 미적용 보안 대책을 식별하여 적용하는 방법이다. 빠르고 비용 효율적이지만 개별 시스템의 특수성을 반영하지 못하는 단점이 있다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": [
       "보안기사",
       "정보보안관리및법규",

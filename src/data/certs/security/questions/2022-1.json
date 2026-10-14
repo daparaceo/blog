@@ -762,7 +762,7 @@
     ],
     "answer": 2,
     "explanation": "WPA2-Enterprise는 IEEE 802.1X와 EAP(Extensible Authentication Protocol)를 사용하여 RADIUS 서버를 통해 개별 사용자를 인증한다. WPA2-Personal(PSK)는 사전 공유 키를 사용하며 기업 환경에는 Enterprise 모드가 권장된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "네트워크보안", "WPA2", "무선보안", "802.1X", "RADIUS", "2022", "2022-1"]
   },
   {
@@ -822,7 +822,7 @@
     ],
     "answer": 4,
     "explanation": "정답은 4번 SPF이다. 발신 도메인의 DNS TXT 레코드에 메일 발송이 허용된 서버 IP를 게시하고, 수신 서버가 실제 접속 IP와 대조해 위조 여부를 판단한다. DKIM은 전자서명으로 본문 무결성을 검증하고, DMARC는 SPF·DKIM 결과와 도메인 정렬 정책을 결합한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "이메일보안", "SPF", "2022", "2022-1"]
   },
   {
@@ -922,7 +922,7 @@
     ],
     "answer": 3,
     "explanation": "저장형 XSS(Persistent XSS)는 악성 스크립트가 게시판, 댓글 등 서버에 저장되어 피해자가 해당 페이지 접속 시 실행된다. 반사형 XSS(Reflected XSS)는 악성 스크립트가 URL 파라미터 등에 포함되어 서버 응답에 반사되어 즉시 실행된다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "XSS", "저장형XSS", "반사형XSS", "2022", "2022-1"]
   },
   {
@@ -982,7 +982,7 @@
     ],
     "answer": 3,
     "explanation": "HTTP Request Smuggling은 프론트엔드와 백엔드 서버가 Content-Length와 Transfer-Encoding: chunked 헤더를 서로 다르게 해석하는 차이를 이용하여 HTTP 요청 경계를 혼란시키는 공격이다. 이를 통해 캐시 포이즈닝, 권한 우회, 다른 사용자의 요청 탈취 등이 가능하다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "HTTPSmuggling", "웹보안", "2022", "2022-1"]
   },
   {
@@ -1202,7 +1202,7 @@
     ],
     "answer": 2,
     "explanation": "JSTL의 fn:escapeXml() 함수는 HTML 특수문자(<, >, &, \", ')를 각각 &lt;, &gt;, &amp;, &quot;, &#039;로 이스케이프하여 사용자 입력이 HTML로 해석되지 않도록 한다. 이를 통해 XSS(Cross-Site Scripting) 공격을 방지한다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "어플리케이션보안", "XSS", "JSTL", "이스케이프", "escapeXml", "2022", "2022-1"]
   },
   {
@@ -1342,7 +1342,7 @@
     ],
     "answer": 2,
     "explanation": "㉠은 소유자 기반의 임의적 접근통제(DAC, Discretionary Access Control), ㉡은 보안 레이블 기반 강제적 접근통제(MAC, Mandatory Access Control), ㉢은 역할 기반 접근통제(RBAC, Role-Based Access Control)이다. 정답은 ㉠ DAC, ㉡ MAC, ㉢ RBAC이므로 2번이 옳다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "접근통제", "DAC", "MAC", "RBAC", "2022", "2022-1"]
   },
   {
@@ -1382,7 +1382,7 @@
     ],
     "answer": 2,
     "explanation": "DSA(Digital Signature Algorithm)는 이산대수 문제(Discrete Logarithm Problem)의 어려움에 기반하며, 서명 생성 시 매번 랜덤한 값(k)을 사용하여 같은 메시지에도 다른 서명값이 생성된다. DSA는 서명 전용 알고리즘으로 암호화에는 사용할 수 없다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "DSA", "전자서명", "이산대수", "2022", "2022-1"]
   },
   {
@@ -1603,7 +1603,7 @@
     ],
     "answer": 4,
     "explanation": "ARIA는 Feistel 구조가 아닌 SPN(Substitution-Permutation Network) 구조를 사용한다. ARIA는 128비트 블록, 128/192/256비트 키를 지원하며 국가정보원과 NSRI에서 개발하여 KS X 1213-1로 표준화된 국산 블록 암호이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안일반", "ARIA", "블록암호", "국내표준", "SPN", "2022", "2022-1"]
   },
   {
@@ -2003,7 +2003,7 @@
     ],
     "answer": 4,
     "explanation": "위험 회피(Risk Avoidance)는 위험의 원인이 되는 자산이나 업무 활동을 아예 제거하거나 수행하지 않음으로써 위험 자체를 없애는 전략이다. 보험을 통한 이전은 위험 전가(Risk Transfer), 보안 통제 적용은 위험 완화(Risk Mitigation), 수용 가능 수준의 위험을 그대로 두는 것은 위험 수용(Risk Acceptance)이다.",
-    "hasImage": false,
+    "hasImage": true,
     "tags": ["보안기사", "정보보안관리및법규", "위험처리", "위험회피", "위험관리", "2022", "2022-1"]
   }
 ]
