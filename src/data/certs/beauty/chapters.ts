@@ -1211,7 +1211,7 @@ export const CHAPTERS: CertChapter[] = [
     <tr><td>B2</td><td>구순염, 피부염</td></tr>
     <tr><td>C</td><td>기미·색소침착, 괴혈병 (멜라닌 생성 억제, 콜라겐 합성)</td></tr>
     <tr><td>D</td><td>구루병 (자외선으로 피부에서 합성)</td></tr>
-    <tr><td>E</td><td>노화 촉진, 불임 (항산화, 항불임 비타민)</td></tr>
+    <tr><td>E</td><td>항산화로 피부 노화 방지에 쓰임. 시험 용어로는 "항불임 비타민"(동물 실험 유래). 사람의 결핍은 드물고 신경·근육 장애, 용혈성 빈혈</td></tr>
   </tbody>
 </table>
 
@@ -1324,7 +1324,7 @@ export const CHAPTERS: CertChapter[] = [
 
 <h3>면허 관련</h3>
 <ul>
-  <li>이·미용업 개설과 업무는 <strong>면허를 받은 사람</strong>만 할 수 있다 (보조원은 개설 불가)</li>
+  <li>이·미용업 개설과 업무는 <strong>면허를 받은 사람</strong>만 할 수 있다. 단, 이·미용사의 감독을 받아 <strong>보조 업무</strong>를 하는 것은 면허 없이 가능하다(법 제8조 제1항 단서). 보조원은 영업소를 개설할 수 없다</li>
   <li>면허 취소·정지 시 지체 없이 <strong>시장·군수·구청장</strong>에게 면허증 반납</li>
 </ul>
 
