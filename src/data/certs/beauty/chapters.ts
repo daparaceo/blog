@@ -10,7 +10,7 @@ export const CHAPTERS: CertChapter[] = [
     subject: 'theory',
     chapter: 'haircut',
     chapterLabel: '헤어커트',
-    keywords: ['커트', '테이퍼링', '클리핑', '레이어', '그라데이션', '원랭스', '이사도라', '텐션', '엘리베이션', '엘레베이션', '가위', '레이저', '착강', '전강', '크로스 체크', '빗'],
+    keywords: ['커트', '테이퍼링', '클리핑', '레이어', '그라데이션', '원랭스', '이사도라', '텐션', '엘리베이션', '엘레베이션', '틴닝', '크로스 체크', '웨이트'],
     content: `
 <h3>커트 형태</h3>
 <table>
@@ -43,13 +43,21 @@ export const CHAPTERS: CertChapter[] = [
   </tbody>
 </table>
 
+<h3>크로스 체크 커트</h3>
+<p>커트를 마친 뒤 처음 슬라이스와 <strong>교차하는 방향</strong>으로 다시 잡아 길이와 단차를 확인하며 다듬는 과정</p>
+`,
+  },
+  {
+    subject: 'theory',
+    chapter: 'tools',
+    chapterLabel: '미용 도구',
+    keywords: ['가위', '착강', '전강', '레이저', '빗', '만곡', '내곡선', '협신'],
+    content: `
 <h3>가위</h3>
 <ul>
   <li><strong>착강가위</strong>: 몸체(협신부)는 연강, 날은 특수강으로 이어 붙인 가위. 부분 수정이 쉽다.</li>
   <li><strong>전강가위</strong>: 전체를 특수강 하나로 만든 가위</li>
 </ul>
-<h3>크로스 체크 커트</h3>
-<p>커트를 마친 뒤 처음 슬라이스와 <strong>교차하는 방향</strong>으로 다시 잡아 길이와 단차를 확인하며 다듬는 과정</p>
 
 <h3>가위·빗 고르는 법</h3>
 <ul>
@@ -62,7 +70,7 @@ export const CHAPTERS: CertChapter[] = [
     subject: 'theory',
     chapter: 'perm-curl',
     chapterLabel: '퍼머넌트 웨이브·컬',
-    keywords: ['퍼머', '웨이브', '시스틴', '테스트 컬', '프로세싱', '와인딩', '컬', '스템', '루프', '피봇', '핑거 웨이브', '스윙', '리지', '플러프', '뱅', '스킵', '다공성', '플레인 린스'],
+    keywords: ['퍼머', '웨이브', '시스틴', '테스트 컬', '프로세싱', '와인딩', '컬', '스템', '루프', '피봇', '핑거 웨이브', '스윙', '스킵', '리지', '플러프', '뱅', '다공성', '플레인 린스'],
     content: `
 <h3>퍼머넌트 웨이브 원리</h3>
 <ul>
@@ -107,6 +115,7 @@ export const CHAPTERS: CertChapter[] = [
   <li><strong>프렌치 뱅</strong>: 위로 빗어 끝을 플러프해 내려뜨린 뱅</li>
   <li><strong>웨이브 뱅</strong>: 풀웨이브나 하프 웨이브로 만든 뱅</li>
 </ul>
+
 <h3>퍼머 전후 처리</h3>
 <ul>
   <li><strong>전</strong>: 모발 진단, 디자인 결정, 필요하면 샴푸. 린스·오일은 바르지 않는다 (약액 침투 방해)</li>
@@ -122,7 +131,7 @@ export const CHAPTERS: CertChapter[] = [
     subject: 'theory',
     chapter: 'color-care',
     chapterLabel: '염색·샴푸·트리트먼트',
-    keywords: ['컬러링', '염색', '터치업', '리터치', '처녀모', '버진', '패치 테스트', '스트랜드', '샴푸', '핫오일', '브러싱', '트리트먼트', '리컨디셔닝', '헤어 팩', '가발', '스캘프', '두피', '모발 손상'],
+    keywords: ['컬러링', '염색', '터치업', '리터치', '처녀모', '버진', '패치 테스트', '스트랜드', '샴푸', '핫오일', '브러싱', '트리트먼트', '리컨디셔닝', '헤어 팩', '가발'],
     content: `
 <h3>염색 용어</h3>
 <table>
@@ -155,6 +164,14 @@ export const CHAPTERS: CertChapter[] = [
   <li>컨디셔너는 모발에만, 바탕(파운데이션)에는 바르지 않는다</li>
   <li>열은 결 변형·윤기 손실의 원인</li>
 </ul>
+`,
+  },
+  {
+    subject: 'theory',
+    chapter: 'scalp-hair',
+    chapterLabel: '두피·모발 관리',
+    keywords: ['스캘프', '두피', '모발 손상', '머니플레이션', '백코밍', '비듬', '댄드러프'],
+    content: `
 <h3>스캘프 트리트먼트 (두피 상태별)</h3>
 <table>
   <thead><tr><th>두피</th><th>트리트먼트</th></tr></thead>
@@ -175,7 +192,7 @@ export const CHAPTERS: CertChapter[] = [
     subject: 'theory',
     chapter: 'makeup-nail',
     chapterLabel: '메이크업·네일',
-    keywords: ['메이크업', '화장', '눈썹', '얼굴형', '데이타임', '소셜', '베이스 코트', '폴리쉬', '네일', '손톱', '썬번', '그리스 페인트', '대머리', '분장', '큐티클', '매니큐어', '쿠퍼로즈'],
+    keywords: ['메이크업', '화장', '눈썹', '얼굴형', '데이타임', '소셜', '썬번', '그리스 페인트', '대머리', '분장', '베이스 코트', '폴리쉬', '네일', '손톱', '큐티클', '매니큐어'],
     content: `
 <h3>메이크업 종류</h3>
 <table>
@@ -196,16 +213,17 @@ export const CHAPTERS: CertChapter[] = [
   <li><strong>마름모형</strong>: 광대가 넓으므로 수평에 가깝게 그려 이마를 넓어 보이게 한다 (내려 그리면 광대가 강조됨)</li>
 </ul>
 
+<h3>그 밖의 메이크업·분장</h3>
+<ul>
+  <li><strong>썬번 메이크업</strong>: 햇볕을 막는 화장 / <strong>그리스 페인트 메이크업</strong>: 무대 분장</li>
+  <li><strong>대머리 분장 재료</strong>: 글라짠·라텍스(대머리 캡), 스프리트검(접착)</li>
+</ul>
+
 <h3>네일 코팅</h3>
 <ul>
   <li><strong>베이스 코트</strong>: 폴리쉬 전에 바름. 착색 방지, 밀착력 향상</li>
   <li><strong>탑 코트</strong>: 폴리쉬 위에 바름. 광택과 지속력</li>
   <li><strong>네일 강화제</strong>: 찢어지거나 갈라지는 손톱 보강</li>
-</ul>
-<h3>그 밖의 메이크업·분장</h3>
-<ul>
-  <li><strong>썬번 메이크업</strong>: 햇볕을 막는 화장 / <strong>그리스 페인트 메이크업</strong>: 무대 분장</li>
-  <li><strong>대머리 분장 재료</strong>: 글라짠·라텍스(대머리 캡), 스프리트검(접착)</li>
 </ul>
 
 <h3>매니큐어 도구</h3>
@@ -213,16 +231,13 @@ export const CHAPTERS: CertChapter[] = [
   <li><strong>큐티클 푸셔</strong>: 상피(큐티클)를 밀어 올림 / <strong>큐티클 니퍼즈</strong>: 큐티클 제거</li>
   <li><strong>에머리 보드</strong>: 손톱 모양 다듬기 / <strong>폴리시 리무버</strong>: 폴리쉬 제거</li>
 </ul>
-
-<h3>피부 상태 용어</h3>
-<p><strong>쿠퍼로즈</strong>: 모세혈관이 확장되어 붉은 실핏줄이 비쳐 보이는 피부. 강한 자극과 급격한 온도 변화를 피한다.</p>
 `,
   },
   {
     subject: 'theory',
     chapter: 'history',
     chapterLabel: '미용의 역사',
-    keywords: ['고대', '고구려', '신라', '백제', '가체', '쌍상투', '쪽진머리', '낭자머리', '풍기명식', '비녀', '산호잠', '옥잠', '이집트', '가발'],
+    keywords: ['고대', '고구려', '신라', '백제', '가체', '쌍상투', '쪽진머리', '낭자머리', '풍기명식', '비녀', '산호잠', '옥잠', '이집트'],
     content: `
 <h3>삼국시대</h3>
 <p>신분과 혼인 여부에 따라 머리모양이 달랐다는 점이 핵심이다.</p>
@@ -241,6 +256,7 @@ export const CHAPTERS: CertChapter[] = [
   <li><strong>쪽진머리(낭자머리)</strong>: 뒤통수 아래에 틀어 비녀를 꽂은 머리</li>
   <li><strong>풍기명식머리</strong>: 얹은머리에서 양쪽 머리를 늘어뜨린 형태</li>
 </ul>
+
 <h3>비녀 (잠)</h3>
 <ul>
   <li><strong>재료 이름</strong>: 산호잠, 옥잠, 금잠, 은잠</li>
@@ -253,6 +269,47 @@ export const CHAPTERS: CertChapter[] = [
   },
 
   // ===== 공중보건학 =====
+  {
+    subject: 'public-health',
+    chapter: 'basics',
+    chapterLabel: '공중보건 개념·인구·보건지표',
+    keywords: ['공중보건', '윈슬로우', '숙주', '병인', '인구', '종형', '피라미드', '항아리', '비례사망지수', '보건지표', '의료보험', '영양소', '조절소'],
+    content: `
+<h3>공중보건 기본 개념</h3>
+<ul>
+  <li><strong>윈슬로우의 정의</strong>: 지역사회의 노력으로 질병 예방, 수명 연장, 신체적·정신적 건강과 효율 증진</li>
+  <li><strong>질병 발생 3요인</strong>: 숙주 - 병인 - 환경</li>
+</ul>
+
+<h3>인구 구성 형태</h3>
+<table>
+  <thead><tr><th>형태</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td>피라미드형</td><td>출생률·사망률 모두 높음 (증가형)</td></tr>
+    <tr><td>종형</td><td>출생률·사망률 모두 낮음, 14세 이하가 65세 이상의 약 2배 (정지형, 이상형)</td></tr>
+    <tr><td>항아리형</td><td>출생률이 사망률보다 낮음 (감소형)</td></tr>
+    <tr><td>별형</td><td>생산연령 인구 유입 (도시형)</td></tr>
+    <tr><td>호로형</td><td>생산연령 인구 유출 (농촌형)</td></tr>
+  </tbody>
+</table>
+
+<h3>보건지표</h3>
+<ul>
+  <li>WHO의 국가 간 건강수준 비교 지표: <strong>비례사망지수</strong>, 평균수명, 조사망률</li>
+  <li>비례사망지수 = 50세 이상 사망자 수 / 전체 사망자 수 × 100 (높을수록 건강수준이 좋다)</li>
+</ul>
+
+<h3>의료보험 연혁</h3>
+<p>1977년 직장의료보험 시작 → 1988년 농어촌 지역 → <strong>1989년 전 국민 의료보험</strong></p>
+
+<h3>영양소 기능</h3>
+<ul>
+  <li>열량소: 탄수화물, 지방, 단백질</li>
+  <li>구성소: 단백질, 무기질</li>
+  <li>조절소: <strong>비타민</strong>, 무기질, 물</li>
+</ul>
+`,
+  },
   {
     subject: 'public-health',
     chapter: 'infection',
@@ -296,6 +353,7 @@ export const CHAPTERS: CertChapter[] = [
     <tr><td>폐흡충 (폐디스토마)</td><td>민물 게·가재</td></tr>
   </tbody>
 </table>
+
 <h3>병원체별 감염병</h3>
 <table>
   <thead><tr><th>병원체</th><th>감염병</th></tr></thead>
@@ -317,8 +375,8 @@ export const CHAPTERS: CertChapter[] = [
   {
     subject: 'public-health',
     chapter: 'environment-industry',
-    chapterLabel: '환경·산업보건·보건지표',
-    keywords: ['용존산소', 'DO', 'BOD', '하수', '잠함병', '산업피로', '비례사망지수', '보건지표', '의료보험', '영양소', '조절소', '비타민', '인구', '종형', '피라미드', '자정작용', '기온역전', '숙주', '병인', '윈슬로우', '조명', '근시'],
+    chapterLabel: '환경보건·산업보건',
+    keywords: ['용존산소', 'DO', 'BOD', '하수', '자정작용', '기온역전', '환경오염', '잠함병', '산업피로', '조명', '근시', '직업병'],
     content: `
 <h3>수질 지표</h3>
 <table>
@@ -329,47 +387,14 @@ export const CHAPTERS: CertChapter[] = [
   </tbody>
 </table>
 
+<h3>공기의 자정작용</h3>
+<p>희석, 강우·강설의 세정, 산화, 자외선 살균, 식물의 가스 교환. <strong>기온역전</strong>은 공기 순환을 막아 오염을 악화시키므로 자정작용이 아니다.</p>
+
 <h3>산업보건</h3>
 <ul>
   <li><strong>잠함병(감압병)</strong>: 고압 환경에서 갑자기 감압할 때 체액·혈액 속 질소가 기포로 변해 생긴다</li>
   <li><strong>산업피로 대책</strong>: 적절한 휴식 배분, 효율적인 에너지 사용, 개인차를 고려한 작업량 배정</li>
 </ul>
-
-<h3>보건지표</h3>
-<ul>
-  <li>WHO의 국가 간 건강수준 비교 지표: <strong>비례사망지수</strong>, 평균수명, 조사망률</li>
-  <li>비례사망지수 = 50세 이상 사망자 수 / 전체 사망자 수 × 100 (높을수록 건강수준이 좋다)</li>
-</ul>
-
-<h3>의료보험 연혁</h3>
-<p>1977년 직장의료보험 시작 → 1988년 농어촌 지역 → <strong>1989년 전 국민 의료보험</strong></p>
-
-<h3>영양소 기능</h3>
-<ul>
-  <li>열량소: 탄수화물, 지방, 단백질</li>
-  <li>구성소: 단백질, 무기질</li>
-  <li>조절소: <strong>비타민</strong>, 무기질, 물</li>
-</ul>
-<h3>공중보건 기본 개념</h3>
-<ul>
-  <li><strong>윈슬로우의 정의</strong>: 지역사회의 노력으로 질병 예방, 수명 연장, 신체적·정신적 건강과 효율 증진</li>
-  <li><strong>질병 발생 3요인</strong>: 숙주 - 병인 - 환경</li>
-</ul>
-
-<h3>인구 구성 형태</h3>
-<table>
-  <thead><tr><th>형태</th><th>특징</th></tr></thead>
-  <tbody>
-    <tr><td>피라미드형</td><td>출생률·사망률 모두 높음 (증가형)</td></tr>
-    <tr><td>종형</td><td>출생률·사망률 모두 낮음, 14세 이하가 65세 이상의 약 2배 (정지형, 이상형)</td></tr>
-    <tr><td>항아리형</td><td>출생률이 사망률보다 낮음 (감소형)</td></tr>
-    <tr><td>별형</td><td>생산연령 인구 유입 (도시형)</td></tr>
-    <tr><td>호로형</td><td>생산연령 인구 유출 (농촌형)</td></tr>
-  </tbody>
-</table>
-
-<h3>공기의 자정작용</h3>
-<p>희석, 강우·강설의 세정, 산화, 자외선 살균, 식물의 가스 교환. <strong>기온역전</strong>은 공기 순환을 막아 오염을 악화시키므로 자정작용이 아니다.</p>
 
 <h3>불량 조명으로 인한 직업병</h3>
 <p>안정피로, 근시, 안구진탕증 (원시는 해당하지 않는다)</p>
@@ -381,7 +406,7 @@ export const CHAPTERS: CertChapter[] = [
     subject: 'disinfection',
     chapter: 'basics',
     chapterLabel: '소독 용어·물리적 소독',
-    keywords: ['소독의 정의', '멸균', '방부', '일광', '자외선', '자비', '건열', '고압증기', '방사선', '물리적', '도자기', '습열', '건열', '화염', '여과', '가스', 'EO'],
+    keywords: ['소독의 정의', '멸균', '방부', '일광', '자외선', '자비', '건열', '습열', '고압증기', '방사선', '물리적', '도자기', '화염', '여과', 'EO', '가스'],
     content: `
 <h3>용어</h3>
 <table>
@@ -409,6 +434,7 @@ export const CHAPTERS: CertChapter[] = [
 <h3>자비소독 첨가제</h3>
 <p>살균력을 높이고 금속의 녹을 막기 위해 넣는다: 탄산나트륨(중조) 1~2%, 크레졸 비누액 2~3%, 석탄산 5%.<br>
 <strong>승홍수는 금속을 부식시키므로 넣지 않는다.</strong></p>
+
 <h3>열 소독 분류</h3>
 <ul>
   <li><strong>습열</strong>: 자비소독, 고압증기멸균, 유통증기멸균, 저온살균</li>
@@ -424,7 +450,7 @@ export const CHAPTERS: CertChapter[] = [
     subject: 'disinfection',
     chapter: 'chemical',
     chapterLabel: '화학적 소독제',
-    keywords: ['석탄산', '크레졸', '포르말린', '과산화수소', '염소', '승홍', '알코올', '알콜', '생석회', '화학적', '희석', '계면활성제', '음이온', '양이온', '구비조건', '음용수', '붕소'],
+    keywords: ['석탄산', '크레졸', '포르말린', '과산화수소', '염소', '승홍', '알코올', '알콜', '생석회', '화학적', '희석', '구비조건', '음용수', '배설물'],
     content: `
 <h3>주요 소독제</h3>
 <table>
@@ -444,7 +470,19 @@ export const CHAPTERS: CertChapter[] = [
 <h3>희석 계산</h3>
 <p>필요한 원액 양 = 만들 양 × 목표 농도 / 원액 농도</p>
 <p>예: 100% 알코올로 70% 알코올 400mL → 원액 400 × 0.7 = <strong>280mL</strong>, 물 <strong>120mL</strong></p>
+
+<h3>이상적인 소독제 조건</h3>
+<p>살균력이 강하고 <strong>효과가 빨리</strong> 나타날 것, 값이 쌀 것, 독성·자극이 적을 것, 희석해도 안정적일 것, 물품을 부식시키지 않을 것</p>
+`,
+  },
+  {
+    subject: 'disinfection',
+    chapter: 'surfactant',
+    chapterLabel: '계면활성제',
+    keywords: ['계면활성제', '음이온', '양이온', '양성', '비이온', '세정'],
+    content: `
 <h3>계면활성제</h3>
+<p>계면활성제는 한 분자 안에 물과 친한 친수기와 기름과 친한 친유기를 함께 가지고 있어, 물과 기름을 섞거나 피부·모발의 때를 떼어낸다. 물에 녹았을 때 친수기가 띠는 전하에 따라 네 가지로 나눈다.</p>
 <table>
   <thead><tr><th>종류</th><th>특징·용도</th></tr></thead>
   <tbody>
@@ -455,18 +493,15 @@ export const CHAPTERS: CertChapter[] = [
   </tbody>
 </table>
 <p>세정력: 음이온 &gt; 양성 &gt; 양이온 &gt; 비이온 / 자극: 양이온 &gt; 음이온 &gt; 양성 &gt; 비이온</p>
-
-<h3>이상적인 소독제 조건</h3>
-<p>살균력이 강하고 <strong>효과가 빨리</strong> 나타날 것, 값이 쌀 것, 독성·자극이 적을 것, 희석해도 안정적일 것, 물품을 부식시키지 않을 것</p>
 `,
   },
 
   // ===== 피부학 =====
   {
     subject: 'skin',
-    chapter: 'structure-type',
-    chapterLabel: '피부 구조·유형',
-    keywords: ['기저층', '유극층', '과립층', '각질층', '유두층', '멜라닌', '건성', '지성', '수렴', '화장수', '필링', 'AHA', '각질', '망상층', '진피', '한선', '아포크린', '에크린', '중화능', 'pH', '포인트 메이크업', '파운데이션'],
+    chapter: 'structure',
+    chapterLabel: '피부 구조',
+    keywords: ['표피', '기저층', '유극층', '과립층', '각질층', '투명층', '유두층', '망상층', '진피', '멜라닌', '중화능', 'pH', '자외선'],
     content: `
 <h3>표피 구조 (위에서 아래로)</h3>
 <table>
@@ -481,9 +516,51 @@ export const CHAPTERS: CertChapter[] = [
 </table>
 <p>유두층·망상층은 진피에 속한다.</p>
 
+<h3>진피</h3>
+<ul>
+  <li><strong>유두층</strong>: 표피 바로 아래, 모세혈관과 신경이 많다</li>
+  <li><strong>망상층</strong>: 진피의 약 4/5. 콜라겐·엘라스틴 섬유가 그물처럼 얽혀 탄력과 강도를 만든다</li>
+</ul>
+
+<h3>피부의 pH</h3>
+<p>건강한 피부는 약산성(pH 4.5~6.5). 알칼리성 물질이 닿아도 원래대로 되돌리는 능력을 <strong>알칼리 중화능</strong>이라 한다.</p>
+
 <h3>자외선과 피부</h3>
 <p>강한 자외선을 받으면 피부는 방어를 위해 <strong>각질층을 두껍게</strong> 하고 멜라닌을 늘린다. 피서 후 피부가 두껍고 거칠어지는 이유다.</p>
+`,
+  },
+  {
+    subject: 'skin',
+    chapter: 'appendage',
+    chapterLabel: '피부 부속기관·모발',
+    keywords: ['한선', '아포크린', '에크린', '액취', '피지선', '피지', '모발', '케라틴', '시스틴', '유황'],
+    content: `
+<h3>한선 (땀샘)</h3>
+<ul>
+  <li><strong>에크린 한선(소한선)</strong>: 전신, 특히 손바닥·발바닥. 체온 조절</li>
+  <li><strong>아포크린 한선(대한선)</strong>: 겨드랑이, 유두, 배꼽 주변, 사타구니, 항문 주변. 액취증의 원인</li>
+</ul>
 
+<h3>피지선</h3>
+<ul>
+  <li>진피에 있으며 모낭에 붙어 피지를 분비한다. 손바닥·발바닥에는 없다</li>
+  <li>피지는 땀과 섞여 약산성 피지막을 만들어 피부를 보호한다</li>
+  <li>피지가 모공에 쌓이면 면포가 되고, 염증이 생기면 여드름이 된다</li>
+</ul>
+
+<h3>모발</h3>
+<ul>
+  <li>주성분은 케라틴 단백질. 황을 포함한 시스틴이 많아 태우면 노린내가 난다</li>
+  <li>구조: 모표피(큐티클, 바깥 보호층) - 모피질(대부분을 차지, 멜라닌 함유) - 모수질(중심부)</li>
+</ul>
+`,
+  },
+  {
+    subject: 'skin',
+    chapter: 'type-cosmetics',
+    chapterLabel: '피부 유형·화장품',
+    keywords: ['건성', '지성', '수렴', '화장수', '필링', 'AHA', '포인트 메이크업', '파운데이션', '화장품'],
+    content: `
 <h3>피부 유형별 관리</h3>
 <ul>
   <li><strong>건성</strong>: 수분과 유분을 함께 공급</li>
@@ -496,20 +573,6 @@ export const CHAPTERS: CertChapter[] = [
   <li><strong>유연 화장수</strong>: 각질층을 부드럽게 하고 수분 공급</li>
   <li><strong>AHA</strong>: 글리콜릭산·락틱산 등 과일산. 각질을 벗겨내는 화학적 필링 성분</li>
 </ul>
-<h3>진피</h3>
-<ul>
-  <li><strong>유두층</strong>: 표피 바로 아래, 모세혈관과 신경이 많다</li>
-  <li><strong>망상층</strong>: 진피의 약 4/5. 콜라겐·엘라스틴 섬유가 그물처럼 얽혀 탄력과 강도를 만든다</li>
-</ul>
-
-<h3>한선 (땀샘)</h3>
-<ul>
-  <li><strong>에크린 한선(소한선)</strong>: 전신, 특히 손바닥·발바닥. 체온 조절</li>
-  <li><strong>아포크린 한선(대한선)</strong>: 겨드랑이, 유두, 배꼽 주변, 사타구니, 항문 주변. 액취증의 원인</li>
-</ul>
-
-<h3>피부의 pH</h3>
-<p>건강한 피부는 약산성(pH 4.5~6.5). 알칼리성 물질이 닿아도 원래대로 되돌리는 능력을 <strong>알칼리 중화능</strong>이라 한다.</p>
 
 <h3>메이크업 화장품 분류</h3>
 <ul>
@@ -520,9 +583,9 @@ export const CHAPTERS: CertChapter[] = [
   },
   {
     subject: 'skin',
-    chapter: 'disease-nutrition',
-    chapterLabel: '피부질환·영양',
-    keywords: ['티눈', '아토피', '주사', '비립종', '켈로이드', '베를로크', '습진', '비타민', '필수지방산', '리놀', '기미', '백반증', '태선화', '화상', '면포', '무기질', '유황', '케라틴'],
+    chapter: 'disease',
+    chapterLabel: '피부질환·피부 변화',
+    keywords: ['티눈', '아토피', '주사', '비립종', '켈로이드', '베를로크', '습진', '백반증', '태선화', '화상', '면포', '쿠퍼로즈', '모세혈관'],
     content: `
 <h3>피부질환</h3>
 <table>
@@ -537,20 +600,9 @@ export const CHAPTERS: CertChapter[] = [
   </tbody>
 </table>
 
-<h3>비타민과 피부</h3>
-<table>
-  <thead><tr><th>비타민</th><th>결핍 증상</th></tr></thead>
-  <tbody>
-    <tr><td>A</td><td>피부 건조, 각질화, 야맹증</td></tr>
-    <tr><td>B2</td><td>구순염, 피부염</td></tr>
-    <tr><td>C</td><td>기미·색소침착, 괴혈병 (멜라닌 생성 억제, 콜라겐 합성)</td></tr>
-    <tr><td>D</td><td>구루병 (자외선으로 피부에서 합성)</td></tr>
-    <tr><td>E</td><td>노화 촉진 (항산화)</td></tr>
-  </tbody>
-</table>
+<h3>피부 상태 용어</h3>
+<p><strong>쿠퍼로즈</strong>: 모세혈관이 확장되어 붉은 실핏줄이 비쳐 보이는 피부. 강한 자극과 급격한 온도 변화를 피한다.</p>
 
-<h3>필수지방산 (비타민 F)</h3>
-<p>체내에서 만들 수 없는 불포화지방산: <strong>리놀레산(리놀산), 리놀렌산, 아라키돈산</strong>. 타르타르산(주석산)은 유기산이라 해당하지 않는다.</p>
 <h3>그 밖의 피부 변화</h3>
 <table>
   <thead><tr><th>용어</th><th>설명</th></tr></thead>
@@ -570,12 +622,31 @@ export const CHAPTERS: CertChapter[] = [
   <li><strong>2도</strong>: 진피까지, 물집</li>
   <li><strong>3도</strong>: 피하지방까지 / <strong>4도</strong>: 근육·뼈까지</li>
 </ul>
+`,
+  },
+  {
+    subject: 'skin',
+    chapter: 'nutrition',
+    chapterLabel: '영양과 피부',
+    keywords: ['비타민', '필수지방산', '리놀', '기미', '무기질'],
+    content: `
+<h3>비타민과 피부</h3>
+<table>
+  <thead><tr><th>비타민</th><th>결핍 증상</th></tr></thead>
+  <tbody>
+    <tr><td>A</td><td>피부 건조, 각질화, 야맹증</td></tr>
+    <tr><td>B2</td><td>구순염, 피부염</td></tr>
+    <tr><td>C</td><td>기미·색소침착, 괴혈병 (멜라닌 생성 억제, 콜라겐 합성)</td></tr>
+    <tr><td>D</td><td>구루병 (자외선으로 피부에서 합성)</td></tr>
+    <tr><td>E</td><td>노화 촉진 (항산화)</td></tr>
+  </tbody>
+</table>
 
-<h3>무기질·모발 성분</h3>
-<ul>
-  <li><strong>무기질</strong>: 뼈·치아 구성, 수분과 산·염기 균형 조절. 에너지원은 아니다</li>
-  <li><strong>모발</strong>: 케라틴 단백질, 황을 포함한 시스틴이 많아 태우면 노린내가 난다</li>
-</ul>
+<h3>필수지방산 (비타민 F)</h3>
+<p>체내에서 만들 수 없는 불포화지방산: <strong>리놀레산(리놀산), 리놀렌산, 아라키돈산</strong>. 타르타르산(주석산)은 유기산이라 해당하지 않는다.</p>
+
+<h3>무기질</h3>
+<p>뼈·치아를 구성하고 수분과 산·염기 균형을 조절하는 조절소다. 열량을 내지 않으므로 에너지원은 아니다.</p>
 `,
   },
 
@@ -630,6 +701,7 @@ export const CHAPTERS: CertChapter[] = [
   <li><strong>공중위생감시원</strong>: 관계 공무원. 출입·검사 권한</li>
   <li><strong>명예공중위생감시원</strong>: 시·도지사가 지도·계몽 등을 위해 둘 수 있다</li>
 </ul>
+
 <h3>공중위생영업의 종류</h3>
 <p>숙박업, 목욕장업, 이용업, 미용업, 세탁업, 건물위생관리업 (출제 당시 명칭: 위생관리용역업)</p>
 
@@ -657,7 +729,7 @@ export const CHAPTERS: CertChapter[] = [
     subject: 'law',
     chapter: 'penalty',
     chapterLabel: '행정처분·과태료·벌칙',
-    keywords: ['과태료', '행정처분', '영업정지', '폐쇄', '개선명령', '경고', '이의', '처분권자', '출입', '음란', '요금표', '면허정지', '면허증 대여', '위생교육', '영업소 외'],
+    keywords: ['과태료', '행정처분', '영업정지', '폐쇄', '개선명령', '경고', '이의', '처분권자', '출입', '음란', '요금표', '면허정지', '면허증 대여'],
     content: `
 <h3>과태료</h3>
 <table>
@@ -689,6 +761,7 @@ export const CHAPTERS: CertChapter[] = [
     <tr><td>300만원 이하 벌금</td><td>면허 없이 업무, 면허 정지 중 업무, 면허증 대여</td></tr>
   </tbody>
 </table>
+
 <h3>행정처분 자주 나오는 예</h3>
 <table>
   <thead><tr><th>위반</th><th>1차</th><th>2차</th><th>3차</th></tr></thead>
