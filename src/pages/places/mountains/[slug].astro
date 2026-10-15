@@ -1,0 +1,406 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { mountains, makeSlug } from '../../../data/bac100.js';
+
+export function getStaticPaths() {
+  return mountains.map(m => ({
+    params: { slug: makeSlug(m.t, m.a) },
+    props: { mountain: m },
+  }));
+}
+
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const { mountain: m } = Astro.props;
+const kakaoKey = import.meta.env.KAKAO_JAVASCRIPT_KEY ?? '';
+
+const displayName = m.t.replace(/\(.*?\)/g, '').trim();
+const region = m.a.split(' ').slice(0, 2).join(' ');
+const heightNum = parseInt(m.h.replace(/,/g, ''), 10);
+
+const nearby = mountains
+  .filter(x => x.t !== m.t)
+  .map(x => ({ ...x, dist: Math.round(haversine(m.lat, m.lng, x.lat, x.lng)) }))
+  .sort((a, b) => a.dist - b.dist)
+  .slice(0, 5);
+
+const difficultyLabel = heightNum >= 1500 ? '어려움' : heightNum >= 1000 ? '보통' : '쉬움';
+const difficultyColor = heightNum >= 1500 ? 'bg-red-100 text-red-700' : heightNum >= 1000 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700';
+
+const siteUrl = 'https://daparapara.com';
+const pageUrl = `${siteUrl}/places/mountains/${makeSlug(m.t, m.a)}/`;
+const title = `${m.t} 등산 정보 | 블랙야크 명산100`;
+const description = `${displayName}(해발 ${m.h}m) 등산 정보. ${region} 위치한 블랙야크 명산100. 인근 명산100, 물·온수 계산기까지 한 번에 확인하세요.`;
+
+const schemaJson = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Place",
+      "name": m.t,
+      "description": description,
+      "url": pageUrl,
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": m.lat,
+        "longitude": m.lng,
+        "elevation": heightNum,
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": region,
+        "addressCountry": "KR",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": `${displayName} 등산 난이도는 어떻게 되나요?`,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": `${displayName}은 해발 ${m.h}m로 난이도는 ${difficultyLabel}입니다. 등산 전 체력 상태와 날씨를 반드시 확인하세요.`,
+          },
+        },
+        {
+          "@type": "Question",
+          "name": `${displayName} 등산 준비물은 무엇이 필요한가요?`,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": `등산화, 등산복, 배낭, 물(1인당 최소 1L), 간식, 우비, 방풍 재킷을 준비하세요. ${heightNum >= 1000 ? '1,000m 이상 산이므로 여름에도 방풍 재킷은 필수입니다.' : '날씨 변화에 대비해 여분의 옷을 챙기세요.'}`,
+          },
+        },
+        {
+          "@type": "Question",
+          "name": `블랙야크 명산100 ${displayName} 인증은 어떻게 하나요?`,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "블랙야크 알파인클럽(BAC) 앱을 설치한 후 정상에서 GPS 인증을 진행하면 됩니다. 앱에서 해당 산을 선택하고 정상 반경 내에서 인증 버튼을 누르면 완료됩니다.",
+          },
+        },
+        {
+          "@type": "Question",
+          "name": `${displayName} 위치는 어디인가요?`,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": `${m.a}에 위치하며, 좌표는 위도 ${m.lat}, 경도 ${m.lng}입니다.`,
+          },
+        },
+      ],
+    },
+  ],
+}).replace(/<\/script>/gi, '<\\/script>');
+
+const nearbyJson = JSON.stringify(nearby).replace(/<\/script>/gi, '<\\/script>');
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  isArticle={false}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={schemaJson} />
+    {kakaoKey && (
+      <script
+        type="text/javascript"
+        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}`}
+      />
+    )}
+  </Fragment>
+
+  <!-- 브레드크럼 -->
+  <nav class="text-xs text-gray-400 mb-4 flex items-center gap-1.5">
+    <a href="/" class="hover:text-sky-500">홈</a>
+    <span>/</span>
+    <a href="/places/bac100/" class="hover:text-sky-500">블랙야크 명산100</a>
+    <span>/</span>
+    <span class="text-gray-600">{m.t}</span>
+  </nav>
+
+  <!-- 헤더 -->
+  <div class="mb-6">
+    <div class="flex items-start justify-between gap-3 flex-wrap">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 leading-tight">{m.t}</h1>
+        <p class="text-sm text-gray-500 mt-1">{m.a}</p>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <span class="text-sm font-semibold text-sky-600 bg-sky-50 px-3 py-1 rounded-full">
+          {m.h}m
+        </span>
+        <span class={`text-xs font-medium px-2.5 py-1 rounded-full ${difficultyColor}`}>
+          {difficultyLabel}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 지도 -->
+  <div class="rounded-2xl overflow-hidden border border-gray-200 mb-4 h-64 relative bg-gray-100">
+    <div id="detail-map" class="w-full h-full"></div>
+  </div>
+
+  <!-- 지도 앱 버튼 -->
+  <div class="flex gap-2 mb-8">
+    <a
+      id="btn-naver"
+      href={`https://map.naver.com/p/?c=${m.lng},${m.lat},15,0,0,0,dh`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+    >
+      <img src="https://www.google.com/s2/favicons?domain=map.naver.com&sz=32" class="w-4 h-4 rounded" alt="" />
+      네이버 지도
+    </a>
+    <button
+      id="btn-kakao"
+      class="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+    >
+      <img src="https://www.google.com/s2/favicons?domain=map.kakao.com&sz=32" class="w-4 h-4 rounded" alt="" />
+      카카오맵
+    </button>
+    <a
+      href={`https://maps.google.com/?q=${m.lat},${m.lng}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="flex items-center gap-1.5 px-3 py-2 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+    >
+      <img src="https://www.google.com/s2/favicons?domain=maps.google.com&sz=32" class="w-4 h-4 rounded" alt="" />
+      구글 지도
+    </a>
+  </div>
+
+  <!-- 인근 명산100 -->
+  <section class="mb-8">
+    <h2 class="text-base font-bold text-gray-800 mb-3">인근 블랙야크 명산100</h2>
+    <ul class="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden">
+      {nearby.map(n => (
+        <li>
+          <a
+            href={`/places/mountains/${makeSlug(n.t, n.a)}/`}
+            class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+          >
+            <div>
+              <span class="text-sm font-medium text-gray-800">{n.t}</span>
+              <span class="text-xs text-gray-400 ml-2">{n.h}m</span>
+            </div>
+            <span class="text-xs text-sky-600 font-medium flex-shrink-0">{n.dist}km</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- 계산기 -->
+  <section class="mb-8">
+    <h2 class="text-base font-bold text-gray-800 mb-3">등산 계산기</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+      <!-- 물 계산기 -->
+      <div class="border border-gray-200 rounded-xl p-4">
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">물 준비량 계산기</h3>
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <label class="text-xs text-gray-500 w-14 flex-shrink-0">인원</label>
+            <div class="flex items-center gap-1.5 flex-1">
+              <input
+                id="water-persons"
+                type="range"
+                min="1" max="10" value="2"
+                class="flex-1 accent-sky-500"
+              />
+              <span id="water-persons-val" class="text-sm font-medium text-gray-700 w-8 text-right">2명</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-2">
+            <label class="text-xs text-gray-500 w-14 flex-shrink-0">소요시간</label>
+            <div class="flex items-center gap-1.5 flex-1">
+              <input
+                id="water-hours"
+                type="range"
+                min="1" max="12" value="4"
+                class="flex-1 accent-sky-500"
+              />
+              <span id="water-hours-val" class="text-sm font-medium text-gray-700 w-10 text-right">4시간</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 pt-3 border-t border-gray-100 text-center">
+          <span class="text-xs text-gray-400">권장 물 준비량</span>
+          <p id="water-result" class="text-xl font-bold text-sky-600 mt-0.5">4.5L</p>
+          <p class="text-[11px] text-gray-400 mt-0.5">인원 × 시간 × 0.5L + 예비 0.5L</p>
+        </div>
+      </div>
+
+      <!-- 온수 계산기 -->
+      <div class="border border-gray-200 rounded-xl p-4">
+        <h3 class="text-sm font-semibold text-gray-700 mb-3">온수 계산기</h3>
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <label class="text-xs text-gray-500 w-16 flex-shrink-0">컵라면</label>
+            <div class="flex items-center gap-1.5 flex-1">
+              <input
+                id="hot-ramen"
+                type="range"
+                min="0" max="10" value="2"
+                class="flex-1 accent-orange-500"
+              />
+              <span id="hot-ramen-val" class="text-sm font-medium text-gray-700 w-8 text-right">2개</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-2">
+            <label class="text-xs text-gray-500 w-16 flex-shrink-0">커피/티</label>
+            <div class="flex items-center gap-1.5 flex-1">
+              <input
+                id="hot-coffee"
+                type="range"
+                min="0" max="10" value="2"
+                class="flex-1 accent-orange-500"
+              />
+              <span id="hot-coffee-val" class="text-sm font-medium text-gray-700 w-8 text-right">2잔</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 pt-3 border-t border-gray-100 text-center">
+          <span class="text-xs text-gray-400">필요 온수량</span>
+          <p id="hot-result" class="text-xl font-bold text-orange-500 mt-0.5">1,400ml</p>
+          <p class="text-[11px] text-gray-400 mt-0.5">컵라면 550ml · 커피 200ml 기준</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="mb-8">
+    <h2 class="text-base font-bold text-gray-800 mb-3">자주 묻는 질문</h2>
+    <div id="faq-list" class="space-y-2">
+      {[
+        {
+          q: `${displayName} 등산 난이도는 어떻게 되나요?`,
+          a: `${displayName}은 해발 ${m.h}m로 난이도 ${difficultyLabel}입니다. 체력 상태와 당일 날씨를 반드시 확인한 후 출발하세요.`,
+        },
+        {
+          q: `${displayName} 등산 준비물은 무엇인가요?`,
+          a: `등산화, 등산복, 배낭, 물(1인당 최소 1L), 간식, 우비, 방풍 재킷을 챙기세요. ${heightNum >= 1000 ? '1,000m 이상 고산이므로 여름에도 정상은 춥습니다.' : '일교차에 대비해 얇은 재킷을 준비하세요.'}`,
+        },
+        {
+          q: `블랙야크 명산100 ${displayName} 인증은 어떻게 하나요?`,
+          a: '블랙야크 알파인클럽(BAC) 앱을 설치하고 정상에서 GPS 인증을 진행하면 됩니다. 정상 반경 내에서 인증 버튼을 누르면 완료됩니다.',
+        },
+        {
+          q: `${displayName} 위치는 어디인가요?`,
+          a: `${m.a}에 위치합니다.`,
+        },
+      ].map((item, i) => (
+        <div class="border border-gray-200 rounded-xl overflow-hidden">
+          <button
+            class="faq-toggle w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+            data-idx={i}
+          >
+            <span class="text-sm font-medium text-gray-800 pr-4">{item.q}</span>
+            <svg class="faq-icon w-4 h-4 text-gray-400 flex-shrink-0 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="faq-body hidden px-4 pb-4 pt-1 text-sm text-gray-600 leading-relaxed">
+            {item.a}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- 목록으로 -->
+  <div class="text-center">
+    <a
+      href="/places/bac100/"
+      class="inline-flex items-center gap-1.5 text-sm text-sky-600 hover:text-sky-700 font-medium"
+    >
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      명산100 전체 목록으로
+    </a>
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ kakaoKey, lat: m.lat, lng: m.lng, name: m.t, nearby: nearbyJson }}>
+(function () {
+  // 카카오맵
+  if (kakaoKey && window.kakao && window.kakao.maps) {
+    var container = document.getElementById('detail-map');
+    var options = { center: new kakao.maps.LatLng(lat, lng), level: 7 };
+    var map = new kakao.maps.Map(container, options);
+
+    var markerPos = new kakao.maps.LatLng(lat, lng);
+    var marker = new kakao.maps.Marker({ position: markerPos, map: map });
+
+    var infowindow = new kakao.maps.InfoWindow({
+      content: '<div style="padding:6px 10px;font-size:13px;font-weight:600;white-space:nowrap;">' + name + '</div>',
+    });
+    infowindow.open(map, marker);
+  }
+
+  // 카카오맵 버튼
+  document.getElementById('btn-kakao').addEventListener('click', function () {
+    var webUrl = 'https://map.kakao.com/link/map/' + encodeURIComponent(name) + ',' + lat + ',' + lng;
+    var appUrl = 'kakaomap://look?p=' + lat + ',' + lng;
+    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      var t = setTimeout(function () { window.open(webUrl, '_blank'); }, 1200);
+      window.addEventListener('blur', function () { clearTimeout(t); }, { once: true });
+      window.location.href = appUrl;
+    } else {
+      window.open(webUrl, '_blank');
+    }
+  });
+
+  // 물 계산기
+  function updateWater() {
+    var p = parseInt(document.getElementById('water-persons').value, 10);
+    var h = parseInt(document.getElementById('water-hours').value, 10);
+    document.getElementById('water-persons-val').textContent = p + '명';
+    document.getElementById('water-hours-val').textContent = h + '시간';
+    var total = (p * h * 0.5 + 0.5).toFixed(1);
+    document.getElementById('water-result').textContent = total + 'L';
+  }
+  document.getElementById('water-persons').addEventListener('input', updateWater);
+  document.getElementById('water-hours').addEventListener('input', updateWater);
+  updateWater();
+
+  // 온수 계산기
+  function updateHot() {
+    var r = parseInt(document.getElementById('hot-ramen').value, 10);
+    var c = parseInt(document.getElementById('hot-coffee').value, 10);
+    document.getElementById('hot-ramen-val').textContent = r + '개';
+    document.getElementById('hot-coffee-val').textContent = c + '잔';
+    var total = r * 550 + c * 200;
+    document.getElementById('hot-result').textContent = total.toLocaleString() + 'ml';
+  }
+  document.getElementById('hot-ramen').addEventListener('input', updateHot);
+  document.getElementById('hot-coffee').addEventListener('input', updateHot);
+  updateHot();
+
+  // FAQ 아코디언
+  document.querySelectorAll('.faq-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var body = btn.nextElementSibling;
+      var icon = btn.querySelector('.faq-icon');
+      var isOpen = !body.classList.contains('hidden');
+      body.classList.toggle('hidden', isOpen);
+      icon.style.transform = isOpen ? '' : 'rotate(180deg)';
+    });
+  });
+}());
+</script>
