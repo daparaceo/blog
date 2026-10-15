@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import { listCerts, getChapters, type CertConfig, type CertSubject } from '../../../../../lib/certs';
+
+export function getStaticPaths() {
+  return listCerts().flatMap(config =>
+    config.subjects.map(subject => ({ params: { cert: config.slug, subject: subject.slug }, props: { config, subject } }))
+  );
+}
+
+const { config, subject } = Astro.props as { config: CertConfig; subject: CertSubject };
+const chapters = getChapters(config.slug).filter(ch => ch.subject === subject.slug);
+---
+
+<BaseLayout title={`${subject.label} | ${config.shortName}`} description={`${config.name} ${subject.label} 요점 정리 — ${subject.desc}`}>
+  <div class="space-y-8" data-pagefind-body>
+
+    <div class="border-b border-gray-200 pb-4">
+      <div class="text-xs text-gray-400 mb-2">
+        <a href={`/learn/certs/${config.slug}/`} class="hover:text-sky-600">{config.shortName}</a>
+        <span class="mx-1">/</span>
+        <span>{subject.label}</span>
+      </div>
+      <h1 class="text-xl font-bold text-gray-900">{subject.label}</h1>
+      <p class="text-sm text-gray-400 mt-0.5">{subject.desc}</p>
+    </div>
+
+    {chapters.length === 0 ? (
+      <p class="text-sm text-gray-400 border border-dashed border-gray-200 rounded-lg p-6 text-center">요점 정리를 준비 중입니다.</p>
+    ) : (
+      <div class="space-y-2">
+        {chapters.map((ch, i) => (
+          <a href={`/learn/certs/${config.slug}/${subject.slug}/${ch.chapter}/`} class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-sky-300 hover:bg-sky-50 transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="text-xs text-gray-300 font-mono w-4">{String(i + 1).padStart(2, '0')}</span>
+              <span class="font-medium text-gray-900 group-hover:text-sky-700">{ch.chapterLabel}</span>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 group-hover:text-sky-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div class="pt-2 border-t border-gray-200">
+      <a href={`/learn/certs/${config.slug}/`} class="text-sm text-gray-500 hover:text-sky-600 transition-colors">← {config.shortName} 학습 홈으로</a>
+    </div>
+
+  </div>
+</BaseLayout>

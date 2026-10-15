@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CertQuestion from '../../../../../components/certs/CertQuestion.astro';
+import {
+  listCerts, getChapters, loadAllQuestions, getRelatedQuestions,
+  type CertConfig, type CertChapter,
+} from '../../../../../lib/certs';
+
+export function getStaticPaths() {
+  return listCerts().flatMap(config =>
+    getChapters(config.slug).map(chapter => ({
+      params: { cert: config.slug, subject: chapter.subject, chapter: chapter.chapter },
+      props: { config, chapter },
+    }))
+  );
+}
+
+const { config, chapter } = Astro.props as { config: CertConfig; chapter: CertChapter };
+const subject = config.subjects.find(s => s.slug === chapter.subject)!;
+const relatedQuestions = getRelatedQuestions(config, chapter, loadAllQuestions(config.slug));
+---
+
+<BaseLayout
+  title={`${chapter.chapterLabel} | ${subject.label} | ${config.shortName}`}
+  description={`${config.name} ${subject.label} - ${chapter.chapterLabel} 요점 정리 및 관련 기출문제`}
+>
+  <div class="space-y-10" data-pagefind-body>
+
+    <div>
+      <div class="text-xs text-gray-400 mb-2">
+        <a href={`/learn/certs/${config.slug}/`} class="hover:text-sky-600">{config.shortName}</a>
+        <span class="mx-1">/</span>
+        <a href={`/learn/certs/${config.slug}/${subject.slug}/`} class="hover:text-sky-600">{subject.label}</a>
+        <span class="mx-1">/</span>
+        <span>{chapter.chapterLabel}</span>
+      </div>
+      <h1 class="text-xl font-bold text-gray-900">{chapter.chapterLabel}</h1>
+    </div>
+
+    <article class="prose prose-sm prose-gray max-w-none
+      prose-headings:font-semibold prose-headings:text-gray-800
+      prose-h3:text-base prose-h3:mt-5 prose-h3:mb-2
+      prose-p:text-gray-600 prose-p:leading-relaxed
+      prose-ul:text-gray-600 prose-li:my-0.5
+      prose-table:text-sm prose-th:bg-gray-50 prose-th:font-semibold prose-td:align-top
+      prose-strong:text-gray-800">
+      <Fragment set:html={chapter.content} />
+    </article>
+
+    {relatedQuestions.length > 0 ? (
+      <section>
+        <h2 class="text-base font-semibold text-gray-700 mb-4 flex items-center gap-2">
+          관련 기출문제
+          <span class="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{relatedQuestions.length}문제</span>
+        </h2>
+        <div class="space-y-4">
+          {relatedQuestions.map(q => (
+            <CertQuestion cert={config.slug} q={q} label={`${q.year}년 ${q.session}회 ${q.number}번`} />
+          ))}
+        </div>
+      </section>
+    ) : (
+      <div class="text-sm text-gray-400 border border-dashed border-gray-200 rounded-lg p-6 text-center">이 챕터와 관련된 기출문제가 아직 없습니다.</div>
+    )}
+
+    <div class="pt-4 border-t border-gray-200">
+      <a href={`/learn/certs/${config.slug}/`} class="text-sm text-gray-500 hover:text-sky-600 transition-colors">← {config.shortName} 학습 홈으로</a>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+  article :global(table) { display: block; overflow-x: auto; }
+  article :global(th), article :global(td) { word-break: keep-all; }
+</style>

@@ -1,0 +1,106 @@
+---
+// 자격증 기출 문항 1개: 보기 선택 → 정답 확인(해설·관련 개념)
+import {
+  createImageResolver, getAnswers, getAnswerText, escapeHtml,
+  type CertQuestion,
+} from '../../lib/certs';
+
+interface Props {
+  cert: string;
+  q: CertQuestion;
+  label?: string;          // 문항 앞 표시 (기본: 번호)
+  related?: { href: string; label: string }[];
+}
+
+const { cert, q, label, related = [] } = Astro.props;
+const images = createImageResolver(cert);
+const roundLabel = `${q.year}년 ${q.session}회`;
+---
+
+<div class="cert-question border border-gray-200 rounded-lg p-5" data-answers={getAnswers(q).join(',')}>
+  <p class="font-medium text-gray-900 mb-4 leading-relaxed">
+    <span class="text-gray-400 mr-1">{label ?? `${q.number}.`}</span>
+    <Fragment set:html={escapeHtml(q.question)} />
+  </p>
+
+  {images.question(q).map((image, i) => (
+    <figure class="mb-4">
+      <img src={image} alt={`${roundLabel} ${q.number}번 문제 참고 이미지 ${i + 1}`} loading="lazy" decoding="async" class="max-w-full h-auto rounded border border-gray-200" />
+    </figure>
+  ))}
+
+  <div class="space-y-2 mb-4">
+    {q.options.map((opt, i) => (
+      <label class="cert-option flex items-start gap-2 p-2 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+        <input type="radio" name={`q-${q.id}`} value={i + 1} class="mt-0.5 accent-sky-600 shrink-0" />
+        <span class="min-w-0 flex-1">
+          <span class="block text-sm text-gray-700" style="overflow-wrap:anywhere" set:html={escapeHtml(opt)}></span>
+          {images.option(q, i + 1).map((image, j) => (
+            <img src={image} alt={`${roundLabel} ${q.number}번 ${i + 1}번 선택지 참고 이미지 ${j + 1}`} loading="lazy" decoding="async" class="max-w-full h-auto mt-2 rounded border border-gray-200" />
+          ))}
+        </span>
+      </label>
+    ))}
+  </div>
+
+  <button type="button" class="cert-check text-xs px-3 py-1.5 bg-sky-600 text-white rounded hover:bg-sky-700 transition-colors">
+    정답 확인
+  </button>
+
+  <div class="cert-explanation hidden mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+    <p class="text-xs font-semibold text-gray-600 mb-1">정답: <Fragment set:html={escapeHtml(getAnswerText(q))} /></p>
+    {q.explanation && <p class="text-xs text-gray-500 leading-relaxed" set:html={escapeHtml(q.explanation)}></p>}
+    {related.length > 0 && (
+      <div class="mt-2">
+        <p class="text-xs font-semibold text-gray-500 mb-1">관련 개념</p>
+        <div class="flex flex-wrap gap-1.5">
+          {related.map(r => (
+            <a href={r.href} class="text-xs text-sky-600 hover:text-sky-700 bg-sky-50 px-2 py-1 rounded">{r.label}</a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .cert-option.correct { background-color: #f0fdf4; border: 1px solid #86efac; color: #15803d; }
+  .cert-option.wrong   { background-color: #fef2f2; border: 1px solid #fca5a5; color: #b91c1c; }
+  .cert-option.correct span, .cert-option.wrong span { font-weight: 500; }
+</style>
+
+<script>
+  // 채점 결과 표시 / 해제. 전체 채점은 페이지에서 cert:grade 이벤트로 호출한다.
+  function grade(item: HTMLElement): boolean {
+    const answers = (item.dataset.answers || '').split(',').map(Number);
+    const selected = item.querySelector<HTMLInputElement>('input[type=radio]:checked');
+    const selectedValue = selected ? Number(selected.value) : null;
+    item.querySelectorAll<HTMLElement>('.cert-option').forEach(label => {
+      label.classList.remove('correct', 'wrong');
+      const value = Number(label.querySelector<HTMLInputElement>('input')?.value);
+      if (answers.includes(value)) label.classList.add('correct');
+      else if (value === selectedValue) label.classList.add('wrong');
+    });
+    item.querySelector('.cert-explanation')?.classList.remove('hidden');
+    const btn = item.querySelector('.cert-check');
+    if (btn) btn.textContent = '정답 숨기기';
+    return selectedValue !== null && answers.includes(selectedValue);
+  }
+
+  function clear(item: HTMLElement, uncheck = false) {
+    item.querySelectorAll('.cert-option').forEach(label => label.classList.remove('correct', 'wrong'));
+    item.querySelector('.cert-explanation')?.classList.add('hidden');
+    if (uncheck) item.querySelectorAll<HTMLInputElement>('input[type=radio]').forEach(r => { r.checked = false; });
+    const btn = item.querySelector('.cert-check');
+    if (btn) btn.textContent = '정답 확인';
+  }
+
+  document.querySelectorAll<HTMLElement>('.cert-question').forEach(item => {
+    item.querySelector('.cert-check')?.addEventListener('click', () => {
+      if (item.querySelector('.cert-explanation')?.classList.contains('hidden')) grade(item);
+      else clear(item);
+    });
+  });
+
+  (window as any).certQuiz = { grade, clear };
+</script>

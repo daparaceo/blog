@@ -1,0 +1,14 @@
+{
+  "slug": "beauty",
+  "name": "미용사(일반) 필기",
+  "shortName": "미용사",
+  "description": "미용사(일반) 필기 준비 — 과목별 요점 정리와 회차별 기출문제 풀이",
+  "passScore": 60,
+  "subjects": [
+    { "slug": "theory", "label": "미용이론", "desc": "헤어 커트·퍼머·컬·염색, 메이크업, 네일, 미용의 역사", "questions": 20 },
+    { "slug": "public-health", "label": "공중보건학", "desc": "감염병과 예방접종, 기생충, 환경·산업보건, 보건지표", "questions": 10 },
+    { "slug": "disinfection", "label": "소독학", "desc": "소독·멸균의 정의, 물리적·화학적 소독법, 소독제별 특징", "questions": 10 },
+    { "slug": "skin", "label": "피부학", "desc": "피부 구조, 피부 유형별 관리, 피부질환, 영양소와 피부", "questions": 10 },
+    { "slug": "law", "label": "공중위생법규", "desc": "영업 신고·위생교육, 면허, 행정처분, 과태료", "questions": 10 }
+  ]
+}

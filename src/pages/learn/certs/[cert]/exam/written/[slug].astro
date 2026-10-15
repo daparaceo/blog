@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
+import CertQuestion from '../../../../../../components/certs/CertQuestion.astro';
+import {
+  listCerts, listExamSlugs, loadExam, getChapters, getRelatedChapters,
+  type CertConfig,
+} from '../../../../../../lib/certs';
+
+export function getStaticPaths() {
+  return listCerts().flatMap(config =>
+    listExamSlugs(config.slug).map(slug => ({ params: { cert: config.slug, slug }, props: { config, slug } }))
+  );
+}
+
+const { config, slug } = Astro.props as { config: CertConfig; slug: string };
+const questions = loadExam(config.slug, slug);
+const chapters = getChapters(config.slug);
+const [year, session] = slug.split('-');
+const title = `${year}년 ${session}회 ${config.shortName}`;
+
+function relatedLinks(q: (typeof questions)[number]) {
+  return getRelatedChapters(config, chapters, q).map(ch => ({
+    href: `/learn/certs/${config.slug}/${ch.subject}/${ch.chapter}/`,
+    label: ch.chapterLabel,
+  }));
+}
+---
+
+<BaseLayout
+  title={`${title} 필기 기출문제`}
+  description={`${config.name} ${year}년 ${session}회 기출문제 ${questions.length}문제 — 문항별 해설, 개별 채점과 전체 채점 지원`}
+>
+  <div class="space-y-8" data-pagefind-body>
+
+    <div class="border-b border-gray-200 pb-4">
+      <div class="text-xs text-gray-400 mb-1">
+        <a href={`/learn/certs/${config.slug}/`} class="hover:text-sky-600">{config.shortName}</a>
+        <span class="mx-1">/</span>
+        기출문제 (필기)
+      </div>
+      <h1 class="text-xl font-bold text-gray-900">{title}</h1>
+      <p class="text-sm text-gray-500 mt-1">총 {questions.length}문제 · {config.passScore}점 이상 합격</p>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <button type="button" class="cert-submit px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">전체 채점하기</button>
+      <button type="button" class="cert-reset px-5 py-2 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">초기화</button>
+    </div>
+
+    <div id="score-section" class="hidden border border-indigo-200 bg-indigo-50 rounded-lg p-4">
+      <p class="text-indigo-700 font-semibold text-lg" id="score-display"></p>
+      <p class="text-indigo-500 text-sm mt-1" id="score-detail"></p>
+    </div>
+
+    {config.subjects.map(subject => {
+      const subjectQuestions = questions.filter(q => q.subject === subject.label);
+      if (subjectQuestions.length === 0) return null;
+      return (
+        <section>
+          <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 border-b border-gray-100 pb-2">{subject.label}</h2>
+          <div class="space-y-6">
+            {subjectQuestions.map(q => <CertQuestion cert={config.slug} q={q} related={relatedLinks(q)} />)}
+          </div>
+        </section>
+      );
+    })}
+
+    <div class="flex items-center gap-4 pt-4 border-t border-gray-200">
+      <button type="button" class="cert-submit px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">전체 채점하기</button>
+      <button type="button" class="cert-reset px-5 py-2 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">초기화</button>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script define:vars={{ passScore: config.passScore }}>
+  document.addEventListener('DOMContentLoaded', function () {
+    var items = Array.from(document.querySelectorAll('.cert-question'));
+    var section = document.getElementById('score-section');
+
+    function submitAll() {
+      var score = items.filter(function (item) { return window.certQuiz.grade(item); }).length;
+      var pct = Math.round((score / items.length) * 100);
+      document.getElementById('score-display').textContent = score + ' / ' + items.length + '문제 (' + pct + '점)';
+      document.getElementById('score-detail').textContent = pct >= passScore
+        ? '합격 기준 충족 (' + passScore + '점 이상)'
+        : '불합격 (' + passScore + '점 미만)';
+      section.classList.remove('hidden');
+      section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function resetAll() {
+      items.forEach(function (item) { window.certQuiz.clear(item, true); });
+      section.classList.add('hidden');
+    }
+
+    document.querySelectorAll('.cert-submit').forEach(function (b) { b.addEventListener('click', submitAll); });
+    document.querySelectorAll('.cert-reset').forEach(function (b) { b.addEventListener('click', resetAll); });
+  });
+</script>
