@@ -1,0 +1,173 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CertQuestion from '../../../../../components/certs/CertQuestion.astro';
+import {
+  listCerts, loadAllQuestions, getChapters, getRelatedChapters,
+  type CertConfig, type CertQuestion as Question,
+} from '../../../../../lib/certs';
+
+// 실전 모의고사: 전 회차 기출을 문제 풀로 두고, 과목별 출제 수(config.subjects[].questions)만큼
+// 브라우저에서 무작위로 뽑는다. 정적 사이트라 전체 풀을 숨겨서 렌더링하고 뽑힌 문제만 보여준다.
+
+export function getStaticPaths() {
+  return listCerts()
+    .filter(config => loadAllQuestions(config.slug).length > 0)
+    .map(config => ({ params: { cert: config.slug }, props: { config } }));
+}
+
+const { config } = Astro.props as { config: CertConfig };
+const chapters = getChapters(config.slug);
+const totalQuestions = config.subjects.reduce((sum, s) => sum + s.questions, 0);
+
+// 회차 간 동일 문제(문항+선택지 일치)는 하나만 남긴다
+const normalize = (s: string) => s.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
+const seen = new Set<string>();
+const pool = loadAllQuestions(config.slug).filter(q => {
+  const key = `${normalize(q.question)}|${q.options.map(normalize).sort().join('|')}`;
+  if (seen.has(key)) return false;
+  seen.add(key);
+  return true;
+});
+
+function relatedLinks(q: Question) {
+  return getRelatedChapters(config, chapters, q).map(ch => ({
+    href: `/learn/certs/${config.slug}/${ch.subject}/${ch.chapter}/`,
+    label: ch.chapterLabel,
+  }));
+}
+
+function sourceLink(q: Question) {
+  return {
+    href: `/learn/certs/${config.slug}/exam/written/${q.examSlug}/`,
+    label: `${q.year}년 ${q.session}회 ${q.number}번`,
+  };
+}
+---
+
+<BaseLayout
+  title={`${config.shortName} 실전 모의고사`}
+  description={`${config.name} 전 회차 기출에서 과목별로 무작위 출제되는 실전 모의고사 ${totalQuestions}문제 — 개별 채점과 전체 채점 지원`}
+>
+  <div class="space-y-8">
+
+    <div class="border-b border-gray-200 pb-4">
+      <div class="text-xs text-gray-400 mb-1">
+        <a href={`/learn/certs/${config.slug}/`} class="hover:text-sky-600">{config.shortName}</a>
+        <span class="mx-1">/</span>
+        실전 모의고사 (필기)
+      </div>
+      <h1 class="text-xl font-bold text-gray-900">{config.shortName} 실전 모의고사</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        기출 {pool.length}문제 중 무작위 출제 · 총 {totalQuestions}문제 · {config.passScore}점 이상 합격
+      </p>
+      {config.sourceNote && <p class="text-xs text-gray-400 mt-2 leading-relaxed">{config.sourceNote}</p>}
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <button type="button" class="cert-submit px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">전체 채점하기</button>
+      <button type="button" class="cert-reset px-5 py-2 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">초기화</button>
+      <button type="button" class="mock-new px-5 py-2 bg-white border border-sky-300 text-sky-700 text-sm font-medium rounded-lg hover:bg-sky-50 transition-colors">새 문제 뽑기</button>
+    </div>
+
+    <div id="score-section" class="hidden border border-indigo-200 bg-indigo-50 rounded-lg p-4">
+      <p class="text-indigo-700 font-semibold text-lg" id="score-display"></p>
+      <p class="text-indigo-500 text-sm mt-1" id="score-detail"></p>
+    </div>
+
+    <noscript>
+      <p class="text-sm text-gray-500">모의고사 문제 출제에는 자바스크립트가 필요합니다.</p>
+    </noscript>
+
+    {config.subjects.map(subject => (
+      <section class="mock-subject" data-subject={subject.label} data-count={subject.questions}>
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 border-b border-gray-100 pb-2">{subject.label}</h2>
+        <div class="mock-list space-y-6"></div>
+      </section>
+    ))}
+
+    <div id="mock-pool" hidden>
+      {pool.map(q => (
+        <div class="mock-item" data-subject={q.subject}>
+          <CertQuestion cert={config.slug} q={q} label="" related={relatedLinks(q)} source={sourceLink(q)} />
+        </div>
+      ))}
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3 pt-4 border-t border-gray-200">
+      <button type="button" class="cert-submit px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">전체 채점하기</button>
+      <button type="button" class="cert-reset px-5 py-2 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">초기화</button>
+      <button type="button" class="mock-new px-5 py-2 bg-white border border-sky-300 text-sky-700 text-sm font-medium rounded-lg hover:bg-sky-50 transition-colors">새 문제 뽑기</button>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script define:vars={{ passScore: config.passScore }}>
+  document.addEventListener('DOMContentLoaded', function () {
+    var poolEl = document.getElementById('mock-pool');
+    var sections = Array.from(document.querySelectorAll('.mock-subject'));
+    var scoreSection = document.getElementById('score-section');
+
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+      return arr;
+    }
+
+    function activeQuestions() {
+      return Array.from(document.querySelectorAll('.mock-list .cert-question'));
+    }
+
+    // 과목별로 겹치지 않게 출제 수만큼 뽑아 1번부터 다시 번호를 매긴다
+    function drawExam() {
+      Array.from(document.querySelectorAll('.mock-list .mock-item')).forEach(function (item) {
+        window.certQuiz.clear(item.querySelector('.cert-question'), true);
+        poolEl.appendChild(item);
+      });
+      var all = Array.from(poolEl.querySelectorAll('.mock-item'));
+      var number = 1;
+      sections.forEach(function (section) {
+        var list = section.querySelector('.mock-list');
+        var count = Number(section.dataset.count);
+        var picked = shuffle(all.filter(function (item) { return item.dataset.subject === section.dataset.subject; })).slice(0, count);
+        picked.forEach(function (item) {
+          item.querySelector('.cert-number').textContent = number++ + '.';
+          list.appendChild(item);
+        });
+      });
+      scoreSection.classList.add('hidden');
+    }
+
+    function submitAll() {
+      var items = activeQuestions();
+      var score = items.filter(function (item) { return window.certQuiz.grade(item); }).length;
+      var pct = Math.round((score / items.length) * 100);
+      document.getElementById('score-display').textContent = score + ' / ' + items.length + '문제 (' + pct + '점)';
+      document.getElementById('score-detail').textContent = pct >= passScore
+        ? '합격 기준 충족 (' + passScore + '점 이상)'
+        : '불합격 (' + passScore + '점 미만)';
+      scoreSection.classList.remove('hidden');
+      scoreSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function resetAll() {
+      activeQuestions().forEach(function (item) { window.certQuiz.clear(item, true); });
+      scoreSection.classList.add('hidden');
+    }
+
+    function newExam() {
+      var answered = document.querySelector('.mock-list input[type=radio]:checked');
+      if (answered && !confirm('지금까지 고른 답이 사라집니다. 새 문제를 뽑을까요?')) return;
+      drawExam();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.cert-submit').forEach(function (b) { b.addEventListener('click', submitAll); });
+    document.querySelectorAll('.cert-reset').forEach(function (b) { b.addEventListener('click', resetAll); });
+    document.querySelectorAll('.mock-new').forEach(function (b) { b.addEventListener('click', newExam); });
+
+    drawExam();
+  });
+</script>
