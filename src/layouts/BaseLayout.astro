@@ -20,7 +20,7 @@ interface Props {
   publishedDate?: string;
   noindex?: boolean;
   noPadding?: boolean;
-  // 애드핏 배너: auto = 본문 맨 위 자동 배치 / manual = 페이지가 직접 배치 / none = 표시 안 함
+  // 애드핏 배너: auto = 본문 맨 아래(푸터 위) 자동 배치 / manual = 페이지가 직접 배치 / none = 표시 안 함
   ads?: 'auto' | 'manual' | 'none';
 }
 
@@ -185,8 +185,8 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
 
   <!-- 메인 콘텐츠 -->
   <main class={noPadding ? 'flex-grow flex flex-col overflow-hidden' : 'flex-grow max-w-3xl mx-auto w-full px-4 py-10'}>
-    {showAutoAds && <AdFitBanner />}
     <slot />
+    {showAutoAds && <AdFitBanner />}
   </main>
 
   <!-- 푸터 -->
