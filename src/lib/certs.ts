@@ -13,6 +13,7 @@ export type CertConfig = {
   description: string;
   passScore: number;
   subjects: CertSubject[];
+  sourceNote?: string;
 };
 export type CertChapter = {
   subject: string;
@@ -34,6 +35,7 @@ export type CertQuestion = {
   answers?: number[];
   explanation?: string;
   hasImage?: boolean;
+  imageMissing?: boolean;
   tags?: string[];
   examSlug: string;
 };
@@ -114,6 +116,22 @@ export function escapeHtml(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+// 2글자 이하 키워드는 다른 단어의 일부로 걸리기 쉽다 ('컬' ⊂ '컬러링').
+// 앞뒤가 단어 경계일 때만 인정하고, 뒤에는 조사가 붙는 것까지 허용한다.
+const SHORT_KEYWORD_MAX = 2;
+const PARTICLES = '은는이가을를의에와과도로만';
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function containsKeyword(text: string, keyword: string) {
+  if (keyword.length > SHORT_KEYWORD_MAX) return text.includes(keyword);
+  const word = '[0-9a-z가-힣]';
+  const pattern = new RegExp(`(?<!${word})${escapeRegExp(keyword)}(?:[${PARTICLES}](?!${word})|(?!${word}))`);
+  return pattern.test(text);
+}
+
 function scoreQuestion(q: CertQuestion, chapter: CertChapter, subjectLabel: string) {
   const questionText = q.question.toLowerCase();
   const optionText = q.options.join(' ').toLowerCase();
@@ -123,10 +141,10 @@ function scoreQuestion(q: CertQuestion, chapter: CertChapter, subjectLabel: stri
   let score = 0;
   chapter.keywords.forEach(kw => {
     const keyword = kw.toLowerCase();
-    if (questionText.includes(keyword) || metaText.includes(keyword)) {
+    if (containsKeyword(questionText, keyword) || containsKeyword(metaText, keyword)) {
       matched.push(kw);
       score += 2;
-    } else if (optionText.includes(keyword) || explanationText.includes(keyword)) {
+    } else if (containsKeyword(optionText, keyword) || containsKeyword(explanationText, keyword)) {
       matched.push(kw);
       score += 1;
     }

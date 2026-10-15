@@ -29,6 +29,10 @@ const roundLabel = `${q.year}년 ${q.session}회`;
     </figure>
   ))}
 
+  {q.imageMissing && (
+    <p class="mb-4 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">원래 시험지에는 그림이 있는 문항이지만, 확보한 자료에 그림이 없어 보기 기호만 표시됩니다.</p>
+  )}
+
   <div class="space-y-2 mb-4">
     {q.options.map((opt, i) => (
       <label class="cert-option flex items-start gap-2 p-2 rounded cursor-pointer hover:bg-gray-50 transition-colors">
