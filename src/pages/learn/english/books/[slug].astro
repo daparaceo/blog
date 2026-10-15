@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import BookSearchBox from '../../../../components/BookSearchBox.astro';
 import WordSearchBox from '../../../../components/WordSearchBox.astro';
+import AdFitBanner from '../../../../components/AdFitBanner.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('learn', ({ data }) => !data.draft);
@@ -66,6 +67,7 @@ const ogImage = post.data.ogImage;
   ogImage={ogImage}
   isArticle={true}
   publishedDate={post.data.publishedAt.toISOString()}
+  ads="manual"
 >
   <article>
     <header class="mb-8 pb-8 border-b border-gray-100">
@@ -92,20 +94,8 @@ const ogImage = post.data.ogImage;
       </time>
     </header>
 
-    <!-- AdFit 광고 (포스트 상단) -->
-    <div class="mb-6 hidden md:flex justify-center">
-      <ins class="kakao_ad_area" style="display:none;"
-        data-ad-unit="DAN-T2zvng3y2R58cLAF"
-        data-ad-width="728"
-        data-ad-height="90"></ins>
-    </div>
-    <div class="mb-6 flex justify-center md:hidden">
-      <ins class="kakao_ad_area" style="display:none;"
-        data-ad-unit="DAN-npX6FNhXLeE9JyIY"
-        data-ad-width="320"
-        data-ad-height="50"></ins>
-    </div>
-    <script type="text/javascript" src="//t1.kakaocdn.net/kas/static/ba.min.js" async></script>
+    <!-- AdFit 광고 (포스트 상단) — BaseLayout 자동 배치 대신 제목 아래에 둔다 -->
+    <AdFitBanner />
 
     {post.data.locations && post.data.locations.length > 0 && (
       <div class="mb-8">

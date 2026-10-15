@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import ErrorReport from '../components/ErrorReport.astro';
+import AdFitBanner from '../components/AdFitBanner.astro';
 
 const learnPosts = await getCollection('learn', ({ data }) => !data.draft);
 const hasEnglish = learnPosts.length > 0;
@@ -19,6 +20,8 @@ interface Props {
   publishedDate?: string;
   noindex?: boolean;
   noPadding?: boolean;
+  // 애드핏 배너: auto = 본문 맨 위 자동 배치 / manual = 페이지가 직접 배치 / none = 표시 안 함
+  ads?: 'auto' | 'manual' | 'none';
 }
 
 const {
@@ -29,7 +32,10 @@ const {
   publishedDate,
   noindex = false,
   noPadding = false,
+  ads = 'auto',
 } = Astro.props;
+// 전체화면 레이아웃(noPadding)은 배너가 끼면 화면이 깨지므로 자동 배치하지 않는다
+const showAutoAds = ads === 'auto' && !noPadding;
 
 const SITE_NAME = 'daparapara';           // ← 블로그 이름 (변경 가능)
 const siteUrl   = Astro.site?.href.replace(/\/$/, '') ?? 'https://daparapara.com';
@@ -179,6 +185,7 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
 
   <!-- 메인 콘텐츠 -->
   <main class={noPadding ? 'flex-grow flex flex-col overflow-hidden' : 'flex-grow max-w-3xl mx-auto w-full px-4 py-10'}>
+    {showAutoAds && <AdFitBanner />}
     <slot />
   </main>
 
