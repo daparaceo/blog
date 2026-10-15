@@ -12,6 +12,7 @@ export type CertConfig = {
   shortName: string;
   description: string;
   passScore: number;
+  subjectPassScore?: number;   // 과목별 과락 기준 (없으면 과락 없음)
   subjects: CertSubject[];
   sourceNote?: string;
 };

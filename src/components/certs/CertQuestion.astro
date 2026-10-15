@@ -18,7 +18,7 @@ const images = createImageResolver(cert);
 const roundLabel = `${q.year}년 ${q.session}회`;
 ---
 
-<div class="cert-question border border-gray-200 rounded-lg p-5" data-answers={getAnswers(q).join(',')}>
+<div class="cert-question border border-gray-200 rounded-lg p-5" data-answers={getAnswers(q).join(',')} data-subject={q.subject}>
   <p class="font-medium text-gray-900 mb-4 leading-relaxed">
     <span class="cert-number text-gray-400 mr-1">{label ?? `${q.number}.`}</span>
     <Fragment set:html={escapeHtml(q.question)} />

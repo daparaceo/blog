@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CertQuestion from '../../../../../components/certs/CertQuestion.astro';
+import CertScore from '../../../../../components/certs/CertScore.astro';
 import {
   listCerts, loadAllQuestions, getChapters, getRelatedChapters,
   type CertConfig, type CertQuestion as Question,
@@ -69,10 +70,7 @@ function sourceLink(q: Question) {
       <button type="button" class="mock-new px-5 py-2 bg-white border border-sky-300 text-sky-700 text-sm font-medium rounded-lg hover:bg-sky-50 transition-colors">새 문제 뽑기</button>
     </div>
 
-    <div id="score-section" class="hidden border border-indigo-200 bg-indigo-50 rounded-lg p-4">
-      <p class="text-indigo-700 font-semibold text-lg" id="score-display"></p>
-      <p class="text-indigo-500 text-sm mt-1" id="score-detail"></p>
-    </div>
+    <CertScore passScore={config.passScore} subjectPassScore={config.subjectPassScore} />
 
     <noscript>
       <p class="text-sm text-gray-500">모의고사 문제 출제에는 자바스크립트가 필요합니다.</p>
@@ -102,11 +100,10 @@ function sourceLink(q: Question) {
   </div>
 </BaseLayout>
 
-<script define:vars={{ passScore: config.passScore }}>
+<script is:inline>
   document.addEventListener('DOMContentLoaded', function () {
     var poolEl = document.getElementById('mock-pool');
     var sections = Array.from(document.querySelectorAll('.mock-subject'));
-    var scoreSection = document.getElementById('score-section');
 
     function shuffle(arr) {
       for (var i = arr.length - 1; i > 0; i--) {
@@ -137,24 +134,16 @@ function sourceLink(q: Question) {
           list.appendChild(item);
         });
       });
-      scoreSection.classList.add('hidden');
+      window.certScore.hide();
     }
 
     function submitAll() {
-      var items = activeQuestions();
-      var score = items.filter(function (item) { return window.certQuiz.grade(item); }).length;
-      var pct = Math.round((score / items.length) * 100);
-      document.getElementById('score-display').textContent = score + ' / ' + items.length + '문제 (' + pct + '점)';
-      document.getElementById('score-detail').textContent = pct >= passScore
-        ? '합격 기준 충족 (' + passScore + '점 이상)'
-        : '불합격 (' + passScore + '점 미만)';
-      scoreSection.classList.remove('hidden');
-      scoreSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      window.certScore.show(activeQuestions(), window.certQuiz.grade);
     }
 
     function resetAll() {
       activeQuestions().forEach(function (item) { window.certQuiz.clear(item, true); });
-      scoreSection.classList.add('hidden');
+      window.certScore.hide();
     }
 
     function newExam() {

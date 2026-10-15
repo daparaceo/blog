@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
 import CertQuestion from '../../../../../../components/certs/CertQuestion.astro';
+import CertScore from '../../../../../../components/certs/CertScore.astro';
 import {
   listCerts, listExamSlugs, loadExam, getChapters, getRelatedChapters,
   type CertConfig,
@@ -48,10 +49,7 @@ function relatedLinks(q: (typeof questions)[number]) {
       <button type="button" class="cert-reset px-5 py-2 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">초기화</button>
     </div>
 
-    <div id="score-section" class="hidden border border-indigo-200 bg-indigo-50 rounded-lg p-4">
-      <p class="text-indigo-700 font-semibold text-lg" id="score-display"></p>
-      <p class="text-indigo-500 text-sm mt-1" id="score-detail"></p>
-    </div>
+    <CertScore passScore={config.passScore} subjectPassScore={config.subjectPassScore} />
 
     {config.subjects.map(subject => {
       const subjectQuestions = questions.filter(q => q.subject === subject.label);
@@ -74,25 +72,17 @@ function relatedLinks(q: (typeof questions)[number]) {
   </div>
 </BaseLayout>
 
-<script define:vars={{ passScore: config.passScore }}>
+<script is:inline>
   document.addEventListener('DOMContentLoaded', function () {
     var items = Array.from(document.querySelectorAll('.cert-question'));
-    var section = document.getElementById('score-section');
 
     function submitAll() {
-      var score = items.filter(function (item) { return window.certQuiz.grade(item); }).length;
-      var pct = Math.round((score / items.length) * 100);
-      document.getElementById('score-display').textContent = score + ' / ' + items.length + '문제 (' + pct + '점)';
-      document.getElementById('score-detail').textContent = pct >= passScore
-        ? '합격 기준 충족 (' + passScore + '점 이상)'
-        : '불합격 (' + passScore + '점 미만)';
-      section.classList.remove('hidden');
-      section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      window.certScore.show(items, window.certQuiz.grade);
     }
 
     function resetAll() {
       items.forEach(function (item) { window.certQuiz.clear(item, true); });
-      section.classList.add('hidden');
+      window.certScore.hide();
     }
 
     document.querySelectorAll('.cert-submit').forEach(function (b) { b.addEventListener('click', submitAll); });
