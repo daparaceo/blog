@@ -16,7 +16,7 @@ const title = `${config.shortName} ${examTitle('predicted', slug)}`;
 
 <BaseLayout
   title={`${title} (현행 출제기준)`}
-  description={`${config.name} 현행 출제기준에 맞춰 자체 제작한 예상문제 ${questions.length}문제 — 문항별 해설, 개별 채점과 전체 채점 지원`}
+  description={`${config.name} 현행 출제기준에 맞춘 예상문제 ${questions.length}문제 — 문항별 해설, 개별 채점과 전체 채점 지원`}
 >
-  <CertExam config={config} questions={questions} title={title} crumb="예상문제 (자체 제작)" note={config.predictedNote} />
+  <CertExam config={config} questions={questions} title={title} crumb="예상문제 (현행 기준)" note={config.predictedNote} />
 </BaseLayout>
