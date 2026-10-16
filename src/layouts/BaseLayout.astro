@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import ErrorReport from '../components/ErrorReport.astro';
 import AdFitBanner from '../components/AdFitBanner.astro';
+import CoupangBanner from '../components/CoupangBanner.astro';
 
 const learnPosts = await getCollection('learn', ({ data }) => !data.draft);
 const hasEnglish = learnPosts.length > 0;
@@ -22,6 +23,8 @@ interface Props {
   noPadding?: boolean;
   // 애드핏 배너: auto = 본문 맨 아래(푸터 위) 자동 배치 / manual = 페이지가 직접 배치 / none = 표시 안 함
   ads?: 'auto' | 'manual' | 'none';
+  // 쿠팡 파트너스 배너를 애드핏 배너 아래에 붙인다
+  coupang?: boolean;
 }
 
 const {
@@ -33,6 +36,7 @@ const {
   noindex = false,
   noPadding = false,
   ads = 'auto',
+  coupang = false,
 } = Astro.props;
 // 전체화면 레이아웃(noPadding)은 배너가 끼면 화면이 깨지므로 자동 배치하지 않는다
 const showAutoAds = ads === 'auto' && !noPadding;
@@ -187,6 +191,7 @@ const fullTitle = title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
   <main class={noPadding ? 'flex-grow flex flex-col overflow-hidden' : 'flex-grow max-w-3xl mx-auto w-full px-4 py-10'}>
     <slot />
     {showAutoAds && <AdFitBanner />}
+    {coupang && !noPadding && <CoupangBanner />}
   </main>
 
   <!-- 푸터 -->
