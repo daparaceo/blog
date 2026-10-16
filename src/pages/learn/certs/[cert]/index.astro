@@ -70,6 +70,7 @@ const subjects = config.subjects.map(s => ({ ...s, chapters: chapters.filter(ch 
       </section>
     )}
 
+    {(examSlugs.length > 0 || predictedSlugs.length === 0) && (
     <section>
       <h2 class="text-base font-semibold text-gray-700 mb-2">{config.writtenHeading ?? '회차별 기출 시험'}</h2>
       {config.writtenNote && <p class="text-xs text-gray-400 mb-4 leading-relaxed">{config.writtenNote}</p>}
@@ -93,6 +94,7 @@ const subjects = config.subjects.map(s => ({ ...s, chapters: chapters.filter(ch 
         </div>
       )}
     </section>
+    )}
 
     {(examSlugs.length > 0 || predictedSlugs.length > 0) && (
       <section>
