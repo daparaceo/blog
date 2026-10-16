@@ -5,7 +5,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-export type CertSubject = { slug: string; label: string; desc: string; questions: number };
+// aliases: 과목 구성이 바뀌기 전 과목명. 구 기출 문항도 관련 개념 매칭에서 같은 과목 가산점을 받는다
+export type CertSubject = { slug: string; label: string; desc: string; questions: number; aliases?: string[] };
 export type CertConfig = {
   slug: string;
   name: string;
@@ -14,7 +15,12 @@ export type CertConfig = {
   passScore: number;
   subjectPassScore?: number;   // 과목별 과락 기준 (없으면 과락 없음)
   subjects: CertSubject[];
-  sourceNote?: string;
+  sourceNote?: string;          // 기출 회차 페이지 상단 출처 안내
+  examSummary?: string;         // 학습 홈 상단 요약 (없으면 "N과목 · 총 N문제")
+  subjectHeading?: string;      // 학습 홈 요점 정리 섹션 제목
+  writtenHeading?: string;      // 학습 홈 기출 섹션 제목
+  writtenNote?: string;         // 학습 홈 기출 섹션 안내
+  predictedNote?: string;       // 예상문제 페이지·섹션 안내
 };
 export type CertChapter = {
   subject: string;
@@ -39,7 +45,10 @@ export type CertQuestion = {
   imageMissing?: boolean;
   tags?: string[];
   examSlug: string;
+  examKind: ExamKind;
 };
+// written: 공단 공개 기출 (questions/) / predicted: 출제기준을 바탕으로 자체 제작한 예상문제 (predicted/)
+export type ExamKind = 'written' | 'predicted';
 
 const DATA_ROOT = path.resolve(process.cwd(), 'src/data/certs');
 const IMAGE_ROOT = path.resolve(process.cwd(), 'public/images/certs');
@@ -56,19 +65,37 @@ export function getChapters(cert: string): CertChapter[] {
   return chapterModules[`../data/certs/${cert}/chapters.ts`]?.CHAPTERS ?? [];
 }
 
-export function listExamSlugs(cert: string): string[] {
-  const dir = path.join(DATA_ROOT, cert, 'questions');
+const EXAM_DIRS: Record<ExamKind, string> = { written: 'questions', predicted: 'predicted' };
+
+export function listExamSlugs(cert: string, kind: ExamKind = 'written'): string[] {
+  const dir = path.join(DATA_ROOT, cert, EXAM_DIRS[kind]);
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir).filter(f => f.endsWith('.json')).map(f => f.replace('.json', '')).sort();
 }
 
-export function loadExam(cert: string, slug: string): CertQuestion[] {
-  const raw = fs.readFileSync(path.join(DATA_ROOT, cert, 'questions', `${slug}.json`), 'utf-8');
-  return JSON.parse(raw).map((q: any) => ({ ...q, examSlug: slug }));
+export function loadExam(cert: string, slug: string, kind: ExamKind = 'written'): CertQuestion[] {
+  const raw = fs.readFileSync(path.join(DATA_ROOT, cert, EXAM_DIRS[kind], `${slug}.json`), 'utf-8');
+  return JSON.parse(raw).map((q: any) => ({ ...q, examSlug: slug, examKind: kind }));
 }
 
 export function loadAllQuestions(cert: string): CertQuestion[] {
-  return listExamSlugs(cert).flatMap(slug => loadExam(cert, slug));
+  return (['written', 'predicted'] as ExamKind[])
+    .flatMap(kind => listExamSlugs(cert, kind).flatMap(slug => loadExam(cert, slug, kind)));
+}
+
+// 회차 표시: 기출은 "2010년 1회", 예상문제는 "예상문제 1회" (예상문제 파일명은 01, 02 ...)
+export function examTitle(kind: ExamKind, slug: string): string {
+  if (kind === 'predicted') return `예상문제 ${Number(slug)}회`;
+  const [year, session] = slug.split('-');
+  return `${year}년 ${session}회`;
+}
+
+export function examHref(cert: string, kind: ExamKind, slug: string): string {
+  return `/learn/certs/${cert}/exam/${kind}/${slug}/`;
+}
+
+export function questionLabel(q: CertQuestion): string {
+  return `${examTitle(q.examKind, q.examSlug)} ${q.number}번`;
 }
 
 // 파일명 = 문제 id 규칙으로 이미지를 찾는다 ({id}, {id}_2, {id}-{k})
@@ -133,7 +160,7 @@ function containsKeyword(text: string, keyword: string) {
   return pattern.test(text);
 }
 
-function scoreQuestion(q: CertQuestion, chapter: CertChapter, subjectLabel: string) {
+function scoreQuestion(q: CertQuestion, chapter: CertChapter, subjectLabels: string[]) {
   const questionText = q.question.toLowerCase();
   const optionText = q.options.join(' ').toLowerCase();
   const explanationText = (q.explanation ?? '').toLowerCase();
@@ -150,26 +177,28 @@ function scoreQuestion(q: CertQuestion, chapter: CertChapter, subjectLabel: stri
       score += 1;
     }
   });
-  if (score > 0 && q.subject === subjectLabel) score += 1;
+  if (score > 0 && subjectLabels.includes(q.subject)) score += 1;
   return { score, matched };
+}
+
+function subjectLabels(config: CertConfig, slug: string): string[] {
+  const subject = config.subjects.find(s => s.slug === slug);
+  return subject ? [subject.label, ...(subject.aliases ?? [])] : [];
 }
 
 export function getRelatedChapters(config: CertConfig, chapters: CertChapter[], q: CertQuestion) {
   return chapters
-    .map(ch => {
-      const subjectLabel = config.subjects.find(s => s.slug === ch.subject)?.label ?? '';
-      return { ...ch, _score: scoreQuestion(q, ch, subjectLabel).score };
-    })
+    .map(ch => ({ ...ch, _score: scoreQuestion(q, ch, subjectLabels(config, ch.subject)).score }))
     .filter(ch => ch._score >= 3)
     .sort((a, b) => b._score - a._score)
     .slice(0, 3);
 }
 
 export function getRelatedQuestions(config: CertConfig, chapter: CertChapter, questions: CertQuestion[]) {
-  const subjectLabel = config.subjects.find(s => s.slug === chapter.subject)?.label ?? '';
+  const labels = subjectLabels(config, chapter.subject);
   const scored = questions
     .map(q => {
-      const { score, matched } = scoreQuestion(q, chapter, subjectLabel);
+      const { score, matched } = scoreQuestion(q, chapter, labels);
       return { ...q, _score: score, _matchedKeywords: matched };
     })
     .filter(q => q._score > 0)

@@ -2,7 +2,7 @@
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CertQuestion from '../../../../../components/certs/CertQuestion.astro';
 import {
-  listCerts, getChapters, loadAllQuestions, getRelatedQuestions,
+  listCerts, getChapters, loadAllQuestions, getRelatedQuestions, questionLabel,
   type CertConfig, type CertChapter,
 } from '../../../../../lib/certs';
 
@@ -22,7 +22,7 @@ const relatedQuestions = getRelatedQuestions(config, chapter, loadAllQuestions(c
 
 <BaseLayout
   title={`${chapter.chapterLabel} | ${subject.label} | ${config.shortName}`}
-  description={`${config.name} ${subject.label} - ${chapter.chapterLabel} 요점 정리 및 관련 기출문제`}
+  description={`${config.name} ${subject.label} - ${chapter.chapterLabel} 요점 정리 및 관련 문제`}
 >
   <div class="space-y-10" data-pagefind-body>
 
@@ -50,17 +50,17 @@ const relatedQuestions = getRelatedQuestions(config, chapter, loadAllQuestions(c
     {relatedQuestions.length > 0 ? (
       <section>
         <h2 class="text-base font-semibold text-gray-700 mb-4 flex items-center gap-2">
-          관련 기출문제
+          관련 문제
           <span class="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{relatedQuestions.length}문제</span>
         </h2>
         <div class="space-y-4">
           {relatedQuestions.map(q => (
-            <CertQuestion cert={config.slug} q={q} label={`${q.year}년 ${q.session}회 ${q.number}번`} />
+            <CertQuestion cert={config.slug} q={q} label={questionLabel(q)} />
           ))}
         </div>
       </section>
     ) : (
-      <div class="text-sm text-gray-400 border border-dashed border-gray-200 rounded-lg p-6 text-center">이 챕터와 관련된 기출문제가 아직 없습니다.</div>
+      <div class="text-sm text-gray-400 border border-dashed border-gray-200 rounded-lg p-6 text-center">이 챕터와 관련된 문제가 아직 없습니다.</div>
     )}
 
     <div class="pt-4 border-t border-gray-200">

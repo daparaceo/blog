@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
+import CertExam from '../../../../../../components/certs/CertExam.astro';
+import { listCerts, listExamSlugs, loadExam, examTitle, type CertConfig } from '../../../../../../lib/certs';
+
+export function getStaticPaths() {
+  return listCerts().flatMap(config =>
+    listExamSlugs(config.slug, 'predicted').map(slug => ({ params: { cert: config.slug, slug }, props: { config, slug } }))
+  );
+}
+
+const { config, slug } = Astro.props as { config: CertConfig; slug: string };
+const questions = loadExam(config.slug, slug, 'predicted');
+const title = `${config.shortName} ${examTitle('predicted', slug)}`;
+---
+
+<BaseLayout
+  title={`${title} (현행 출제기준)`}
+  description={`${config.name} 현행 출제기준에 맞춰 자체 제작한 예상문제 ${questions.length}문제 — 문항별 해설, 개별 채점과 전체 채점 지원`}
+>
+  <CertExam config={config} questions={questions} title={title} crumb="예상문제 (자체 제작)" note={config.predictedNote} />
+</BaseLayout>

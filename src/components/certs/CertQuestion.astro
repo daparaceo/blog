@@ -1,7 +1,7 @@
 ---
-// 자격증 기출 문항 1개: 보기 선택 → 정답 확인(해설·관련 개념)
+// 자격증 문항 1개 (기출·예상문제): 보기 선택 → 정답 확인(해설·관련 개념)
 import {
-  createImageResolver, getAnswers, getAnswerText, escapeHtml,
+  createImageResolver, getAnswers, getAnswerText, escapeHtml, examTitle,
   type CertQuestion,
 } from '../../lib/certs';
 
@@ -15,7 +15,7 @@ interface Props {
 
 const { cert, q, label, related = [], source } = Astro.props;
 const images = createImageResolver(cert);
-const roundLabel = `${q.year}년 ${q.session}회`;
+const roundLabel = examTitle(q.examKind, q.examSlug);
 ---
 
 <div class="cert-question border border-gray-200 rounded-lg p-5" data-answers={getAnswers(q).join(',')} data-subject={q.subject}>
