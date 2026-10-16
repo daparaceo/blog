@@ -61,6 +61,22 @@ export function listCerts(): CertConfig[] {
     .map(d => JSON.parse(fs.readFileSync(path.join(DATA_ROOT, d.name, 'config.json'), 'utf-8')));
 }
 
+// 출제기준 (src/data/certs/{cert}/syllabus.json 이 있는 시험만 /learn/certs/[cert]/syllabus/ 페이지가 생긴다)
+export type CertSyllabus = {
+  title: string;
+  versions: { label: string; period: string; url: string }[];
+  sameNote?: string;
+  checkedAt: string;
+  summary: [string, string][];
+  duty?: string;
+  items: { title: string; subject?: string; details: [string, string[]][] }[];
+};
+
+export function getSyllabus(cert: string): CertSyllabus | null {
+  const file = path.join(DATA_ROOT, cert, 'syllabus.json');
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf-8')) : null;
+}
+
 export function getChapters(cert: string): CertChapter[] {
   return chapterModules[`../data/certs/${cert}/chapters.ts`]?.CHAPTERS ?? [];
 }

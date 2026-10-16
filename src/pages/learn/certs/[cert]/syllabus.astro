@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { listCerts, getSyllabus, type CertConfig, type CertSyllabus } from '../../../../lib/certs';
+
+export function getStaticPaths() {
+  return listCerts()
+    .map(config => ({ config, syllabus: getSyllabus(config.slug) }))
+    .filter(({ syllabus }) => syllabus !== null)
+    .map(({ config, syllabus }) => ({ params: { cert: config.slug }, props: { config, syllabus } }));
+}
+
+const { config, syllabus } = Astro.props as { config: CertConfig; syllabus: CertSyllabus };
+const subjectLabel = (slug?: string) => config.subjects.find(s => s.slug === slug)?.label;
+---
+
+<BaseLayout
+  title={`${syllabus.title} | ${config.shortName}`}
+  description={`${syllabus.title} — ${syllabus.versions.map(v => `${v.label} ${v.period}`).join(', ')} 적용 주요항목·세부항목·세세항목 정리`}
+>
+  <div class="space-y-8" data-pagefind-body>
+
+    <div class="border-b border-gray-200 pb-4">
+      <div class="text-xs text-gray-400 mb-1">
+        <a href={`/learn/certs/${config.slug}/`} class="hover:text-sky-600">{config.shortName}</a>
+        <span class="mx-1">/</span>
+        출제기준
+      </div>
+      <h1 class="text-xl font-bold text-gray-900">{syllabus.title}</h1>
+      {syllabus.sameNote && <p class="text-sm text-gray-500 mt-2">{syllabus.sameNote}</p>}
+    </div>
+
+    <section>
+      <h2 class="text-base font-semibold text-gray-700 mb-3">적용기간</h2>
+      <div class="grid gap-2 sm:grid-cols-2">
+        {syllabus.versions.map(v => (
+          <a href={v.url} target="_blank" rel="noopener noreferrer" class="block p-4 border border-gray-200 rounded-lg hover:border-sky-300 hover:bg-sky-50 transition-colors group">
+            <span class="text-xs font-medium text-sky-700 bg-sky-50 px-2 py-0.5 rounded">{v.label}</span>
+            <span class="block font-medium text-gray-900 mt-2">{v.period}</span>
+            <span class="block text-xs text-gray-400 mt-1 group-hover:text-sky-600">Q-net 원문 보기 ↗</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-base font-semibold text-gray-700 mb-3">시험 개요</h2>
+      <dl class="grid grid-cols-[6rem_1fr] gap-x-4 gap-y-2 text-sm">
+        {syllabus.summary.map(([k, v]) => (
+          <>
+            <dt class="text-gray-400">{k}</dt>
+            <dd class="text-gray-700">{v}</dd>
+          </>
+        ))}
+      </dl>
+      {syllabus.duty && <p class="text-sm text-gray-500 mt-3 leading-relaxed">직무내용: {syllabus.duty}</p>}
+    </section>
+
+    <section>
+      <h2 class="text-base font-semibold text-gray-700 mb-3">주요항목 · 세부항목 · 세세항목</h2>
+      <div class="space-y-3">
+        {syllabus.items.map((item, i) => (
+          <div class="border border-gray-200 rounded-lg overflow-hidden">
+            <div class="flex items-center justify-between gap-3 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
+              <h3 class="font-semibold text-gray-900 text-sm">{i + 1}. {item.title}</h3>
+              {subjectLabel(item.subject) && (
+                <a href={`/learn/certs/${config.slug}/${item.subject}/`} class="text-xs text-sky-600 hover:text-sky-700 shrink-0">요점 정리 →</a>
+              )}
+            </div>
+            <ul class="divide-y divide-gray-100">
+              {item.details.map(([detail, subs]) => (
+                <li class="px-4 py-2.5 sm:flex sm:gap-4 text-sm">
+                  <span class="block sm:w-56 shrink-0 font-medium text-gray-700">{detail}</span>
+                  <span class="block text-gray-500 mt-0.5 sm:mt-0">{subs.join(' · ')}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <p class="text-xs text-gray-400">출처: 한국산업인력공단 Q-net 종목별 출제기준 (확인일 {syllabus.checkedAt}). 실기 출제기준은 포함하지 않았습니다.</p>
+
+    <div class="pt-2 border-t border-gray-200">
+      <a href={`/learn/certs/${config.slug}/`} class="text-sm text-gray-500 hover:text-sky-600 transition-colors">← {config.shortName} 학습 홈으로</a>
+    </div>
+
+  </div>
+</BaseLayout>
