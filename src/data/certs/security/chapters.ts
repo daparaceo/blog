@@ -248,458 +248,102 @@ ALL: ALL</code></pre>
   {
     subject: 'system',
     subjectLabel: '시스템보안',
-    chapter: 'access-control',
-    chapterLabel: '접근통제',
-    keywords: ['DAC', 'MAC', 'RBAC', 'ABAC', '식별', '인증', '인가', 'MFA', '지식기반', '소지기반', '특성기반', 'SSO', '최소권한', '직무분리'],
+    chapter: 'system-attack',
+    chapterLabel: '시스템 공격 기법',
+    keywords: ['버퍼오버플로', '포맷스트링', '레이스컨디션', 'TOCTOU', '권한상승', '루트킷', '패스워드크래킹', 'Pass the Hash', 'NOP sled', '스택'],
     content: `
-<h3>접근통제 3단계</h3>
+<h3>버퍼 오버플로 (Buffer Overflow)</h3>
+<p>입력 데이터가 버퍼 크기를 초과해 인접 메모리를 덮어쓰는 공격. 스택의 리턴 주소를 공격자 코드로 덮어씁니다.</p>
 <table>
-  <thead><tr><th>단계</th><th>설명</th><th>예시</th></tr></thead>
+  <thead><tr><th>구분</th><th>스택 기반</th><th>힙 기반</th></tr></thead>
   <tbody>
-    <tr><td><strong>식별(Identification)</strong></td><td>시스템에 자신을 알림</td><td>사용자명 입력</td></tr>
-    <tr><td><strong>인증(Authentication)</strong></td><td>주장한 신원을 증명</td><td>패스워드, OTP, 생체인식</td></tr>
-    <tr><td><strong>인가(Authorization)</strong></td><td>인증된 주체에게 자원 접근 권한 부여</td><td>ACL, 역할 기반 권한</td></tr>
+    <tr><td>대상</td><td>스택 상의 지역변수</td><td>동적 할당 메모리</td></tr>
+    <tr><td>목표</td><td>리턴 주소 덮어쓰기</td><td>함수 포인터, vtable 덮어쓰기</td></tr>
+    <tr><td>난이도</td><td>비교적 쉬움</td><td>어려움</td></tr>
   </tbody>
 </table>
 
-<h3>인증 요소 (Authentication Factor)</h3>
+<h4>NOP Sled</h4>
+<p>NOP(No Operation) 명령어(0x90)를 연속 배치해 셸코드 앞에 슬라이드 영역 생성. 정확한 리턴 주소 몰라도 NOP 영역 어딘가에 점프하면 셸코드 실행 가능.</p>
+
+<h4>버퍼 오버플로 대응 기법</h4>
 <table>
-  <thead><tr><th>유형</th><th>설명</th><th>예시</th></tr></thead>
+  <thead><tr><th>대응 기법</th><th>설명</th></tr></thead>
   <tbody>
-    <tr><td>지식 기반 (Something you know)</td><td>알고 있는 것</td><td>패스워드, PIN, 보안 질문</td></tr>
-    <tr><td>소지 기반 (Something you have)</td><td>가지고 있는 것</td><td>OTP 토큰, 스마트카드, 인증서</td></tr>
-    <tr><td>특성 기반 (Something you are)</td><td>자신의 특성</td><td>지문, 홍채, 얼굴, 정맥</td></tr>
-    <tr><td>MFA (다단계 인증)</td><td>2가지 이상 요소 조합</td><td>패스워드 + OTP</td></tr>
+    <tr><td><strong>ASLR</strong> (Address Space Layout Randomization)</td><td>스택·힙·라이브러리 주소 무작위화 → 리턴 주소 예측 방해</td></tr>
+    <tr><td><strong>DEP/NX</strong> (Data Execution Prevention)</td><td>스택·힙에서 코드 실행 금지</td></tr>
+    <tr><td><strong>스택 카나리(Stack Canary)</strong></td><td>리턴 주소 앞에 카나리 값 배치. 리턴 전 카나리 변조 여부 확인.</td></tr>
+    <tr><td><strong>SafeSEH</strong></td><td>SEH(구조적 예외 처리) 핸들러 포인터 검증 (Windows)</td></tr>
   </tbody>
 </table>
 
-<h3>접근통제 정책 유형 비교</h3>
-<table>
-  <thead><tr><th>구분</th><th>권한 결정 주체</th><th>기반</th><th>특징</th><th>예시</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><strong>DAC</strong><br>(임의적 접근통제)</td>
-      <td>데이터 소유자</td>
-      <td>신분(Identity)</td>
-      <td>유연하나 트로이목마 취약. 소유자가 자유롭게 권한 부여.</td>
-      <td>유닉스 파일 권한, Windows NTFS</td>
-    </tr>
-    <tr>
-      <td><strong>MAC</strong><br>(강제적 접근통제)</td>
-      <td>시스템/관리자</td>
-      <td>보안 레이블</td>
-      <td>강력하나 유연성 낮음. 군사·정부 환경. 사용자가 권한 변경 불가.</td>
-      <td>SELinux, 기밀/비밀/대외비/일반</td>
-    </tr>
-    <tr>
-      <td><strong>RBAC</strong><br>(역할기반 접근통제)</td>
-      <td>관리자</td>
-      <td>역할(Role)</td>
-      <td>역할에 권한 부여 후 사용자를 역할에 할당. 대규모 조직에 적합.</td>
-      <td>직급별 ERP 권한</td>
-    </tr>
-    <tr>
-      <td><strong>ABAC</strong><br>(속성기반 접근통제)</td>
-      <td>정책 엔진</td>
-      <td>속성 조합</td>
-      <td>사용자·자원·환경 속성 조합으로 세밀한 정책. XACML 표준.</td>
-      <td>근무시간+부서+보안등급 조합</td>
-    </tr>
-  </tbody>
-</table>
+<h3>포맷 스트링 공격 (Format String Attack)</h3>
+<p>printf() 등 포맷 함수에 사용자 입력을 직접 포맷 문자열로 전달할 때 발생.</p>
+<pre><code>취약 코드: printf(user_input);       // 위험
+안전 코드: printf("%s", user_input); // 안전
 
-<h3>접근 제어 행렬 (Access Control Matrix)</h3>
-<p>주체(Subject)와 객체(Object)의 권한 관계를 행렬로 표현. 행: 주체, 열: 객체, 셀: 권한.</p>
+%x : 스택 메모리 내용 출력 (정보 유출)
+%n : 현재까지 출력한 바이트 수를 메모리에 쓰기 (임의 쓰기 가능)</code></pre>
+
+<h3>레이스 컨디션 / TOCTOU</h3>
+<p><strong>레이스 컨디션(Race Condition)</strong>: 두 프로세스가 공유 자원에 동시 접근해 결과가 실행 순서에 따라 달라지는 취약점.</p>
+<p><strong>TOCTOU (Time-of-Check-to-Time-of-Use)</strong>: 권한 확인 시점(TOC)과 실제 사용 시점(TOU) 사이에 공격자가 파일 등 자원을 교체하는 공격.</p>
+<pre><code>1. 프로그램이 /tmp/safe_file 권한 확인 (TOC)
+2. 공격자가 /tmp/safe_file을 /etc/passwd로 심볼릭 링크 교체
+3. 프로그램이 /tmp/safe_file에 쓰기 (TOU) → /etc/passwd 수정됨</code></pre>
+
+<h3>권한 상승 기법</h3>
 <ul>
-  <li><strong>ACL (Access Control List)</strong>: 열(객체) 기준으로 접근 가능한 주체 목록</li>
-  <li><strong>Capability List</strong>: 행(주체) 기준으로 접근 가능한 객체 목록</li>
+  <li><strong>SetUID 악용</strong>: SUID 설정된 프로그램의 취약점을 이용해 root 권한 획득</li>
+  <li><strong>커널 취약점 공격</strong>: dirty COW, ptrace 등 커널 버그 악용</li>
+  <li><strong>sudo 설정 오류</strong>: sudoers 잘못된 설정으로 권한 상승</li>
+  <li><strong>PATH 변조</strong>: 환경변수 PATH에 악성 디렉토리 삽입</li>
 </ul>
 
-<h3>접근통제 원칙</h3>
+<h3>루트킷 (Rootkit)</h3>
+<p>시스템에 지속적으로 은닉하며 관리자 수준 접근을 유지하는 악성 소프트웨어.</p>
+<table>
+  <thead><tr><th>유형</th><th>동작 방식</th></tr></thead>
+  <tbody>
+    <tr><td>커널 레벨 루트킷</td><td>커널 모듈로 로드. 시스템 콜 테이블 후킹. 탐지 극히 어려움.</td></tr>
+    <tr><td>사용자 레벨 루트킷</td><td>ls, ps 등 시스템 명령어 교체. 상대적으로 탐지 쉬움.</td></tr>
+    <tr><td>부트킷</td><td>MBR/UEFI 감염. OS 로드 전 실행.</td></tr>
+    <tr><td>하이퍼바이저 루트킷</td><td>가상화 레이어 활용. OS 아래에서 동작.</td></tr>
+  </tbody>
+</table>
+
+<h3>패스워드 크래킹</h3>
+<table>
+  <thead><tr><th>기법</th><th>설명</th><th>대응</th></tr></thead>
+  <tbody>
+    <tr><td>무차별 대입(Brute-force)</td><td>모든 가능한 조합 시도</td><td>계정 잠금, 긴 패스워드</td></tr>
+    <tr><td>사전 공격(Dictionary)</td><td>자주 쓰이는 단어 목록</td><td>복잡한 패스워드 정책</td></tr>
+    <tr><td>Rainbow Table</td><td>사전계산된 해시 역조회</td><td>솔트(Salt) 사용</td></tr>
+    <tr><td>하이브리드 공격</td><td>사전 단어 + 숫자·특수문자 조합</td><td>복잡한 패스워드</td></tr>
+  </tbody>
+</table>
+
+<h3>Pass the Hash (PtH)</h3>
+<p>Windows NTLM 인증에서 실제 패스워드 없이 <strong>NTLM 해시값만으로 인증</strong>하는 공격.</p>
 <ul>
-  <li><strong>최소권한(Least Privilege)</strong>: 업무 수행에 필요한 최소한의 권한만 부여</li>
-  <li><strong>직무분리(Separation of Duties)</strong>: 한 사람이 중요 프로세스 전체를 통제 불가. 내부 사기 방지</li>
-  <li><strong>알 필요성(Need-to-Know)</strong>: 업무 수행에 반드시 필요한 정보만 접근 허용</li>
-  <li><strong>기본 거부(Default Deny)</strong>: 명시적으로 허용되지 않은 것은 모두 거부</li>
+  <li>공격 도구: mimikatz, impacket</li>
+  <li>대응: Kerberos 인증 사용, Protected Users 그룹 활용, 관리자 계정 최소화, Credential Guard</li>
 </ul>
 
-<h3>SSO 및 연동 프로토콜 비교</h3>
+<h3>대응 방안 종합</h3>
 <table>
-  <thead><tr><th>프로토콜</th><th>목적</th><th>특징</th></tr></thead>
+  <thead><tr><th>공격 유형</th><th>주요 대응</th></tr></thead>
   <tbody>
-    <tr><td>Kerberos</td><td>인증</td><td>티켓 기반. KDC(AS+TGS). 대칭키. 시간 동기화 필수(5분)</td></tr>
-    <tr><td>SAML</td><td>인증+인가</td><td>XML 기반. IdP ↔ SP. 엔터프라이즈 SSO</td></tr>
-    <tr><td>OAuth 2.0</td><td>인가(Authorization)</td><td>액세스 토큰 발급. API 위임 접근</td></tr>
-    <tr><td>OpenID Connect</td><td>인증</td><td>OAuth 2.0 기반 + ID 토큰(JWT)</td></tr>
+    <tr><td>버퍼 오버플로</td><td>ASLR, DEP, 스택 카나리, 안전한 함수 사용(strncpy, snprintf)</td></tr>
+    <tr><td>포맷 스트링</td><td>포맷 문자열에 사용자 입력 직접 사용 금지</td></tr>
+    <tr><td>TOCTOU</td><td>파일 디스크립터 사용(open 후 fd로만 처리), 임시파일 안전한 생성(mkstemp)</td></tr>
+    <tr><td>권한 상승</td><td>최소권한 원칙, 불필요한 SUID 파일 제거, 정기 패치</td></tr>
+    <tr><td>루트킷</td><td>무결성 검사 도구(Tripwire), 신뢰 부트(Secure Boot), EDR</td></tr>
+    <tr><td>Pass the Hash</td><td>Kerberos 강제, Credential Guard, 관리자 계정 분리</td></tr>
   </tbody>
 </table>
     `,
   },
-  {
-    subject: 'system',
-    subjectLabel: '시스템보안',
-    chapter: 'security-model',
-    chapterLabel: '보안 모델',
-    keywords: ['Bell-LaPadula', 'Biba', 'Clark-Wilson', 'Chinese Wall', 'Brewer-Nash', '참조모니터', 'TCB', '보안커널', '격자모델', 'ss속성', '스타속성'],
-    content: `
-<h3>Bell-LaPadula 모델 (기밀성)</h3>
-<p>군사 기밀 보호 목적. MAC 기반. <strong>"Read Down, Write Up"만 허용.</strong></p>
-<table>
-  <thead><tr><th>속성</th><th>규칙</th><th>의미</th></tr></thead>
-  <tbody>
-    <tr><td>ss-속성 (단순 보안 속성)</td><td>No Read Up</td><td>자신보다 높은 등급 객체 읽기 금지</td></tr>
-    <tr><td>*-속성 (스타 속성)</td><td>No Write Down</td><td>자신보다 낮은 등급 객체 쓰기 금지 (정보 유출 방지)</td></tr>
-    <tr><td>ds-속성 (임의 보안 속성)</td><td>DAC 규칙 적용</td><td>접근통제 행렬로 추가 제한</td></tr>
-  </tbody>
-</table>
-<p>단점: 무결성 보장 안 됨 (낮은 등급 사용자가 높은 등급에 쓸 수 있음)</p>
-
-<h3>Biba 모델 (무결성)</h3>
-<p>Bell-LaPadula와 반대 방향. <strong>"Read Up, Write Down"만 허용.</strong></p>
-<table>
-  <thead><tr><th>속성</th><th>규칙</th><th>의미</th></tr></thead>
-  <tbody>
-    <tr><td>단순 무결성 속성</td><td>No Read Down</td><td>낮은 등급 객체 읽기 금지 (오염 방지)</td></tr>
-    <tr><td>*-무결성 속성</td><td>No Write Up</td><td>높은 등급 객체 쓰기 금지</td></tr>
-  </tbody>
-</table>
-<p>단점: 기밀성 보장 안 됨</p>
-
-<h3>Bell-LaPadula vs Biba 비교</h3>
-<table>
-  <thead><tr><th>구분</th><th>Bell-LaPadula</th><th>Biba</th></tr></thead>
-  <tbody>
-    <tr><td>보호 목표</td><td>기밀성(Confidentiality)</td><td>무결성(Integrity)</td></tr>
-    <tr><td>읽기 규칙</td><td>No Read Up (상위 읽기 금지)</td><td>No Read Down (하위 읽기 금지)</td></tr>
-    <tr><td>쓰기 규칙</td><td>No Write Down (하위 쓰기 금지)</td><td>No Write Up (상위 쓰기 금지)</td></tr>
-    <tr><td>허용 방향</td><td>Read Down, Write Up</td><td>Read Up, Write Down</td></tr>
-    <tr><td>적용 환경</td><td>군사·정부</td><td>상업적 무결성</td></tr>
-  </tbody>
-</table>
-
-<h3>Clark-Wilson 모델 (상업적 무결성)</h3>
-<p>상업 환경 무결성 보장. 3가지 목표: 인가된 사용자의 부정 조작 방지 / 직무 분리 / 트랜잭션 로깅.</p>
-<table>
-  <thead><tr><th>구성 요소</th><th>의미</th></tr></thead>
-  <tbody>
-    <tr><td>CDI (Constrained Data Item)</td><td>무결성 통제가 적용되는 데이터</td></tr>
-    <tr><td>UDI (Unconstrained Data Item)</td><td>통제 없는 입력 데이터 (외부 입력)</td></tr>
-    <tr><td>TP (Transformation Procedure)</td><td>CDI를 변환하는 유일한 프로그램</td></tr>
-    <tr><td>IVP (Integrity Verification Procedure)</td><td>CDI 무결성 검증 절차</td></tr>
-  </tbody>
-</table>
-
-<h3>Chinese Wall 모델 (Brewer-Nash)</h3>
-<p>이해충돌(Conflict of Interest) 방지. 컨설팅·금융 환경.</p>
-<ul>
-  <li>한 번 A사 정보 접근 시 경쟁사 B사 정보 접근 자동 차단</li>
-  <li>시간이 지남에 따라 접근 가능 객체가 동적으로 변함 (DAC+MAC 혼합 특성)</li>
-</ul>
-
-<h3>기타 보안 모델</h3>
-<table>
-  <thead><tr><th>모델</th><th>특징</th></tr></thead>
-  <tbody>
-    <tr><td>HRU (Harrison-Ruzzo-Ullman)</td><td>접근 행렬 기반. 권한 변경 연산 정의. 안전성 결정 불가(비결정적)</td></tr>
-    <tr><td>Take-Grant</td><td>권한 전달(Grant)·가져오기(Take) 연산으로 권한 흐름 분석</td></tr>
-    <tr><td>격자 모델(Lattice)</td><td>보안 레벨 간 편순서 관계. Bell-LaPadula의 수학적 기반</td></tr>
-  </tbody>
-</table>
-
-<h3>참조 모니터 (Reference Monitor)</h3>
-<p>모든 접근 요청을 중재하는 추상적 개념. 3가지 필수 요건:</p>
-<ul>
-  <li><strong>격리성(Isolation)</strong>: 변조·우회 불가하게 격리</li>
-  <li><strong>완전성(Completeness)</strong>: 모든 접근 요청 반드시 통과</li>
-  <li><strong>검증가능성(Verifiability)</strong>: 정확성 검증·테스트 가능</li>
-</ul>
-<p>구현체: <strong>보안 커널(Security Kernel)</strong>. TCB(Trusted Computing Base)의 핵심 구성 요소.</p>
-<p><strong>TCB</strong>: 시스템 보안 정책을 강제하는 하드웨어·소프트웨어·펌웨어의 집합. 보안 커널 + 보안 관련 프로세스.</p>
-    `,
-  },
-
-  {
-    subject: 'system',
-    subjectLabel: '시스템보안',
-    chapter: 'symmetric-crypto',
-    chapterLabel: '대칭키 암호화',
-    keywords: ['DES', 'AES', 'ARIA', 'SEED', 'LEA', '3DES', 'ECB', 'CBC', 'CTR', 'GCM', 'RC4', 'AEAD', '블록암호', '스트림암호'],
-    content: `
-<h3>암호화 유형 간단 비교</h3>
-<table>
-  <thead><tr><th>구분</th><th>대칭키</th><th>비대칭키</th><th>해시</th></tr></thead>
-  <tbody>
-    <tr><td>키</td><td>암·복호화 동일 키</td><td>공개키/개인키 쌍</td><td>키 없음 (단방향)</td></tr>
-    <tr><td>속도</td><td>빠름</td><td>매우 느림</td><td>매우 빠름</td></tr>
-    <tr><td>키 수(n명)</td><td>n(n-1)/2</td><td>2n</td><td>해당 없음</td></tr>
-    <tr><td>주요 용도</td><td>대용량 데이터 암호화</td><td>키 교환, 디지털 서명</td><td>무결성 검증, 패스워드</td></tr>
-  </tbody>
-</table>
-
-<h3>블록 암호 vs 스트림 암호</h3>
-<table>
-  <thead><tr><th>구분</th><th>블록 암호</th><th>스트림 암호</th></tr></thead>
-  <tbody>
-    <tr><td>처리 단위</td><td>고정 크기 블록 (64/128bit)</td><td>1비트 또는 1바이트씩</td></tr>
-    <tr><td>패딩</td><td>필요 (블록 크기 맞춤)</td><td>불필요</td></tr>
-    <tr><td>속도</td><td>상대적으로 느림</td><td>빠름</td></tr>
-    <tr><td>대표</td><td>DES, AES, ARIA, SEED</td><td>RC4, A5/1, ChaCha20</td></tr>
-  </tbody>
-</table>
-
-<h3>주요 블록 암호 알고리즘</h3>
-<table>
-  <thead><tr><th>알고리즘</th><th>키 길이</th><th>블록 크기</th><th>특징</th></tr></thead>
-  <tbody>
-    <tr><td><strong>DES</strong></td><td>56bit</td><td>64bit</td><td>1977년 미국 표준. 현재 안전하지 않음. 전사적 공격 가능.</td></tr>
-    <tr><td><strong>3DES</strong></td><td>168bit (실효 112bit)</td><td>64bit</td><td>EDE 방식. 느림. 레거시 호환.</td></tr>
-    <tr><td><strong>AES</strong></td><td>128/192/256bit</td><td>128bit</td><td>2001년 미국 표준(FIPS 197). Rijndael. 현재 가장 널리 사용.</td></tr>
-    <tr><td><strong>ARIA</strong></td><td>128/192/256bit</td><td>128bit</td><td>국내 표준(KS X 1213). 국정원 개발.</td></tr>
-    <tr><td><strong>SEED</strong></td><td>128/256bit</td><td>128bit</td><td>국내 표준(KS X 1005). KISA 개발. 전자금융.</td></tr>
-    <tr><td><strong>LEA</strong></td><td>128/192/256bit</td><td>128bit</td><td>경량 암호화. IoT 환경. 국내 표준.</td></tr>
-  </tbody>
-</table>
-
-<h3>블록 암호 운용 모드</h3>
-<table>
-  <thead><tr><th>모드</th><th>패딩</th><th>병렬처리</th><th>특징</th><th>용도</th></tr></thead>
-  <tbody>
-    <tr><td><strong>ECB</strong></td><td>필요</td><td>가능</td><td>블록 독립 암호화. 같은 평문→같은 암호문. 패턴 노출. 사용 금지.</td><td>사용 금지</td></tr>
-    <tr><td><strong>CBC</strong></td><td>필요</td><td>복호화만</td><td>이전 암호문 블록과 XOR. IV 필요. 오류 전파.</td><td>파일 암호화</td></tr>
-    <tr><td><strong>CFB</strong></td><td>불필요</td><td>복호화만</td><td>스트림 암호처럼 동작. IV 필요.</td><td>스트림 데이터</td></tr>
-    <tr><td><strong>OFB</strong></td><td>불필요</td><td>불가</td><td>키 스트림 사전 생성. 오류 비전파.</td><td>위성통신</td></tr>
-    <tr><td><strong>CTR</strong></td><td>불필요</td><td>가능</td><td>카운터 값 암호화 후 XOR. 완전 병렬.</td><td>고성능</td></tr>
-    <tr><td><strong>GCM</strong></td><td>불필요</td><td>가능</td><td>CTR + GHASH 인증. AEAD. 인증 태그 생성.</td><td>TLS 1.3</td></tr>
-  </tbody>
-</table>
-
-<h3>AEAD 및 스트림 암호</h3>
-<p><strong>AEAD (Authenticated Encryption with Associated Data)</strong>: 암호화 + 인증을 동시 제공. GCM, CCM, ChaCha20-Poly1305.</p>
-<p><strong>RC4</strong>: SSL/WEP에 사용됐으나 편향성 취약점 발견. 현재 사용 금지.</p>
-    `,
-  },
-  {
-    subject: 'system',
-    subjectLabel: '시스템보안',
-    chapter: 'asymmetric-crypto',
-    chapterLabel: '비대칭키 암호화',
-    keywords: ['RSA', 'ECC', 'Diffie-Hellman', 'ElGamal', 'DSA', '소인수분해', '이산로그', '타원곡선', '하이브리드', '공개키', '개인키'],
-    content: `
-<h3>비대칭키 기본 원리</h3>
-<ul>
-  <li><strong>암호화</strong>: 수신자의 공개키로 암호화 → 수신자의 개인키로 복호화</li>
-  <li><strong>디지털 서명</strong>: 송신자의 개인키로 서명 → 수신자가 공개키로 검증</li>
-</ul>
-
-<h3>주요 비대칭키 알고리즘</h3>
-<table>
-  <thead><tr><th>알고리즘</th><th>수학적 기반</th><th>권장 키 길이</th><th>용도</th></tr></thead>
-  <tbody>
-    <tr><td><strong>RSA</strong></td><td>소인수분해의 어려움</td><td>2048bit 이상</td><td>암호화, 디지털 서명</td></tr>
-    <tr><td><strong>ECC</strong></td><td>타원곡선 이산로그 문제</td><td>256bit</td><td>모바일/IoT (짧은 키로 동등 보안)</td></tr>
-    <tr><td><strong>Diffie-Hellman (DH)</strong></td><td>이산로그 문제</td><td>2048bit 이상</td><td>키 교환 전용 (암호화·서명 불가)</td></tr>
-    <tr><td><strong>ElGamal</strong></td><td>이산로그 문제</td><td>1024bit 이상</td><td>암호화, 서명</td></tr>
-    <tr><td><strong>DSA</strong></td><td>이산로그 문제</td><td>1024~3072bit</td><td>디지털 서명 전용</td></tr>
-  </tbody>
-</table>
-
-<h3>RSA 원리</h3>
-<p>두 큰 소수 p, q의 곱 n=p×q에서, n만 알고서 p, q를 소인수분해하기 어렵다는 수학적 난제를 기반으로 합니다.</p>
-<ul>
-  <li>키 길이: 현재 2048bit 이상 권장 (1024bit 이하 취약)</li>
-  <li>RSA 2048bit ≈ ECC 224bit ≈ AES 112bit (동등 보안강도)</li>
-</ul>
-
-<h3>ECC 특징</h3>
-<p>타원곡선 위의 점 덧셈 연산을 기반으로 하는 암호화. RSA보다 짧은 키로 동등한 보안강도를 제공합니다.</p>
-<table>
-  <thead><tr><th>ECC 키 길이</th><th>동등 RSA 키 길이</th></tr></thead>
-  <tbody>
-    <tr><td>256bit</td><td>3072bit</td></tr>
-    <tr><td>384bit</td><td>7680bit</td></tr>
-    <tr><td>521bit</td><td>15360bit</td></tr>
-  </tbody>
-</table>
-
-<h3>Diffie-Hellman 키 교환</h3>
-<p>공개 채널에서 안전하게 공유 비밀키 생성. <strong>인증 기능 없음</strong> → 중간자 공격(MITM) 취약.</p>
-<ul>
-  <li><strong>DHE (임시 DH)</strong>: 매 세션마다 임시 키 생성 → PFS(Perfect Forward Secrecy) 제공</li>
-  <li><strong>ECDHE</strong>: ECC 기반 DHE. TLS 1.3의 기본 키 교환 방식</li>
-</ul>
-
-<h3>하이브리드 암호화</h3>
-<p>대칭키(빠른 속도)와 비대칭키(안전한 키 교환)를 결합하는 방식. HTTPS/TLS에서 사용.</p>
-<pre><code>1. 세션 키(대칭키) 생성
-2. 세션 키를 수신자의 공개키로 암호화 → 전송
-3. 실제 데이터는 세션 키(대칭키)로 암호화 → 전송
-4. 수신자: 개인키로 세션 키 복호화 → 세션 키로 데이터 복호화</code></pre>
-
-<h3>키 관리 비교</h3>
-<table>
-  <thead><tr><th>구분</th><th>n명 간 필요 키 수</th></tr></thead>
-  <tbody>
-    <tr><td>대칭키 (1:1 비밀키)</td><td>n(n-1)/2</td></tr>
-    <tr><td>비대칭키 (공개키+개인키 쌍)</td><td>2n</td></tr>
-  </tbody>
-</table>
-    `,
-  },
-  {
-    subject: 'system',
-    subjectLabel: '시스템보안',
-    chapter: 'hash-mac',
-    chapterLabel: '해시·메시지 인증',
-    keywords: ['MD5', 'SHA-1', 'SHA-256', 'SHA-3', 'HMAC', 'HAS-160', '충돌', '역상', '솔트', '레인보우테이블', 'bcrypt', 'PBKDF2'],
-    content: `
-<h3>해시 함수 4가지 특성</h3>
-<table>
-  <thead><tr><th>특성</th><th>설명</th></tr></thead>
-  <tbody>
-    <tr><td><strong>일방향성(One-way)</strong></td><td>해시값으로 원문 복원 불가 (역산 불가)</td></tr>
-    <tr><td><strong>역상 저항성(Preimage resistance)</strong></td><td>주어진 해시값 h에 대해 H(m)=h인 m 찾기 어려움</td></tr>
-    <tr><td><strong>제2역상 저항성(Second preimage resistance)</strong></td><td>주어진 m1에 대해 H(m1)=H(m2)인 m2 찾기 어려움</td></tr>
-    <tr><td><strong>충돌 저항성(Collision resistance)</strong></td><td>H(m1)=H(m2)인 임의의 m1≠m2 쌍 찾기 어려움</td></tr>
-  </tbody>
-</table>
-
-<h3>주요 해시 알고리즘</h3>
-<table>
-  <thead><tr><th>알고리즘</th><th>출력 길이</th><th>상태</th></tr></thead>
-  <tbody>
-    <tr><td><strong>MD5</strong></td><td>128bit</td><td>충돌 공격 가능. 무결성 검증 부적합. 사용 지양.</td></tr>
-    <tr><td><strong>SHA-1</strong></td><td>160bit</td><td>2017년 충돌 공격 성공(SHAttered). 사용 금지 권고.</td></tr>
-    <tr><td><strong>SHA-224/256</strong></td><td>224/256bit</td><td>SHA-2 계열. 현재 표준. 가장 널리 사용.</td></tr>
-    <tr><td><strong>SHA-384/512</strong></td><td>384/512bit</td><td>SHA-2 계열. 고보안 환경.</td></tr>
-    <tr><td><strong>SHA-3</strong></td><td>224~512bit</td><td>Keccak 알고리즘. SHA-2와 완전히 다른 구조.</td></tr>
-    <tr><td><strong>HAS-160</strong></td><td>160bit</td><td>국내 표준 해시 (KCDSA 서명에 사용).</td></tr>
-  </tbody>
-</table>
-
-<h3>충돌 공격</h3>
-<ul>
-  <li><strong>MD5 충돌</strong>: 2004년 Wang 등이 이론 증명. 실용적 충돌 생성 가능.</li>
-  <li><strong>SHA-1 충돌(SHAttered)</strong>: 2017년 Google 연구팀. 같은 SHA-1 해시값을 가진 두 PDF 파일 생성.</li>
-  <li>충돌 저항성이 깨지면 디지털 서명 위조 가능 → 폐기</li>
-</ul>
-
-<h3>HMAC (Hash-based Message Authentication Code)</h3>
-<p>비밀키 + 해시 함수 조합. <strong>무결성 + 인증</strong> 동시 제공. 기밀성은 제공하지 않음.</p>
-<pre><code>HMAC(K, m) = H((K⊕opad) || H((K⊕ipad) || m))</code></pre>
-<ul>
-  <li>용도: API 요청 인증, TLS MAC, JWT HS256</li>
-  <li>MAC만으로는 부인방지 불가 (키 공유 때문)</li>
-</ul>
-
-<h3>해시 공격 기법</h3>
-<table>
-  <thead><tr><th>공격</th><th>방법</th><th>대응</th></tr></thead>
-  <tbody>
-    <tr><td>무차별 대입(Brute-force)</td><td>모든 가능한 입력 시도</td><td>긴 패스워드, 느린 해시 함수</td></tr>
-    <tr><td>사전 공격(Dictionary)</td><td>자주 쓰이는 단어 목록 사용</td><td>복잡한 패스워드 정책</td></tr>
-    <tr><td>Rainbow Table</td><td>사전계산된 해시 역조회 테이블</td><td>솔트(Salt) 사용</td></tr>
-  </tbody>
-</table>
-
-<h3>솔트(Salt)와 패스워드 저장</h3>
-<p><strong>솔트</strong>: 패스워드에 랜덤 값을 추가해 해시. 같은 패스워드도 다른 해시값 → Rainbow Table 무력화.</p>
-<table>
-  <thead><tr><th>방식</th><th>특징</th><th>권장 여부</th></tr></thead>
-  <tbody>
-    <tr><td>MD5(password)</td><td>빠름, Rainbow Table 취약</td><td>금지</td></tr>
-    <tr><td>SHA-256(salt+password)</td><td>빠름 — 무차별 대입 취약</td><td>비권장</td></tr>
-    <tr><td><strong>bcrypt</strong></td><td>작업 계수(cost factor)로 속도 조절</td><td>권장</td></tr>
-    <tr><td><strong>PBKDF2</strong></td><td>반복 해시 + 솔트. NIST 권장.</td><td>권장</td></tr>
-    <tr><td><strong>Argon2</strong></td><td>메모리 집약적. 2015년 Password Hashing Competition 우승.</td><td>권장</td></tr>
-  </tbody>
-</table>
-    `,
-  },
-  {
-    subject: 'system',
-    subjectLabel: '시스템보안',
-    chapter: 'pki-signature',
-    chapterLabel: 'PKI·디지털 서명',
-    keywords: ['CA', 'RA', 'VA', 'PKI', 'X.509', 'CRL', 'OCSP', '디지털서명', '인증서', '공인인증서', '전자서명법', 'KISA'],
-    content: `
-<h3>디지털 서명 과정</h3>
-<pre><code>서명(송신자):
-  1. 메시지를 해시 함수로 요약 → 메시지 다이제스트(MD)
-  2. MD를 송신자의 개인키로 암호화 → 디지털 서명
-
-검증(수신자):
-  1. 수신된 서명을 송신자의 공개키로 복호화 → MD'
-  2. 수신된 메시지를 동일 해시 함수로 요약 → MD
-  3. MD == MD' 이면 서명 유효</code></pre>
-
-<h3>디지털 서명 제공 기능</h3>
-<table>
-  <thead><tr><th>제공하는 보안 기능</th><th>제공하지 않는 기능</th></tr></thead>
-  <tbody>
-    <tr>
-      <td>무결성(Integrity), 인증(Authentication), 부인방지(Non-repudiation)</td>
-      <td>기밀성(Confidentiality) — 별도 암호화 필요</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3>PKI 구성요소</h3>
-<table>
-  <thead><tr><th>구성 요소</th><th>역할</th></tr></thead>
-  <tbody>
-    <tr><td><strong>CA (인증기관)</strong></td><td>인증서 발급·갱신·폐기. 신뢰의 근원.</td></tr>
-    <tr><td><strong>RA (등록기관)</strong></td><td>사용자 신원 확인 후 CA에 인증서 발급 요청. CA와 사용자 사이 중개.</td></tr>
-    <tr><td><strong>VA (검증기관)</strong></td><td>인증서 유효성 실시간 검증 (OCSP 응답 제공).</td></tr>
-    <tr><td><strong>저장소(Repository)</strong></td><td>인증서·CRL 공개 저장. LDAP 디렉토리 방식.</td></tr>
-  </tbody>
-</table>
-
-<h3>X.509 인증서 주요 필드</h3>
-<table>
-  <thead><tr><th>필드</th><th>설명</th></tr></thead>
-  <tbody>
-    <tr><td>버전(Version)</td><td>인증서 형식 버전 (v3 사용)</td></tr>
-    <tr><td>일련번호(Serial Number)</td><td>CA 내 고유 번호</td></tr>
-    <tr><td>서명 알고리즘</td><td>CA가 서명에 사용한 알고리즘</td></tr>
-    <tr><td>발급자(Issuer)</td><td>인증서를 발급한 CA 정보</td></tr>
-    <tr><td>유효기간(Validity)</td><td>NotBefore ~ NotAfter</td></tr>
-    <tr><td>주체(Subject)</td><td>인증서 소유자 정보</td></tr>
-    <tr><td>공개키 정보</td><td>소유자의 공개키 + 알고리즘</td></tr>
-    <tr><td>확장(Extensions)</td><td>SAN, Key Usage, CRL 배포점 등</td></tr>
-    <tr><td>CA 서명</td><td>CA 개인키로 서명한 값</td></tr>
-  </tbody>
-</table>
-
-<h3>CRL vs OCSP 비교</h3>
-<table>
-  <thead><tr><th>구분</th><th>CRL</th><th>OCSP</th></tr></thead>
-  <tbody>
-    <tr><td>방식</td><td>폐기 인증서 목록 다운로드</td><td>실시간 상태 조회</td></tr>
-    <tr><td>최신성</td><td>주기적 갱신 (다소 지연)</td><td>실시간</td></tr>
-    <tr><td>크기</td><td>목록이 커질 수 있음</td><td>단건 응답</td></tr>
-    <tr><td>프라이버시</td><td>CA에 조회 안함</td><td>CA가 조회 내역 파악 가능</td></tr>
-    <tr><td>포트</td><td>HTTP 80</td><td>HTTP 80/443</td></tr>
-  </tbody>
-</table>
-<p><strong>OCSP Stapling</strong>: 서버가 OCSP 응답을 미리 캐시해 TLS 핸드셰이크 시 클라이언트에 제공 → 성능 향상, 프라이버시 보호.</p>
-
-<h3>인증서 검증 체인</h3>
-<pre><code>Root CA (자체 서명, 브라우저/OS 내장)
-  ↓ 서명
-중간 CA (Intermediate CA)
-  ↓ 서명
-사용자(서버) 인증서</code></pre>
-<p>신뢰 체인(Chain of Trust): Root CA를 신뢰하면 중간 CA와 최종 인증서도 신뢰.</p>
-
-<h3>국내 PKI 체계</h3>
-<ul>
-  <li>최상위 인증기관: <strong>KISA (한국인터넷진흥원)</strong></li>
-  <li>공인인증기관 5개: 금융결제원, KOSCOM, 한국정보인증, 이니텍, 한국전자인증</li>
-  <li><strong>2020년 전자서명법 개정</strong>: 공인인증서(구 공인인증기관) 독점 지위 폐지. 사설 인증서와 동등 지위.</li>
-</ul>
-    `,
-  },
-
   {
     subject: 'system',
     subjectLabel: '시스템보안',
@@ -798,98 +442,171 @@ ALL: ALL</code></pre>
   {
     subject: 'system',
     subjectLabel: '시스템보안',
-    chapter: 'system-attack',
-    chapterLabel: '시스템 공격 기법',
-    keywords: ['버퍼오버플로', '포맷스트링', '레이스컨디션', 'TOCTOU', '권한상승', '루트킷', '패스워드크래킹', 'Pass the Hash', 'NOP sled', '스택'],
+    chapter: 'social-engineering',
+    chapterLabel: '사회공학',
+    keywords: ['사회공학', '피싱', '스피어피싱', '보이스피싱', '비싱', '스미싱', '프리텍스팅', '베이팅', '테일게이팅', '큐 프로 쿼', '심리적 조작', '보안 인식 교육'],
     content: `
-<h3>버퍼 오버플로 (Buffer Overflow)</h3>
-<p>입력 데이터가 버퍼 크기를 초과해 인접 메모리를 덮어쓰는 공격. 스택의 리턴 주소를 공격자 코드로 덮어씁니다.</p>
+<h3>사회공학 공격 유형</h3>
 <table>
-  <thead><tr><th>구분</th><th>스택 기반</th><th>힙 기반</th></tr></thead>
+  <thead><tr><th>유형</th><th>수단</th><th>타겟</th><th>특징</th></tr></thead>
   <tbody>
-    <tr><td>대상</td><td>스택 상의 지역변수</td><td>동적 할당 메모리</td></tr>
-    <tr><td>목표</td><td>리턴 주소 덮어쓰기</td><td>함수 포인터, vtable 덮어쓰기</td></tr>
-    <tr><td>난이도</td><td>비교적 쉬움</td><td>어려움</td></tr>
+    <tr>
+      <td><strong>피싱(Phishing)</strong></td>
+      <td>이메일, 가짜 웹사이트</td>
+      <td>불특정 다수</td>
+      <td>신뢰 기관(은행, 포털) 위장. 대량 발송.</td>
+    </tr>
+    <tr>
+      <td><strong>스피어피싱(Spear Phishing)</strong></td>
+      <td>이메일</td>
+      <td>특정 개인·조직</td>
+      <td>맞춤형 내용. 성공률 높음. APT 초기 침투 수단.</td>
+    </tr>
+    <tr>
+      <td><strong>웨일링(Whaling)</strong></td>
+      <td>이메일</td>
+      <td>CEO·임원 등 고위직</td>
+      <td>스피어피싱의 일종. 고가치 타겟 전문.</td>
+    </tr>
+    <tr>
+      <td><strong>비싱(Vishing)</strong></td>
+      <td>전화(Voice)</td>
+      <td>개인</td>
+      <td>전화로 개인정보·계좌 정보 탈취. 콜센터 직원 사칭.</td>
+    </tr>
+    <tr>
+      <td><strong>스미싱(Smishing)</strong></td>
+      <td>SMS/문자</td>
+      <td>스마트폰 사용자</td>
+      <td>URL 포함 문자. 악성 앱 설치 유도.</td>
+    </tr>
+    <tr>
+      <td><strong>프리텍스팅(Pretexting)</strong></td>
+      <td>전화, 대면, 이메일</td>
+      <td>직원</td>
+      <td>가짜 신분·상황 설정. IT 직원·감사관 사칭.</td>
+    </tr>
+    <tr>
+      <td><strong>베이팅(Baiting)</strong></td>
+      <td>물리적 미디어</td>
+      <td>호기심 많은 직원</td>
+      <td>악성 USB를 주차장·엘리베이터에 방치.</td>
+    </tr>
+    <tr>
+      <td><strong>테일게이팅(Tailgating)</strong></td>
+      <td>물리적 접근</td>
+      <td>물리 보안 구역</td>
+      <td>인가자 뒤에 따라 들어감. 사회적 예의를 이용.</td>
+    </tr>
   </tbody>
 </table>
 
-<h4>NOP Sled</h4>
-<p>NOP(No Operation) 명령어(0x90)를 연속 배치해 셸코드 앞에 슬라이드 영역 생성. 정확한 리턴 주소 몰라도 NOP 영역 어딘가에 점프하면 셸코드 실행 가능.</p>
-
-<h4>버퍼 오버플로 대응 기법</h4>
+<h3>공격에 이용되는 심리 기법</h3>
 <table>
-  <thead><tr><th>대응 기법</th><th>설명</th></tr></thead>
+  <thead><tr><th>심리 기법</th><th>설명</th><th>공격 예시</th></tr></thead>
   <tbody>
-    <tr><td><strong>ASLR</strong> (Address Space Layout Randomization)</td><td>스택·힙·라이브러리 주소 무작위화 → 리턴 주소 예측 방해</td></tr>
-    <tr><td><strong>DEP/NX</strong> (Data Execution Prevention)</td><td>스택·힙에서 코드 실행 금지</td></tr>
-    <tr><td><strong>스택 카나리(Stack Canary)</strong></td><td>리턴 주소 앞에 카나리 값 배치. 리턴 전 카나리 변조 여부 확인.</td></tr>
-    <tr><td><strong>SafeSEH</strong></td><td>SEH(구조적 예외 처리) 핸들러 포인터 검증 (Windows)</td></tr>
+    <tr><td><strong>권위(Authority)</strong></td><td>상위 직급·기관처럼 행세</td><td>"CEO입니다, 지금 당장 계좌 이체 해주세요"</td></tr>
+    <tr><td><strong>긴박감(Urgency)</strong></td><td>즉각 행동을 유도해 판단력 저하</td><td>"지금 처리 안 하면 계정이 삭제됩니다"</td></tr>
+    <tr><td><strong>친밀감(Familiarity)</strong></td><td>아는 사람인 척하여 경계 해제</td><td>"저 지난번에 미팅했던 김대리입니다"</td></tr>
+    <tr><td><strong>사회적 증거(Social Proof)</strong></td><td>다른 사람도 했다고 안심시킴</td><td>"다른 부서는 이미 다 클릭했어요"</td></tr>
+    <tr><td><strong>상호성(Reciprocity)</strong></td><td>뭔가를 줄 테니 정보를 달라는 교환</td><td>"무료 USB 드릴게요, 설문 하나만..."</td></tr>
   </tbody>
 </table>
 
-<h3>포맷 스트링 공격 (Format String Attack)</h3>
-<p>printf() 등 포맷 함수에 사용자 입력을 직접 포맷 문자열로 전달할 때 발생.</p>
-<pre><code>취약 코드: printf(user_input);       // 위험
-안전 코드: printf("%s", user_input); // 안전
+<h3>피싱 유형 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>피싱</th><th>스피어피싱</th><th>웨일링</th></tr></thead>
+  <tbody>
+    <tr><td>타겟</td><td>불특정 다수</td><td>특정 개인·부서</td><td>고위 임원(CEO, CFO)</td></tr>
+    <tr><td>맞춤화</td><td>없음</td><td>높음</td><td>매우 높음</td></tr>
+    <tr><td>성공률</td><td>낮음</td><td>높음</td><td>매우 높음</td></tr>
+    <tr><td>준비 시간</td><td>짧음</td><td>중간</td><td>길음</td></tr>
+  </tbody>
+</table>
 
-%x : 스택 메모리 내용 출력 (정보 유출)
-%n : 현재까지 출력한 바이트 수를 메모리에 쓰기 (임의 쓰기 가능)</code></pre>
-
-<h3>레이스 컨디션 / TOCTOU</h3>
-<p><strong>레이스 컨디션(Race Condition)</strong>: 두 프로세스가 공유 자원에 동시 접근해 결과가 실행 순서에 따라 달라지는 취약점.</p>
-<p><strong>TOCTOU (Time-of-Check-to-Time-of-Use)</strong>: 권한 확인 시점(TOC)과 실제 사용 시점(TOU) 사이에 공격자가 파일 등 자원을 교체하는 공격.</p>
-<pre><code>1. 프로그램이 /tmp/safe_file 권한 확인 (TOC)
-2. 공격자가 /tmp/safe_file을 /etc/passwd로 심볼릭 링크 교체
-3. 프로그램이 /tmp/safe_file에 쓰기 (TOU) → /etc/passwd 수정됨</code></pre>
-
-<h3>권한 상승 기법</h3>
+<h3>APT와 사회공학</h3>
+<p><strong>APT(Advanced Persistent Threat)</strong> 공격에서 사회공학은 초기 침투(Initial Access) 수단으로 가장 많이 활용된다.</p>
 <ul>
-  <li><strong>SetUID 악용</strong>: SUID 설정된 프로그램의 취약점을 이용해 root 권한 획득</li>
-  <li><strong>커널 취약점 공격</strong>: dirty COW, ptrace 등 커널 버그 악용</li>
-  <li><strong>sudo 설정 오류</strong>: sudoers 잘못된 설정으로 권한 상승</li>
-  <li><strong>PATH 변조</strong>: 환경변수 PATH에 악성 디렉토리 삽입</li>
+  <li>스피어피싱 → 악성 첨부파일 실행 → 내부망 침투</li>
+  <li>가장 기술적으로 완벽한 방어도 사람의 실수 하나로 무력화</li>
 </ul>
 
-<h3>루트킷 (Rootkit)</h3>
-<p>시스템에 지속적으로 은닉하며 관리자 수준 접근을 유지하는 악성 소프트웨어.</p>
-<table>
-  <thead><tr><th>유형</th><th>동작 방식</th></tr></thead>
-  <tbody>
-    <tr><td>커널 레벨 루트킷</td><td>커널 모듈로 로드. 시스템 콜 테이블 후킹. 탐지 극히 어려움.</td></tr>
-    <tr><td>사용자 레벨 루트킷</td><td>ls, ps 등 시스템 명령어 교체. 상대적으로 탐지 쉬움.</td></tr>
-    <tr><td>부트킷</td><td>MBR/UEFI 감염. OS 로드 전 실행.</td></tr>
-    <tr><td>하이퍼바이저 루트킷</td><td>가상화 레이어 활용. OS 아래에서 동작.</td></tr>
-  </tbody>
-</table>
-
-<h3>패스워드 크래킹</h3>
-<table>
-  <thead><tr><th>기법</th><th>설명</th><th>대응</th></tr></thead>
-  <tbody>
-    <tr><td>무차별 대입(Brute-force)</td><td>모든 가능한 조합 시도</td><td>계정 잠금, 긴 패스워드</td></tr>
-    <tr><td>사전 공격(Dictionary)</td><td>자주 쓰이는 단어 목록</td><td>복잡한 패스워드 정책</td></tr>
-    <tr><td>Rainbow Table</td><td>사전계산된 해시 역조회</td><td>솔트(Salt) 사용</td></tr>
-    <tr><td>하이브리드 공격</td><td>사전 단어 + 숫자·특수문자 조합</td><td>복잡한 패스워드</td></tr>
-  </tbody>
-</table>
-
-<h3>Pass the Hash (PtH)</h3>
-<p>Windows NTLM 인증에서 실제 패스워드 없이 <strong>NTLM 해시값만으로 인증</strong>하는 공격.</p>
+<h3>대응책</h3>
 <ul>
-  <li>공격 도구: mimikatz, impacket</li>
-  <li>대응: Kerberos 인증 사용, Protected Users 그룹 활용, 관리자 계정 최소화, Credential Guard</li>
+  <li><strong>보안 인식 교육</strong>: 전직원 정기 교육, 피싱 시뮬레이션 훈련</li>
+  <li><strong>이중 확인 절차</strong>: 이메일 요청 시 전화 콜백으로 본인 확인</li>
+  <li><strong>정보 공개 최소화</strong>: SNS에 조직 정보·직위 과다 공개 자제</li>
+  <li><strong>물리 보안 강화</strong>: 맨트랩, 방문자 등록·동반, 테일게이팅 방지 교육</li>
+  <li><strong>이메일 보안</strong>: SPF·DKIM·DMARC 적용으로 발신자 위조 방지</li>
+  <li><strong>USB 정책</strong>: 허가되지 않은 USB 사용 금지, AutoRun 비활성화</li>
+</ul>
+    `,
+  },
+  {
+    subject: 'system',
+    subjectLabel: '시스템보안',
+    chapter: 'cloud-security',
+    chapterLabel: '클라우드 보안',
+    keywords: ['클라우드', 'IaaS', 'PaaS', 'SaaS', '공유 책임 모델', 'CASB', 'CSPM', 'Zero Trust', 'IAM', 'MFA', '컨테이너', 'Docker', 'Kubernetes', 'API 보안', 'S3 버킷', '데이터 주권'],
+    content: `
+
+<h3>클라우드 서비스 모델 비교</h3>
+<table>
+  <thead><tr><th>모델</th><th>사용자 관리 범위</th><th>공급자 관리 범위</th><th>예시</th></tr></thead>
+  <tbody>
+    <tr><td><strong>IaaS</strong> (Infrastructure as a Service)</td><td>OS, 미들웨어, 앱, 데이터</td><td>물리 인프라, 네트워크, 가상화</td><td>AWS EC2, Azure VM</td></tr>
+    <tr><td><strong>PaaS</strong> (Platform as a Service)</td><td>앱, 데이터</td><td>OS, 미들웨어, 런타임, 인프라</td><td>Google App Engine, Heroku</td></tr>
+    <tr><td><strong>SaaS</strong> (Software as a Service)</td><td>데이터, 사용자 설정</td><td>모든 인프라+소프트웨어</td><td>Gmail, Salesforce, Office 365</td></tr>
+  </tbody>
+</table>
+
+<h3>공유 책임 모델 (Shared Responsibility Model)</h3>
+<p>클라우드 보안 책임을 공급자와 사용자가 분담. 모델에 따라 사용자 책임 범위가 다름.</p>
+<ul>
+  <li><strong>공급자 책임</strong>: 물리 보안, 하이퍼바이저, 네트워크 인프라, 글로벌 인프라</li>
+  <li><strong>사용자 책임 (IaaS)</strong>: 데이터 암호화, 네트워크 설정, OS 패치, 접근 관리, 애플리케이션 보안</li>
+  <li><strong>사용자 책임 (SaaS)</strong>: 데이터 분류, 접근 권한, 계정 관리 (범위 축소)</li>
 </ul>
 
-<h3>대응 방안 종합</h3>
+<h3>클라우드 보안 위협</h3>
 <table>
-  <thead><tr><th>공격 유형</th><th>주요 대응</th></tr></thead>
+  <thead><tr><th>위협</th><th>설명</th><th>대응</th></tr></thead>
   <tbody>
-    <tr><td>버퍼 오버플로</td><td>ASLR, DEP, 스택 카나리, 안전한 함수 사용(strncpy, snprintf)</td></tr>
-    <tr><td>포맷 스트링</td><td>포맷 문자열에 사용자 입력 직접 사용 금지</td></tr>
-    <tr><td>TOCTOU</td><td>파일 디스크립터 사용(open 후 fd로만 처리), 임시파일 안전한 생성(mkstemp)</td></tr>
-    <tr><td>권한 상승</td><td>최소권한 원칙, 불필요한 SUID 파일 제거, 정기 패치</td></tr>
-    <tr><td>루트킷</td><td>무결성 검사 도구(Tripwire), 신뢰 부트(Secure Boot), EDR</td></tr>
-    <tr><td>Pass the Hash</td><td>Kerberos 강제, Credential Guard, 관리자 계정 분리</td></tr>
+    <tr><td><strong>데이터 유출</strong></td><td>S3 버킷 Public 설정 오류, 잘못된 ACL</td><td>CSPM, 버킷 퍼블릭 액세스 차단</td></tr>
+    <tr><td><strong>계정 탈취</strong></td><td>루트 계정 직접 사용, MFA 미설정</td><td>루트 계정 미사용, MFA 강제 적용</td></tr>
+    <tr><td><strong>내부자 위협</strong></td><td>과도한 IAM 권한, 권한 남용</td><td>최소 권한 IAM, 접근 로그 감사</td></tr>
+    <tr><td><strong>공급망 공격</strong></td><td>서드파티 이미지·라이브러리 취약점</td><td>이미지 서명 검증, SCA</td></tr>
+    <tr><td><strong>API 취약점</strong></td><td>인증 없는 API 엔드포인트, 과도한 권한</td><td>API 게이트웨이, 인증·인가 강화</td></tr>
+  </tbody>
+</table>
+
+<h3>CASB (Cloud Access Security Broker)</h3>
+<p>클라우드 서비스와 사용자 사이에 위치해 보안 정책을 적용하는 중개 솔루션.</p>
+<ul>
+  <li><strong>가시성</strong>: 어떤 클라우드 서비스를 누가 어떻게 사용하는지 파악 (Shadow IT 탐지)</li>
+  <li><strong>컴플라이언스</strong>: 규정 준수 여부 모니터링</li>
+  <li><strong>데이터 보안</strong>: DLP, 암호화, 토큰화</li>
+  <li><strong>위협 방어</strong>: 악성코드 탐지, 이상 행동 분석</li>
+</ul>
+
+<h3>CSPM (Cloud Security Posture Management)</h3>
+<p>클라우드 설정 오류를 지속적으로 탐지·교정. S3 Public 버킷, 방화벽 과잉 허용 등 감지.</p>
+
+<h3>Zero Trust</h3>
+<p>"Never Trust, Always Verify" — 내부망도 신뢰하지 않음. 모든 요청을 검증.</p>
+<ul>
+  <li><strong>핵심 원칙</strong>: 명시적 검증, 최소 권한 접근, 침해 가정</li>
+  <li><strong>마이크로세그멘테이션</strong>: 내부 네트워크를 작은 세그먼트로 분리. 측면 이동(Lateral Movement) 차단.</li>
+</ul>
+
+<h3>컨테이너 보안</h3>
+<table>
+  <thead><tr><th>위협</th><th>대응</th></tr></thead>
+  <tbody>
+    <tr><td>취약한 베이스 이미지</td><td>이미지 취약점 스캔 (Trivy, Snyk), 공식 최소 이미지 사용</td></tr>
+    <tr><td>컨테이너 권한 상승</td><td>비특권(non-root) 컨테이너 실행, --privileged 금지</td></tr>
+    <tr><td>시크릿 하드코딩</td><td>환경변수·시크릿 관리 도구(Vault, K8s Secrets) 사용</td></tr>
+    <tr><td>컨테이너 탈출</td><td>컨테이너 런타임 최신 유지, seccomp/AppArmor 프로파일 적용</td></tr>
   </tbody>
 </table>
     `,
@@ -1052,7 +769,6 @@ ALL: ALL</code></pre>
 </table>
     `,
   },
-
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
@@ -1147,7 +863,6 @@ ALL: ALL</code></pre>
 </table>
     `,
   },
-
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
@@ -1234,7 +949,6 @@ ALL: ALL</code></pre>
 </table>
     `,
   },
-
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
@@ -1347,7 +1061,6 @@ ALL: ALL</code></pre>
 </ul>
     `,
   },
-
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
@@ -1449,7 +1162,6 @@ ALL: ALL</code></pre>
 </ul>
     `,
   },
-
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
@@ -1553,7 +1265,6 @@ ALL: ALL</code></pre>
 </ul>
     `,
   },
-
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
@@ -1670,7 +1381,6 @@ ALL: ALL</code></pre>
 </table>
     `,
   },
-
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
@@ -1788,7 +1498,6 @@ ALL: ALL</code></pre>
 </ul>
     `,
   },
-
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
@@ -1906,9 +1615,10 @@ ALL: ALL</code></pre>
     `,
   },
 
+  // ===== 어플리케이션보안 =====
   {
-    subject: 'network',
-    subjectLabel: '네트워크보안',
+    subject: 'application',
+    subjectLabel: '어플리케이션보안',
     chapter: 'email-security',
     chapterLabel: '이메일 보안',
     keywords: ['SPF', 'DKIM', 'DMARC', 'SMTP', 'POP3', 'IMAP', 'S/MIME', 'PGP', '피싱', '스팸', 'MX 레코드', 'STARTTLS', '헤더 위조', 'TXT 레코드'],
@@ -2014,8 +1724,6 @@ ALL: ALL</code></pre>
     +-- [4] DMARC 보고서 발송: rua(집계), ruf(포렌식) 주소로 보고서 전송</code></pre>
     `,
   },
-
-  // ===== 어플리케이션보안 =====
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
@@ -2094,7 +1802,6 @@ ID 입력: admin'--
 <p><strong>방어</strong>: 응답 헤더 값에 CR·LF 문자 포함 여부 검증·제거.</p>
     `,
   },
-
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
@@ -2158,7 +1865,6 @@ ID 입력: admin'--
 </ul>
     `,
   },
-
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
@@ -2236,7 +1942,6 @@ Signature: HMACSHA256(header + "." + payload, secret)</code></pre>
 </ul>
     `,
   },
-
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
@@ -2308,7 +2013,6 @@ url=http://localhost:8080/admin</code></pre>
 <p><strong>방어</strong>: 리다이렉트 대상을 화이트리스트 도메인으로 제한, 상대 경로만 허용, 외부 URL 리다이렉트 금지.</p>
     `,
   },
-
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
@@ -2406,81 +2110,6 @@ url=http://localhost:8080/admin</code></pre>
 <p><strong>방어</strong>: 모든 리소스를 HTTPS로 제공, HSTS 적용, upgrade-insecure-requests CSP 디렉티브 사용.</p>
     `,
   },
-
-  {
-    subject: 'application',
-    subjectLabel: '어플리케이션보안',
-    chapter: 'owasp-secure-coding',
-    chapterLabel: 'OWASP·시큐어 코딩',
-    keywords: ['OWASP', 'OWASP Top 10', '시큐어 코딩', 'Secure Coding', '입력값 검증', '출력값 인코딩', '오류 처리', '로깅', '암호화', '취약한 의존성', 'SAST', 'DAST', 'SCA', 'DevSecOps', 'SDL'],
-    content: `
-
-<h3>OWASP Top 10 (2021)</h3>
-<table>
-  <thead><tr><th>순위</th><th>항목</th><th>대표 예시</th><th>핵심 방어</th></tr></thead>
-  <tbody>
-    <tr><td>A01</td><td><strong>취약한 접근 통제</strong> (Broken Access Control)</td><td>수평/수직 권한 상승, 강제 브라우징</td><td>서버 측 접근 통제, 최소 권한</td></tr>
-    <tr><td>A02</td><td><strong>암호화 실패</strong> (Cryptographic Failures)</td><td>평문 전송, 취약 암호화(MD5/SHA1)</td><td>TLS 강제, 강력한 해시 알고리즘</td></tr>
-    <tr><td>A03</td><td><strong>인젝션</strong> (Injection)</td><td>SQL·OS·LDAP 인젝션</td><td>Prepared Statement, 입력 검증</td></tr>
-    <tr><td>A04</td><td><strong>안전하지 않은 설계</strong> (Insecure Design)</td><td>위협 모델링 미수행, 보안 설계 부재</td><td>SDL, 위협 모델링, 보안 요구사항 정의</td></tr>
-    <tr><td>A05</td><td><strong>보안 설정 오류</strong> (Security Misconfiguration)</td><td>기본 계정, 불필요 기능 활성화, 오류 노출</td><td>최소 설치, 보안 기본값, 오류 메시지 제거</td></tr>
-    <tr><td>A06</td><td><strong>취약하고 오래된 구성요소</strong></td><td>패치 안 된 라이브러리, EOL 소프트웨어</td><td>SCA, 의존성 관리, 주기적 패치</td></tr>
-    <tr><td>A07</td><td><strong>식별 및 인증 실패</strong></td><td>무차별 대입 허용, 세션 관리 취약</td><td>MFA, 강력한 세션 관리, 잠금 정책</td></tr>
-    <tr><td>A08</td><td><strong>소프트웨어 및 데이터 무결성 실패</strong></td><td>안전하지 않은 역직렬화, 공급망 공격</td><td>디지털 서명 검증, 신뢰 소프트웨어만 사용</td></tr>
-    <tr><td>A09</td><td><strong>보안 로깅 및 모니터링 실패</strong></td><td>침해 미탐지, 로그 부재</td><td>중앙 로깅, 이상 탐지, 인시던트 대응</td></tr>
-    <tr><td>A10</td><td><strong>서버 측 요청 위조</strong> (SSRF)</td><td>내부 서비스 접근, 메타데이터 탈취</td><td>URL 화이트리스트, 내부 IP 차단</td></tr>
-  </tbody>
-</table>
-
-<h3>시큐어 코딩 7대 원칙</h3>
-<table>
-  <thead><tr><th>원칙</th><th>핵심 내용</th></tr></thead>
-  <tbody>
-    <tr><td><strong>입력값 검증</strong></td><td>모든 외부 입력을 신뢰하지 않음. 화이트리스트 기반 검증.</td></tr>
-    <tr><td><strong>출력값 인코딩</strong></td><td>HTML·SQL·OS 명령 등 컨텍스트에 맞는 인코딩 적용.</td></tr>
-    <tr><td><strong>인증·세션 관리</strong></td><td>강력한 인증, 안전한 세션 생성·소멸, MFA 적용.</td></tr>
-    <tr><td><strong>접근통제</strong></td><td>최소 권한 원칙, 서버 측 권한 검증, 기능 수준 접근 제어.</td></tr>
-    <tr><td><strong>암호화</strong></td><td>민감 데이터 암호화, 강력한 알고리즘 사용, 키 관리.</td></tr>
-    <tr><td><strong>오류 처리</strong></td><td>스택 트레이스·DB 오류 노출 금지. 사용자에게는 일반 메시지만.</td></tr>
-    <tr><td><strong>보안 설정</strong></td><td>기본값 최소화, 불필요 기능 비활성화, 보안 헤더 적용.</td></tr>
-  </tbody>
-</table>
-
-<h3>보안 테스트 도구 비교</h3>
-<table>
-  <thead><tr><th>구분</th><th>방식</th><th>시점</th><th>특징</th><th>대표 도구</th></tr></thead>
-  <tbody>
-    <tr><td><strong>SAST</strong> (정적 분석)</td><td>소스코드 분석</td><td>개발 단계</td><td>빠른 피드백, 실행 불필요. 오탐 많음.</td><td>SonarQube, Checkmarx, Fortify</td></tr>
-    <tr><td><strong>DAST</strong> (동적 분석)</td><td>실행 중 앱 공격</td><td>테스트·운영 단계</td><td>실제 취약점 확인. 소스코드 불필요.</td><td>OWASP ZAP, Burp Suite</td></tr>
-    <tr><td><strong>IAST</strong> (대화형 분석)</td><td>에이전트 삽입 후 런타임 분석</td><td>QA 단계</td><td>정확도 높음. SAST+DAST 장점 결합.</td><td>Contrast Security</td></tr>
-    <tr><td><strong>SCA</strong> (소프트웨어 구성 분석)</td><td>의존성 라이브러리 취약점 검사</td><td>개발·CI 단계</td><td>오픈소스 취약점(CVE) 탐지.</td><td>Snyk, OWASP Dependency-Check</td></tr>
-  </tbody>
-</table>
-
-<h3>SDL (Secure Development Lifecycle)</h3>
-<table>
-  <thead><tr><th>단계</th><th>주요 보안 활동</th></tr></thead>
-  <tbody>
-    <tr><td><strong>요구사항</strong></td><td>보안 요구사항 정의, 규정 준수 확인</td></tr>
-    <tr><td><strong>설계</strong></td><td>위협 모델링(STRIDE), 보안 아키텍처 검토</td></tr>
-    <tr><td><strong>구현</strong></td><td>시큐어 코딩 가이드 준수, SAST 적용</td></tr>
-    <tr><td><strong>테스트</strong></td><td>DAST, 침투 테스트, SCA, 코드 리뷰</td></tr>
-    <tr><td><strong>배포</strong></td><td>보안 설정 검토, 취약점 스캔</td></tr>
-    <tr><td><strong>운영</strong></td><td>모니터링, 패치 관리, 인시던트 대응</td></tr>
-  </tbody>
-</table>
-
-<h3>DevSecOps</h3>
-<p>CI/CD 파이프라인에 보안 자동화를 삽입. "Shift Left" — 보안 검증을 개발 초기로 이동.</p>
-<ul>
-  <li>코드 커밋 → SAST 자동 실행</li>
-  <li>빌드 → SCA (의존성 취약점 스캔)</li>
-  <li>스테이징 배포 → DAST 자동 실행</li>
-  <li>운영 → 런타임 모니터링·RASP</li>
-</ul>
-    `,
-  },
-
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
@@ -2566,7 +2195,6 @@ db.users.find({$where: "this.password == '" + input + "'"})
 <p><strong>방어</strong>: 사용자 입력을 연산자로 사용 금지, $where 비활성화, 입력 타입 검증, mongoose 등 ODM 사용.</p>
     `,
   },
-
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
@@ -2648,160 +2276,79 @@ OI = 주문 정보 (상품·금액)    →  상점만 확인
 </table>
     `,
   },
-
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
-    chapter: 'auth-sso',
-    chapterLabel: '인증·SSO·접근통제',
-    keywords: ['SSO', 'Single Sign-On', 'SAML', 'OAuth', 'OpenID Connect', 'Kerberos', 'RADIUS', 'LDAP', 'Active Directory', '커버로스', '티켓', 'TGT', '2FA', 'MFA', 'FIDO', 'WebAuthn'],
+    chapter: 'owasp-secure-coding',
+    chapterLabel: 'OWASP·시큐어 코딩',
+    keywords: ['OWASP', 'OWASP Top 10', '시큐어 코딩', 'Secure Coding', '입력값 검증', '출력값 인코딩', '오류 처리', '로깅', '암호화', '취약한 의존성', 'SAST', 'DAST', 'SCA', 'DevSecOps', 'SDL'],
     content: `
 
-<h3>SSO (Single Sign-On)</h3>
-<p>한 번의 로그인으로 여러 서비스를 이용. 인증 정보를 중앙 IdP(Identity Provider)가 관리.</p>
+<h3>OWASP Top 10 (2021)</h3>
 <table>
-  <thead><tr><th>장점</th><th>단점</th></tr></thead>
+  <thead><tr><th>순위</th><th>항목</th><th>대표 예시</th><th>핵심 방어</th></tr></thead>
   <tbody>
-    <tr><td>사용자 편의성 향상 (비밀번호 피로 감소)</td><td>IdP 장애 시 모든 서비스 중단</td></tr>
-    <tr><td>중앙 집중 인증 관리</td><td>IdP 계정 탈취 시 모든 서비스 피해</td></tr>
-    <tr><td>감사 로그 일원화</td><td>구현 복잡성 증가</td></tr>
+    <tr><td>A01</td><td><strong>취약한 접근 통제</strong> (Broken Access Control)</td><td>수평/수직 권한 상승, 강제 브라우징</td><td>서버 측 접근 통제, 최소 권한</td></tr>
+    <tr><td>A02</td><td><strong>암호화 실패</strong> (Cryptographic Failures)</td><td>평문 전송, 취약 암호화(MD5/SHA1)</td><td>TLS 강제, 강력한 해시 알고리즘</td></tr>
+    <tr><td>A03</td><td><strong>인젝션</strong> (Injection)</td><td>SQL·OS·LDAP 인젝션</td><td>Prepared Statement, 입력 검증</td></tr>
+    <tr><td>A04</td><td><strong>안전하지 않은 설계</strong> (Insecure Design)</td><td>위협 모델링 미수행, 보안 설계 부재</td><td>SDL, 위협 모델링, 보안 요구사항 정의</td></tr>
+    <tr><td>A05</td><td><strong>보안 설정 오류</strong> (Security Misconfiguration)</td><td>기본 계정, 불필요 기능 활성화, 오류 노출</td><td>최소 설치, 보안 기본값, 오류 메시지 제거</td></tr>
+    <tr><td>A06</td><td><strong>취약하고 오래된 구성요소</strong></td><td>패치 안 된 라이브러리, EOL 소프트웨어</td><td>SCA, 의존성 관리, 주기적 패치</td></tr>
+    <tr><td>A07</td><td><strong>식별 및 인증 실패</strong></td><td>무차별 대입 허용, 세션 관리 취약</td><td>MFA, 강력한 세션 관리, 잠금 정책</td></tr>
+    <tr><td>A08</td><td><strong>소프트웨어 및 데이터 무결성 실패</strong></td><td>안전하지 않은 역직렬화, 공급망 공격</td><td>디지털 서명 검증, 신뢰 소프트웨어만 사용</td></tr>
+    <tr><td>A09</td><td><strong>보안 로깅 및 모니터링 실패</strong></td><td>침해 미탐지, 로그 부재</td><td>중앙 로깅, 이상 탐지, 인시던트 대응</td></tr>
+    <tr><td>A10</td><td><strong>서버 측 요청 위조</strong> (SSRF)</td><td>내부 서비스 접근, 메타데이터 탈취</td><td>URL 화이트리스트, 내부 IP 차단</td></tr>
   </tbody>
 </table>
 
-<h3>Kerberos</h3>
-<p>신뢰할 수 있는 제3자(KDC)를 통한 티켓 기반 인증. Active Directory의 기본 인증 프로토콜.</p>
-<pre><code>1. 클라이언트 → KDC (AS): 로그인 요청
-2. KDC → 클라이언트: TGT (Ticket Granting Ticket) 발급 (AS_REP)
-3. 클라이언트 → KDC (TGS): TGT 제시, 서비스 티켓 요청
-4. KDC → 클라이언트: 서비스 티켓 발급 (TGS_REP)
-5. 클라이언트 → 서비스 서버: 서비스 티켓 제시
-6. 서비스 서버: 티켓 검증 후 서비스 제공
-
-KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
-
-<h3>SAML 2.0</h3>
-<p>XML 기반 SSO 표준. IdP(Identity Provider)와 SP(Service Provider) 간 인증 정보(Assertion) 교환.</p>
+<h3>시큐어 코딩 7대 원칙</h3>
 <table>
-  <thead><tr><th>흐름</th><th>설명</th></tr></thead>
+  <thead><tr><th>원칙</th><th>핵심 내용</th></tr></thead>
   <tbody>
-    <tr><td><strong>SP-initiated</strong></td><td>사용자가 SP 접근 → SP가 IdP로 리다이렉트 → 인증 후 Assertion을 SP에 전달</td></tr>
-    <tr><td><strong>IdP-initiated</strong></td><td>사용자가 IdP 포털 로그인 → 서비스 선택 → IdP가 Assertion 생성 후 SP 전달</td></tr>
+    <tr><td><strong>입력값 검증</strong></td><td>모든 외부 입력을 신뢰하지 않음. 화이트리스트 기반 검증.</td></tr>
+    <tr><td><strong>출력값 인코딩</strong></td><td>HTML·SQL·OS 명령 등 컨텍스트에 맞는 인코딩 적용.</td></tr>
+    <tr><td><strong>인증·세션 관리</strong></td><td>강력한 인증, 안전한 세션 생성·소멸, MFA 적용.</td></tr>
+    <tr><td><strong>접근통제</strong></td><td>최소 권한 원칙, 서버 측 권한 검증, 기능 수준 접근 제어.</td></tr>
+    <tr><td><strong>암호화</strong></td><td>민감 데이터 암호화, 강력한 알고리즘 사용, 키 관리.</td></tr>
+    <tr><td><strong>오류 처리</strong></td><td>스택 트레이스·DB 오류 노출 금지. 사용자에게는 일반 메시지만.</td></tr>
+    <tr><td><strong>보안 설정</strong></td><td>기본값 최소화, 불필요 기능 비활성화, 보안 헤더 적용.</td></tr>
   </tbody>
 </table>
+
+<h3>보안 테스트 도구 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>방식</th><th>시점</th><th>특징</th><th>대표 도구</th></tr></thead>
+  <tbody>
+    <tr><td><strong>SAST</strong> (정적 분석)</td><td>소스코드 분석</td><td>개발 단계</td><td>빠른 피드백, 실행 불필요. 오탐 많음.</td><td>SonarQube, Checkmarx, Fortify</td></tr>
+    <tr><td><strong>DAST</strong> (동적 분석)</td><td>실행 중 앱 공격</td><td>테스트·운영 단계</td><td>실제 취약점 확인. 소스코드 불필요.</td><td>OWASP ZAP, Burp Suite</td></tr>
+    <tr><td><strong>IAST</strong> (대화형 분석)</td><td>에이전트 삽입 후 런타임 분석</td><td>QA 단계</td><td>정확도 높음. SAST+DAST 장점 결합.</td><td>Contrast Security</td></tr>
+    <tr><td><strong>SCA</strong> (소프트웨어 구성 분석)</td><td>의존성 라이브러리 취약점 검사</td><td>개발·CI 단계</td><td>오픈소스 취약점(CVE) 탐지.</td><td>Snyk, OWASP Dependency-Check</td></tr>
+  </tbody>
+</table>
+
+<h3>SDL (Secure Development Lifecycle)</h3>
+<table>
+  <thead><tr><th>단계</th><th>주요 보안 활동</th></tr></thead>
+  <tbody>
+    <tr><td><strong>요구사항</strong></td><td>보안 요구사항 정의, 규정 준수 확인</td></tr>
+    <tr><td><strong>설계</strong></td><td>위협 모델링(STRIDE), 보안 아키텍처 검토</td></tr>
+    <tr><td><strong>구현</strong></td><td>시큐어 코딩 가이드 준수, SAST 적용</td></tr>
+    <tr><td><strong>테스트</strong></td><td>DAST, 침투 테스트, SCA, 코드 리뷰</td></tr>
+    <tr><td><strong>배포</strong></td><td>보안 설정 검토, 취약점 스캔</td></tr>
+    <tr><td><strong>운영</strong></td><td>모니터링, 패치 관리, 인시던트 대응</td></tr>
+  </tbody>
+</table>
+
+<h3>DevSecOps</h3>
+<p>CI/CD 파이프라인에 보안 자동화를 삽입. "Shift Left" — 보안 검증을 개발 초기로 이동.</p>
 <ul>
-  <li><strong>Assertion</strong>: 인증 사실을 담은 XML 문서. IdP가 서명.</li>
+  <li>코드 커밋 → SAST 자동 실행</li>
+  <li>빌드 → SCA (의존성 취약점 스캔)</li>
+  <li>스테이징 배포 → DAST 자동 실행</li>
+  <li>운영 → 런타임 모니터링·RASP</li>
 </ul>
-
-<h3>OAuth 2.0 vs OpenID Connect 비교</h3>
-<table>
-  <thead><tr><th>항목</th><th>OAuth 2.0</th><th>OpenID Connect (OIDC)</th></tr></thead>
-  <tbody>
-    <tr><td><strong>목적</strong></td><td>권한 위임 (Authorization)</td><td>인증 (Authentication) — OAuth 2.0 위에 구축</td></tr>
-    <tr><td><strong>토큰</strong></td><td>Access Token</td><td>ID Token (JWT) + Access Token</td></tr>
-    <tr><td><strong>사용자 정보</strong></td><td>직접 정의 없음</td><td>/userinfo 엔드포인트 표준화</td></tr>
-    <tr><td><strong>흐름</strong></td><td>Authorization Code, Client Credentials 등</td><td>Authorization Code + PKCE 권장</td></tr>
-    <tr><td><strong>사용 예</strong></td><td>Google 캘린더 접근 허용</td><td>Google 계정으로 로그인</td></tr>
-  </tbody>
-</table>
-
-<h3>RADIUS</h3>
-<p>원격 접속 인증 프로토콜. NAS(Network Access Server)가 클라이언트 인증 요청을 RADIUS 서버에 위임.</p>
-<pre><code>클라이언트 → NAS → RADIUS 서버 → Accept/Reject
-(VPN, Wi-Fi, 다이얼업 인증에 사용)
-802.1X: 네트워크 장치 접근 시 RADIUS로 인증</code></pre>
-
-<h3>LDAP·Active Directory</h3>
-<ul>
-  <li><strong>LDAP (Lightweight Directory Access Protocol)</strong>: 디렉터리 서비스 접근 표준 프로토콜. 계층적 DN 구조.</li>
-  <li><strong>DN 예시</strong>: cn=John Doe, ou=Users, dc=example, dc=com</li>
-  <li><strong>Active Directory</strong>: Microsoft의 LDAP 기반 디렉터리 서비스. Kerberos 인증 통합.</li>
-</ul>
-
-<h3>FIDO2·WebAuthn (패스키)</h3>
-<p>비밀번호 없는 인증(Passwordless). 생체인식·하드웨어 키를 이용한 강력한 인증.</p>
-<table>
-  <thead><tr><th>구성요소</th><th>역할</th></tr></thead>
-  <tbody>
-    <tr><td><strong>FIDO2</strong></td><td>FIDO Alliance 표준. WebAuthn + CTAP 포함.</td></tr>
-    <tr><td><strong>WebAuthn</strong></td><td>W3C 표준. 브라우저-서버 간 인증 프로토콜.</td></tr>
-    <tr><td><strong>CTAP</strong></td><td>외부 인증기기(USB 키, 스마트폰)와 통신.</td></tr>
-    <tr><td><strong>Passkey</strong></td><td>장치에 공개키 저장. 비밀번호 완전 대체.</td></tr>
-  </tbody>
-</table>
-<p><strong>원리</strong>: 등록 시 공개키를 서버에 저장, 개인키는 장치에 보관. 인증 시 장치가 개인키로 서명 → 서버가 공개키로 검증.</p>
     `,
   },
-
-  {
-    subject: 'application',
-    subjectLabel: '어플리케이션보안',
-    chapter: 'cloud-security',
-    chapterLabel: '클라우드 보안',
-    keywords: ['클라우드', 'IaaS', 'PaaS', 'SaaS', '공유 책임 모델', 'CASB', 'CSPM', 'Zero Trust', 'IAM', 'MFA', '컨테이너', 'Docker', 'Kubernetes', 'API 보안', 'S3 버킷', '데이터 주권'],
-    content: `
-
-<h3>클라우드 서비스 모델 비교</h3>
-<table>
-  <thead><tr><th>모델</th><th>사용자 관리 범위</th><th>공급자 관리 범위</th><th>예시</th></tr></thead>
-  <tbody>
-    <tr><td><strong>IaaS</strong> (Infrastructure as a Service)</td><td>OS, 미들웨어, 앱, 데이터</td><td>물리 인프라, 네트워크, 가상화</td><td>AWS EC2, Azure VM</td></tr>
-    <tr><td><strong>PaaS</strong> (Platform as a Service)</td><td>앱, 데이터</td><td>OS, 미들웨어, 런타임, 인프라</td><td>Google App Engine, Heroku</td></tr>
-    <tr><td><strong>SaaS</strong> (Software as a Service)</td><td>데이터, 사용자 설정</td><td>모든 인프라+소프트웨어</td><td>Gmail, Salesforce, Office 365</td></tr>
-  </tbody>
-</table>
-
-<h3>공유 책임 모델 (Shared Responsibility Model)</h3>
-<p>클라우드 보안 책임을 공급자와 사용자가 분담. 모델에 따라 사용자 책임 범위가 다름.</p>
-<ul>
-  <li><strong>공급자 책임</strong>: 물리 보안, 하이퍼바이저, 네트워크 인프라, 글로벌 인프라</li>
-  <li><strong>사용자 책임 (IaaS)</strong>: 데이터 암호화, 네트워크 설정, OS 패치, 접근 관리, 애플리케이션 보안</li>
-  <li><strong>사용자 책임 (SaaS)</strong>: 데이터 분류, 접근 권한, 계정 관리 (범위 축소)</li>
-</ul>
-
-<h3>클라우드 보안 위협</h3>
-<table>
-  <thead><tr><th>위협</th><th>설명</th><th>대응</th></tr></thead>
-  <tbody>
-    <tr><td><strong>데이터 유출</strong></td><td>S3 버킷 Public 설정 오류, 잘못된 ACL</td><td>CSPM, 버킷 퍼블릭 액세스 차단</td></tr>
-    <tr><td><strong>계정 탈취</strong></td><td>루트 계정 직접 사용, MFA 미설정</td><td>루트 계정 미사용, MFA 강제 적용</td></tr>
-    <tr><td><strong>내부자 위협</strong></td><td>과도한 IAM 권한, 권한 남용</td><td>최소 권한 IAM, 접근 로그 감사</td></tr>
-    <tr><td><strong>공급망 공격</strong></td><td>서드파티 이미지·라이브러리 취약점</td><td>이미지 서명 검증, SCA</td></tr>
-    <tr><td><strong>API 취약점</strong></td><td>인증 없는 API 엔드포인트, 과도한 권한</td><td>API 게이트웨이, 인증·인가 강화</td></tr>
-  </tbody>
-</table>
-
-<h3>CASB (Cloud Access Security Broker)</h3>
-<p>클라우드 서비스와 사용자 사이에 위치해 보안 정책을 적용하는 중개 솔루션.</p>
-<ul>
-  <li><strong>가시성</strong>: 어떤 클라우드 서비스를 누가 어떻게 사용하는지 파악 (Shadow IT 탐지)</li>
-  <li><strong>컴플라이언스</strong>: 규정 준수 여부 모니터링</li>
-  <li><strong>데이터 보안</strong>: DLP, 암호화, 토큰화</li>
-  <li><strong>위협 방어</strong>: 악성코드 탐지, 이상 행동 분석</li>
-</ul>
-
-<h3>CSPM (Cloud Security Posture Management)</h3>
-<p>클라우드 설정 오류를 지속적으로 탐지·교정. S3 Public 버킷, 방화벽 과잉 허용 등 감지.</p>
-
-<h3>Zero Trust</h3>
-<p>"Never Trust, Always Verify" — 내부망도 신뢰하지 않음. 모든 요청을 검증.</p>
-<ul>
-  <li><strong>핵심 원칙</strong>: 명시적 검증, 최소 권한 접근, 침해 가정</li>
-  <li><strong>마이크로세그멘테이션</strong>: 내부 네트워크를 작은 세그먼트로 분리. 측면 이동(Lateral Movement) 차단.</li>
-</ul>
-
-<h3>컨테이너 보안</h3>
-<table>
-  <thead><tr><th>위협</th><th>대응</th></tr></thead>
-  <tbody>
-    <tr><td>취약한 베이스 이미지</td><td>이미지 취약점 스캔 (Trivy, Snyk), 공식 최소 이미지 사용</td></tr>
-    <tr><td>컨테이너 권한 상승</td><td>비특권(non-root) 컨테이너 실행, --privileged 금지</td></tr>
-    <tr><td>시크릿 하드코딩</td><td>환경변수·시크릿 관리 도구(Vault, K8s Secrets) 사용</td></tr>
-    <tr><td>컨테이너 탈출</td><td>컨테이너 런타임 최신 유지, seccomp/AppArmor 프로파일 적용</td></tr>
-  </tbody>
-</table>
-    `,
-  },
-
   {
     subject: 'application',
     subjectLabel: '어플리케이션보안',
@@ -2888,6 +2435,543 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   {
     subject: 'general',
     subjectLabel: '정보보안일반',
+    chapter: 'auth-sso',
+    chapterLabel: '인증·SSO·접근통제',
+    keywords: ['SSO', 'Single Sign-On', 'SAML', 'OAuth', 'OpenID Connect', 'Kerberos', 'RADIUS', 'LDAP', 'Active Directory', '커버로스', '티켓', 'TGT', '2FA', 'MFA', 'FIDO', 'WebAuthn'],
+    content: `
+
+<h3>SSO (Single Sign-On)</h3>
+<p>한 번의 로그인으로 여러 서비스를 이용. 인증 정보를 중앙 IdP(Identity Provider)가 관리.</p>
+<table>
+  <thead><tr><th>장점</th><th>단점</th></tr></thead>
+  <tbody>
+    <tr><td>사용자 편의성 향상 (비밀번호 피로 감소)</td><td>IdP 장애 시 모든 서비스 중단</td></tr>
+    <tr><td>중앙 집중 인증 관리</td><td>IdP 계정 탈취 시 모든 서비스 피해</td></tr>
+    <tr><td>감사 로그 일원화</td><td>구현 복잡성 증가</td></tr>
+  </tbody>
+</table>
+
+<h3>Kerberos</h3>
+<p>신뢰할 수 있는 제3자(KDC)를 통한 티켓 기반 인증. Active Directory의 기본 인증 프로토콜.</p>
+<pre><code>1. 클라이언트 → KDC (AS): 로그인 요청
+2. KDC → 클라이언트: TGT (Ticket Granting Ticket) 발급 (AS_REP)
+3. 클라이언트 → KDC (TGS): TGT 제시, 서비스 티켓 요청
+4. KDC → 클라이언트: 서비스 티켓 발급 (TGS_REP)
+5. 클라이언트 → 서비스 서버: 서비스 티켓 제시
+6. 서비스 서버: 티켓 검증 후 서비스 제공
+
+KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
+
+<h3>SAML 2.0</h3>
+<p>XML 기반 SSO 표준. IdP(Identity Provider)와 SP(Service Provider) 간 인증 정보(Assertion) 교환.</p>
+<table>
+  <thead><tr><th>흐름</th><th>설명</th></tr></thead>
+  <tbody>
+    <tr><td><strong>SP-initiated</strong></td><td>사용자가 SP 접근 → SP가 IdP로 리다이렉트 → 인증 후 Assertion을 SP에 전달</td></tr>
+    <tr><td><strong>IdP-initiated</strong></td><td>사용자가 IdP 포털 로그인 → 서비스 선택 → IdP가 Assertion 생성 후 SP 전달</td></tr>
+  </tbody>
+</table>
+<ul>
+  <li><strong>Assertion</strong>: 인증 사실을 담은 XML 문서. IdP가 서명.</li>
+</ul>
+
+<h3>OAuth 2.0 vs OpenID Connect 비교</h3>
+<table>
+  <thead><tr><th>항목</th><th>OAuth 2.0</th><th>OpenID Connect (OIDC)</th></tr></thead>
+  <tbody>
+    <tr><td><strong>목적</strong></td><td>권한 위임 (Authorization)</td><td>인증 (Authentication) — OAuth 2.0 위에 구축</td></tr>
+    <tr><td><strong>토큰</strong></td><td>Access Token</td><td>ID Token (JWT) + Access Token</td></tr>
+    <tr><td><strong>사용자 정보</strong></td><td>직접 정의 없음</td><td>/userinfo 엔드포인트 표준화</td></tr>
+    <tr><td><strong>흐름</strong></td><td>Authorization Code, Client Credentials 등</td><td>Authorization Code + PKCE 권장</td></tr>
+    <tr><td><strong>사용 예</strong></td><td>Google 캘린더 접근 허용</td><td>Google 계정으로 로그인</td></tr>
+  </tbody>
+</table>
+
+<h3>RADIUS</h3>
+<p>원격 접속 인증 프로토콜. NAS(Network Access Server)가 클라이언트 인증 요청을 RADIUS 서버에 위임.</p>
+<pre><code>클라이언트 → NAS → RADIUS 서버 → Accept/Reject
+(VPN, Wi-Fi, 다이얼업 인증에 사용)
+802.1X: 네트워크 장치 접근 시 RADIUS로 인증</code></pre>
+
+<h3>LDAP·Active Directory</h3>
+<ul>
+  <li><strong>LDAP (Lightweight Directory Access Protocol)</strong>: 디렉터리 서비스 접근 표준 프로토콜. 계층적 DN 구조.</li>
+  <li><strong>DN 예시</strong>: cn=John Doe, ou=Users, dc=example, dc=com</li>
+  <li><strong>Active Directory</strong>: Microsoft의 LDAP 기반 디렉터리 서비스. Kerberos 인증 통합.</li>
+</ul>
+
+<h3>FIDO2·WebAuthn (패스키)</h3>
+<p>비밀번호 없는 인증(Passwordless). 생체인식·하드웨어 키를 이용한 강력한 인증.</p>
+<table>
+  <thead><tr><th>구성요소</th><th>역할</th></tr></thead>
+  <tbody>
+    <tr><td><strong>FIDO2</strong></td><td>FIDO Alliance 표준. WebAuthn + CTAP 포함.</td></tr>
+    <tr><td><strong>WebAuthn</strong></td><td>W3C 표준. 브라우저-서버 간 인증 프로토콜.</td></tr>
+    <tr><td><strong>CTAP</strong></td><td>외부 인증기기(USB 키, 스마트폰)와 통신.</td></tr>
+    <tr><td><strong>Passkey</strong></td><td>장치에 공개키 저장. 비밀번호 완전 대체.</td></tr>
+  </tbody>
+</table>
+<p><strong>원리</strong>: 등록 시 공개키를 서버에 저장, 개인키는 장치에 보관. 인증 시 장치가 개인키로 서명 → 서버가 공개키로 검증.</p>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
+    chapter: 'access-control',
+    chapterLabel: '접근통제',
+    keywords: ['DAC', 'MAC', 'RBAC', 'ABAC', '식별', '인증', '인가', 'MFA', '지식기반', '소지기반', '특성기반', 'SSO', '최소권한', '직무분리'],
+    content: `
+<h3>접근통제 3단계</h3>
+<table>
+  <thead><tr><th>단계</th><th>설명</th><th>예시</th></tr></thead>
+  <tbody>
+    <tr><td><strong>식별(Identification)</strong></td><td>시스템에 자신을 알림</td><td>사용자명 입력</td></tr>
+    <tr><td><strong>인증(Authentication)</strong></td><td>주장한 신원을 증명</td><td>패스워드, OTP, 생체인식</td></tr>
+    <tr><td><strong>인가(Authorization)</strong></td><td>인증된 주체에게 자원 접근 권한 부여</td><td>ACL, 역할 기반 권한</td></tr>
+  </tbody>
+</table>
+
+<h3>인증 요소 (Authentication Factor)</h3>
+<table>
+  <thead><tr><th>유형</th><th>설명</th><th>예시</th></tr></thead>
+  <tbody>
+    <tr><td>지식 기반 (Something you know)</td><td>알고 있는 것</td><td>패스워드, PIN, 보안 질문</td></tr>
+    <tr><td>소지 기반 (Something you have)</td><td>가지고 있는 것</td><td>OTP 토큰, 스마트카드, 인증서</td></tr>
+    <tr><td>특성 기반 (Something you are)</td><td>자신의 특성</td><td>지문, 홍채, 얼굴, 정맥</td></tr>
+    <tr><td>MFA (다단계 인증)</td><td>2가지 이상 요소 조합</td><td>패스워드 + OTP</td></tr>
+  </tbody>
+</table>
+
+<h3>접근통제 정책 유형 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>권한 결정 주체</th><th>기반</th><th>특징</th><th>예시</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>DAC</strong><br>(임의적 접근통제)</td>
+      <td>데이터 소유자</td>
+      <td>신분(Identity)</td>
+      <td>유연하나 트로이목마 취약. 소유자가 자유롭게 권한 부여.</td>
+      <td>유닉스 파일 권한, Windows NTFS</td>
+    </tr>
+    <tr>
+      <td><strong>MAC</strong><br>(강제적 접근통제)</td>
+      <td>시스템/관리자</td>
+      <td>보안 레이블</td>
+      <td>강력하나 유연성 낮음. 군사·정부 환경. 사용자가 권한 변경 불가.</td>
+      <td>SELinux, 기밀/비밀/대외비/일반</td>
+    </tr>
+    <tr>
+      <td><strong>RBAC</strong><br>(역할기반 접근통제)</td>
+      <td>관리자</td>
+      <td>역할(Role)</td>
+      <td>역할에 권한 부여 후 사용자를 역할에 할당. 대규모 조직에 적합.</td>
+      <td>직급별 ERP 권한</td>
+    </tr>
+    <tr>
+      <td><strong>ABAC</strong><br>(속성기반 접근통제)</td>
+      <td>정책 엔진</td>
+      <td>속성 조합</td>
+      <td>사용자·자원·환경 속성 조합으로 세밀한 정책. XACML 표준.</td>
+      <td>근무시간+부서+보안등급 조합</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>접근 제어 행렬 (Access Control Matrix)</h3>
+<p>주체(Subject)와 객체(Object)의 권한 관계를 행렬로 표현. 행: 주체, 열: 객체, 셀: 권한.</p>
+<ul>
+  <li><strong>ACL (Access Control List)</strong>: 열(객체) 기준으로 접근 가능한 주체 목록</li>
+  <li><strong>Capability List</strong>: 행(주체) 기준으로 접근 가능한 객체 목록</li>
+</ul>
+
+<h3>접근통제 원칙</h3>
+<ul>
+  <li><strong>최소권한(Least Privilege)</strong>: 업무 수행에 필요한 최소한의 권한만 부여</li>
+  <li><strong>직무분리(Separation of Duties)</strong>: 한 사람이 중요 프로세스 전체를 통제 불가. 내부 사기 방지</li>
+  <li><strong>알 필요성(Need-to-Know)</strong>: 업무 수행에 반드시 필요한 정보만 접근 허용</li>
+  <li><strong>기본 거부(Default Deny)</strong>: 명시적으로 허용되지 않은 것은 모두 거부</li>
+</ul>
+
+<h3>SSO 및 연동 프로토콜 비교</h3>
+<table>
+  <thead><tr><th>프로토콜</th><th>목적</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td>Kerberos</td><td>인증</td><td>티켓 기반. KDC(AS+TGS). 대칭키. 시간 동기화 필수(5분)</td></tr>
+    <tr><td>SAML</td><td>인증+인가</td><td>XML 기반. IdP ↔ SP. 엔터프라이즈 SSO</td></tr>
+    <tr><td>OAuth 2.0</td><td>인가(Authorization)</td><td>액세스 토큰 발급. API 위임 접근</td></tr>
+    <tr><td>OpenID Connect</td><td>인증</td><td>OAuth 2.0 기반 + ID 토큰(JWT)</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
+    chapter: 'security-model',
+    chapterLabel: '보안 모델',
+    keywords: ['Bell-LaPadula', 'Biba', 'Clark-Wilson', 'Chinese Wall', 'Brewer-Nash', '참조모니터', 'TCB', '보안커널', '격자모델', 'ss속성', '스타속성'],
+    content: `
+<h3>Bell-LaPadula 모델 (기밀성)</h3>
+<p>군사 기밀 보호 목적. MAC 기반. <strong>"Read Down, Write Up"만 허용.</strong></p>
+<table>
+  <thead><tr><th>속성</th><th>규칙</th><th>의미</th></tr></thead>
+  <tbody>
+    <tr><td>ss-속성 (단순 보안 속성)</td><td>No Read Up</td><td>자신보다 높은 등급 객체 읽기 금지</td></tr>
+    <tr><td>*-속성 (스타 속성)</td><td>No Write Down</td><td>자신보다 낮은 등급 객체 쓰기 금지 (정보 유출 방지)</td></tr>
+    <tr><td>ds-속성 (임의 보안 속성)</td><td>DAC 규칙 적용</td><td>접근통제 행렬로 추가 제한</td></tr>
+  </tbody>
+</table>
+<p>단점: 무결성 보장 안 됨 (낮은 등급 사용자가 높은 등급에 쓸 수 있음)</p>
+
+<h3>Biba 모델 (무결성)</h3>
+<p>Bell-LaPadula와 반대 방향. <strong>"Read Up, Write Down"만 허용.</strong></p>
+<table>
+  <thead><tr><th>속성</th><th>규칙</th><th>의미</th></tr></thead>
+  <tbody>
+    <tr><td>단순 무결성 속성</td><td>No Read Down</td><td>낮은 등급 객체 읽기 금지 (오염 방지)</td></tr>
+    <tr><td>*-무결성 속성</td><td>No Write Up</td><td>높은 등급 객체 쓰기 금지</td></tr>
+  </tbody>
+</table>
+<p>단점: 기밀성 보장 안 됨</p>
+
+<h3>Bell-LaPadula vs Biba 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>Bell-LaPadula</th><th>Biba</th></tr></thead>
+  <tbody>
+    <tr><td>보호 목표</td><td>기밀성(Confidentiality)</td><td>무결성(Integrity)</td></tr>
+    <tr><td>읽기 규칙</td><td>No Read Up (상위 읽기 금지)</td><td>No Read Down (하위 읽기 금지)</td></tr>
+    <tr><td>쓰기 규칙</td><td>No Write Down (하위 쓰기 금지)</td><td>No Write Up (상위 쓰기 금지)</td></tr>
+    <tr><td>허용 방향</td><td>Read Down, Write Up</td><td>Read Up, Write Down</td></tr>
+    <tr><td>적용 환경</td><td>군사·정부</td><td>상업적 무결성</td></tr>
+  </tbody>
+</table>
+
+<h3>Clark-Wilson 모델 (상업적 무결성)</h3>
+<p>상업 환경 무결성 보장. 3가지 목표: 인가된 사용자의 부정 조작 방지 / 직무 분리 / 트랜잭션 로깅.</p>
+<table>
+  <thead><tr><th>구성 요소</th><th>의미</th></tr></thead>
+  <tbody>
+    <tr><td>CDI (Constrained Data Item)</td><td>무결성 통제가 적용되는 데이터</td></tr>
+    <tr><td>UDI (Unconstrained Data Item)</td><td>통제 없는 입력 데이터 (외부 입력)</td></tr>
+    <tr><td>TP (Transformation Procedure)</td><td>CDI를 변환하는 유일한 프로그램</td></tr>
+    <tr><td>IVP (Integrity Verification Procedure)</td><td>CDI 무결성 검증 절차</td></tr>
+  </tbody>
+</table>
+
+<h3>Chinese Wall 모델 (Brewer-Nash)</h3>
+<p>이해충돌(Conflict of Interest) 방지. 컨설팅·금융 환경.</p>
+<ul>
+  <li>한 번 A사 정보 접근 시 경쟁사 B사 정보 접근 자동 차단</li>
+  <li>시간이 지남에 따라 접근 가능 객체가 동적으로 변함 (DAC+MAC 혼합 특성)</li>
+</ul>
+
+<h3>기타 보안 모델</h3>
+<table>
+  <thead><tr><th>모델</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td>HRU (Harrison-Ruzzo-Ullman)</td><td>접근 행렬 기반. 권한 변경 연산 정의. 안전성 결정 불가(비결정적)</td></tr>
+    <tr><td>Take-Grant</td><td>권한 전달(Grant)·가져오기(Take) 연산으로 권한 흐름 분석</td></tr>
+    <tr><td>격자 모델(Lattice)</td><td>보안 레벨 간 편순서 관계. Bell-LaPadula의 수학적 기반</td></tr>
+  </tbody>
+</table>
+
+<h3>참조 모니터 (Reference Monitor)</h3>
+<p>모든 접근 요청을 중재하는 추상적 개념. 3가지 필수 요건:</p>
+<ul>
+  <li><strong>격리성(Isolation)</strong>: 변조·우회 불가하게 격리</li>
+  <li><strong>완전성(Completeness)</strong>: 모든 접근 요청 반드시 통과</li>
+  <li><strong>검증가능성(Verifiability)</strong>: 정확성 검증·테스트 가능</li>
+</ul>
+<p>구현체: <strong>보안 커널(Security Kernel)</strong>. TCB(Trusted Computing Base)의 핵심 구성 요소.</p>
+<p><strong>TCB</strong>: 시스템 보안 정책을 강제하는 하드웨어·소프트웨어·펌웨어의 집합. 보안 커널 + 보안 관련 프로세스.</p>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
+    chapter: 'symmetric-crypto',
+    chapterLabel: '대칭키 암호화',
+    keywords: ['DES', 'AES', 'ARIA', 'SEED', 'LEA', '3DES', 'ECB', 'CBC', 'CTR', 'GCM', 'RC4', 'AEAD', '블록암호', '스트림암호'],
+    content: `
+<h3>암호화 유형 간단 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>대칭키</th><th>비대칭키</th><th>해시</th></tr></thead>
+  <tbody>
+    <tr><td>키</td><td>암·복호화 동일 키</td><td>공개키/개인키 쌍</td><td>키 없음 (단방향)</td></tr>
+    <tr><td>속도</td><td>빠름</td><td>매우 느림</td><td>매우 빠름</td></tr>
+    <tr><td>키 수(n명)</td><td>n(n-1)/2</td><td>2n</td><td>해당 없음</td></tr>
+    <tr><td>주요 용도</td><td>대용량 데이터 암호화</td><td>키 교환, 디지털 서명</td><td>무결성 검증, 패스워드</td></tr>
+  </tbody>
+</table>
+
+<h3>블록 암호 vs 스트림 암호</h3>
+<table>
+  <thead><tr><th>구분</th><th>블록 암호</th><th>스트림 암호</th></tr></thead>
+  <tbody>
+    <tr><td>처리 단위</td><td>고정 크기 블록 (64/128bit)</td><td>1비트 또는 1바이트씩</td></tr>
+    <tr><td>패딩</td><td>필요 (블록 크기 맞춤)</td><td>불필요</td></tr>
+    <tr><td>속도</td><td>상대적으로 느림</td><td>빠름</td></tr>
+    <tr><td>대표</td><td>DES, AES, ARIA, SEED</td><td>RC4, A5/1, ChaCha20</td></tr>
+  </tbody>
+</table>
+
+<h3>주요 블록 암호 알고리즘</h3>
+<table>
+  <thead><tr><th>알고리즘</th><th>키 길이</th><th>블록 크기</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td><strong>DES</strong></td><td>56bit</td><td>64bit</td><td>1977년 미국 표준. 현재 안전하지 않음. 전사적 공격 가능.</td></tr>
+    <tr><td><strong>3DES</strong></td><td>168bit (실효 112bit)</td><td>64bit</td><td>EDE 방식. 느림. 레거시 호환.</td></tr>
+    <tr><td><strong>AES</strong></td><td>128/192/256bit</td><td>128bit</td><td>2001년 미국 표준(FIPS 197). Rijndael. 현재 가장 널리 사용.</td></tr>
+    <tr><td><strong>ARIA</strong></td><td>128/192/256bit</td><td>128bit</td><td>국내 표준(KS X 1213). 국정원 개발.</td></tr>
+    <tr><td><strong>SEED</strong></td><td>128/256bit</td><td>128bit</td><td>국내 표준(KS X 1005). KISA 개발. 전자금융.</td></tr>
+    <tr><td><strong>LEA</strong></td><td>128/192/256bit</td><td>128bit</td><td>경량 암호화. IoT 환경. 국내 표준.</td></tr>
+  </tbody>
+</table>
+
+<h3>블록 암호 운용 모드</h3>
+<table>
+  <thead><tr><th>모드</th><th>패딩</th><th>병렬처리</th><th>특징</th><th>용도</th></tr></thead>
+  <tbody>
+    <tr><td><strong>ECB</strong></td><td>필요</td><td>가능</td><td>블록 독립 암호화. 같은 평문→같은 암호문. 패턴 노출. 사용 금지.</td><td>사용 금지</td></tr>
+    <tr><td><strong>CBC</strong></td><td>필요</td><td>복호화만</td><td>이전 암호문 블록과 XOR. IV 필요. 오류 전파.</td><td>파일 암호화</td></tr>
+    <tr><td><strong>CFB</strong></td><td>불필요</td><td>복호화만</td><td>스트림 암호처럼 동작. IV 필요.</td><td>스트림 데이터</td></tr>
+    <tr><td><strong>OFB</strong></td><td>불필요</td><td>불가</td><td>키 스트림 사전 생성. 오류 비전파.</td><td>위성통신</td></tr>
+    <tr><td><strong>CTR</strong></td><td>불필요</td><td>가능</td><td>카운터 값 암호화 후 XOR. 완전 병렬.</td><td>고성능</td></tr>
+    <tr><td><strong>GCM</strong></td><td>불필요</td><td>가능</td><td>CTR + GHASH 인증. AEAD. 인증 태그 생성.</td><td>TLS 1.3</td></tr>
+  </tbody>
+</table>
+
+<h3>AEAD 및 스트림 암호</h3>
+<p><strong>AEAD (Authenticated Encryption with Associated Data)</strong>: 암호화 + 인증을 동시 제공. GCM, CCM, ChaCha20-Poly1305.</p>
+<p><strong>RC4</strong>: SSL/WEP에 사용됐으나 편향성 취약점 발견. 현재 사용 금지.</p>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
+    chapter: 'asymmetric-crypto',
+    chapterLabel: '비대칭키 암호화',
+    keywords: ['RSA', 'ECC', 'Diffie-Hellman', 'ElGamal', 'DSA', '소인수분해', '이산로그', '타원곡선', '하이브리드', '공개키', '개인키'],
+    content: `
+<h3>비대칭키 기본 원리</h3>
+<ul>
+  <li><strong>암호화</strong>: 수신자의 공개키로 암호화 → 수신자의 개인키로 복호화</li>
+  <li><strong>디지털 서명</strong>: 송신자의 개인키로 서명 → 수신자가 공개키로 검증</li>
+</ul>
+
+<h3>주요 비대칭키 알고리즘</h3>
+<table>
+  <thead><tr><th>알고리즘</th><th>수학적 기반</th><th>권장 키 길이</th><th>용도</th></tr></thead>
+  <tbody>
+    <tr><td><strong>RSA</strong></td><td>소인수분해의 어려움</td><td>2048bit 이상</td><td>암호화, 디지털 서명</td></tr>
+    <tr><td><strong>ECC</strong></td><td>타원곡선 이산로그 문제</td><td>256bit</td><td>모바일/IoT (짧은 키로 동등 보안)</td></tr>
+    <tr><td><strong>Diffie-Hellman (DH)</strong></td><td>이산로그 문제</td><td>2048bit 이상</td><td>키 교환 전용 (암호화·서명 불가)</td></tr>
+    <tr><td><strong>ElGamal</strong></td><td>이산로그 문제</td><td>1024bit 이상</td><td>암호화, 서명</td></tr>
+    <tr><td><strong>DSA</strong></td><td>이산로그 문제</td><td>1024~3072bit</td><td>디지털 서명 전용</td></tr>
+  </tbody>
+</table>
+
+<h3>RSA 원리</h3>
+<p>두 큰 소수 p, q의 곱 n=p×q에서, n만 알고서 p, q를 소인수분해하기 어렵다는 수학적 난제를 기반으로 합니다.</p>
+<ul>
+  <li>키 길이: 현재 2048bit 이상 권장 (1024bit 이하 취약)</li>
+  <li>RSA 2048bit ≈ ECC 224bit ≈ AES 112bit (동등 보안강도)</li>
+</ul>
+
+<h3>ECC 특징</h3>
+<p>타원곡선 위의 점 덧셈 연산을 기반으로 하는 암호화. RSA보다 짧은 키로 동등한 보안강도를 제공합니다.</p>
+<table>
+  <thead><tr><th>ECC 키 길이</th><th>동등 RSA 키 길이</th></tr></thead>
+  <tbody>
+    <tr><td>256bit</td><td>3072bit</td></tr>
+    <tr><td>384bit</td><td>7680bit</td></tr>
+    <tr><td>521bit</td><td>15360bit</td></tr>
+  </tbody>
+</table>
+
+<h3>Diffie-Hellman 키 교환</h3>
+<p>공개 채널에서 안전하게 공유 비밀키 생성. <strong>인증 기능 없음</strong> → 중간자 공격(MITM) 취약.</p>
+<ul>
+  <li><strong>DHE (임시 DH)</strong>: 매 세션마다 임시 키 생성 → PFS(Perfect Forward Secrecy) 제공</li>
+  <li><strong>ECDHE</strong>: ECC 기반 DHE. TLS 1.3의 기본 키 교환 방식</li>
+</ul>
+
+<h3>하이브리드 암호화</h3>
+<p>대칭키(빠른 속도)와 비대칭키(안전한 키 교환)를 결합하는 방식. HTTPS/TLS에서 사용.</p>
+<pre><code>1. 세션 키(대칭키) 생성
+2. 세션 키를 수신자의 공개키로 암호화 → 전송
+3. 실제 데이터는 세션 키(대칭키)로 암호화 → 전송
+4. 수신자: 개인키로 세션 키 복호화 → 세션 키로 데이터 복호화</code></pre>
+
+<h3>키 관리 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>n명 간 필요 키 수</th></tr></thead>
+  <tbody>
+    <tr><td>대칭키 (1:1 비밀키)</td><td>n(n-1)/2</td></tr>
+    <tr><td>비대칭키 (공개키+개인키 쌍)</td><td>2n</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
+    chapter: 'hash-mac',
+    chapterLabel: '해시·메시지 인증',
+    keywords: ['MD5', 'SHA-1', 'SHA-256', 'SHA-3', 'HMAC', 'HAS-160', '충돌', '역상', '솔트', '레인보우테이블', 'bcrypt', 'PBKDF2'],
+    content: `
+<h3>해시 함수 4가지 특성</h3>
+<table>
+  <thead><tr><th>특성</th><th>설명</th></tr></thead>
+  <tbody>
+    <tr><td><strong>일방향성(One-way)</strong></td><td>해시값으로 원문 복원 불가 (역산 불가)</td></tr>
+    <tr><td><strong>역상 저항성(Preimage resistance)</strong></td><td>주어진 해시값 h에 대해 H(m)=h인 m 찾기 어려움</td></tr>
+    <tr><td><strong>제2역상 저항성(Second preimage resistance)</strong></td><td>주어진 m1에 대해 H(m1)=H(m2)인 m2 찾기 어려움</td></tr>
+    <tr><td><strong>충돌 저항성(Collision resistance)</strong></td><td>H(m1)=H(m2)인 임의의 m1≠m2 쌍 찾기 어려움</td></tr>
+  </tbody>
+</table>
+
+<h3>주요 해시 알고리즘</h3>
+<table>
+  <thead><tr><th>알고리즘</th><th>출력 길이</th><th>상태</th></tr></thead>
+  <tbody>
+    <tr><td><strong>MD5</strong></td><td>128bit</td><td>충돌 공격 가능. 무결성 검증 부적합. 사용 지양.</td></tr>
+    <tr><td><strong>SHA-1</strong></td><td>160bit</td><td>2017년 충돌 공격 성공(SHAttered). 사용 금지 권고.</td></tr>
+    <tr><td><strong>SHA-224/256</strong></td><td>224/256bit</td><td>SHA-2 계열. 현재 표준. 가장 널리 사용.</td></tr>
+    <tr><td><strong>SHA-384/512</strong></td><td>384/512bit</td><td>SHA-2 계열. 고보안 환경.</td></tr>
+    <tr><td><strong>SHA-3</strong></td><td>224~512bit</td><td>Keccak 알고리즘. SHA-2와 완전히 다른 구조.</td></tr>
+    <tr><td><strong>HAS-160</strong></td><td>160bit</td><td>국내 표준 해시 (KCDSA 서명에 사용).</td></tr>
+  </tbody>
+</table>
+
+<h3>충돌 공격</h3>
+<ul>
+  <li><strong>MD5 충돌</strong>: 2004년 Wang 등이 이론 증명. 실용적 충돌 생성 가능.</li>
+  <li><strong>SHA-1 충돌(SHAttered)</strong>: 2017년 Google 연구팀. 같은 SHA-1 해시값을 가진 두 PDF 파일 생성.</li>
+  <li>충돌 저항성이 깨지면 디지털 서명 위조 가능 → 폐기</li>
+</ul>
+
+<h3>HMAC (Hash-based Message Authentication Code)</h3>
+<p>비밀키 + 해시 함수 조합. <strong>무결성 + 인증</strong> 동시 제공. 기밀성은 제공하지 않음.</p>
+<pre><code>HMAC(K, m) = H((K⊕opad) || H((K⊕ipad) || m))</code></pre>
+<ul>
+  <li>용도: API 요청 인증, TLS MAC, JWT HS256</li>
+  <li>MAC만으로는 부인방지 불가 (키 공유 때문)</li>
+</ul>
+
+<h3>해시 공격 기법</h3>
+<table>
+  <thead><tr><th>공격</th><th>방법</th><th>대응</th></tr></thead>
+  <tbody>
+    <tr><td>무차별 대입(Brute-force)</td><td>모든 가능한 입력 시도</td><td>긴 패스워드, 느린 해시 함수</td></tr>
+    <tr><td>사전 공격(Dictionary)</td><td>자주 쓰이는 단어 목록 사용</td><td>복잡한 패스워드 정책</td></tr>
+    <tr><td>Rainbow Table</td><td>사전계산된 해시 역조회 테이블</td><td>솔트(Salt) 사용</td></tr>
+  </tbody>
+</table>
+
+<h3>솔트(Salt)와 패스워드 저장</h3>
+<p><strong>솔트</strong>: 패스워드에 랜덤 값을 추가해 해시. 같은 패스워드도 다른 해시값 → Rainbow Table 무력화.</p>
+<table>
+  <thead><tr><th>방식</th><th>특징</th><th>권장 여부</th></tr></thead>
+  <tbody>
+    <tr><td>MD5(password)</td><td>빠름, Rainbow Table 취약</td><td>금지</td></tr>
+    <tr><td>SHA-256(salt+password)</td><td>빠름 — 무차별 대입 취약</td><td>비권장</td></tr>
+    <tr><td><strong>bcrypt</strong></td><td>작업 계수(cost factor)로 속도 조절</td><td>권장</td></tr>
+    <tr><td><strong>PBKDF2</strong></td><td>반복 해시 + 솔트. NIST 권장.</td><td>권장</td></tr>
+    <tr><td><strong>Argon2</strong></td><td>메모리 집약적. 2015년 Password Hashing Competition 우승.</td><td>권장</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
+    chapter: 'pki-signature',
+    chapterLabel: 'PKI·디지털 서명',
+    keywords: ['CA', 'RA', 'VA', 'PKI', 'X.509', 'CRL', 'OCSP', '디지털서명', '인증서', '공인인증서', '전자서명법', 'KISA'],
+    content: `
+<h3>디지털 서명 과정</h3>
+<pre><code>서명(송신자):
+  1. 메시지를 해시 함수로 요약 → 메시지 다이제스트(MD)
+  2. MD를 송신자의 개인키로 암호화 → 디지털 서명
+
+검증(수신자):
+  1. 수신된 서명을 송신자의 공개키로 복호화 → MD'
+  2. 수신된 메시지를 동일 해시 함수로 요약 → MD
+  3. MD == MD' 이면 서명 유효</code></pre>
+
+<h3>디지털 서명 제공 기능</h3>
+<table>
+  <thead><tr><th>제공하는 보안 기능</th><th>제공하지 않는 기능</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>무결성(Integrity), 인증(Authentication), 부인방지(Non-repudiation)</td>
+      <td>기밀성(Confidentiality) — 별도 암호화 필요</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>PKI 구성요소</h3>
+<table>
+  <thead><tr><th>구성 요소</th><th>역할</th></tr></thead>
+  <tbody>
+    <tr><td><strong>CA (인증기관)</strong></td><td>인증서 발급·갱신·폐기. 신뢰의 근원.</td></tr>
+    <tr><td><strong>RA (등록기관)</strong></td><td>사용자 신원 확인 후 CA에 인증서 발급 요청. CA와 사용자 사이 중개.</td></tr>
+    <tr><td><strong>VA (검증기관)</strong></td><td>인증서 유효성 실시간 검증 (OCSP 응답 제공).</td></tr>
+    <tr><td><strong>저장소(Repository)</strong></td><td>인증서·CRL 공개 저장. LDAP 디렉토리 방식.</td></tr>
+  </tbody>
+</table>
+
+<h3>X.509 인증서 주요 필드</h3>
+<table>
+  <thead><tr><th>필드</th><th>설명</th></tr></thead>
+  <tbody>
+    <tr><td>버전(Version)</td><td>인증서 형식 버전 (v3 사용)</td></tr>
+    <tr><td>일련번호(Serial Number)</td><td>CA 내 고유 번호</td></tr>
+    <tr><td>서명 알고리즘</td><td>CA가 서명에 사용한 알고리즘</td></tr>
+    <tr><td>발급자(Issuer)</td><td>인증서를 발급한 CA 정보</td></tr>
+    <tr><td>유효기간(Validity)</td><td>NotBefore ~ NotAfter</td></tr>
+    <tr><td>주체(Subject)</td><td>인증서 소유자 정보</td></tr>
+    <tr><td>공개키 정보</td><td>소유자의 공개키 + 알고리즘</td></tr>
+    <tr><td>확장(Extensions)</td><td>SAN, Key Usage, CRL 배포점 등</td></tr>
+    <tr><td>CA 서명</td><td>CA 개인키로 서명한 값</td></tr>
+  </tbody>
+</table>
+
+<h3>CRL vs OCSP 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>CRL</th><th>OCSP</th></tr></thead>
+  <tbody>
+    <tr><td>방식</td><td>폐기 인증서 목록 다운로드</td><td>실시간 상태 조회</td></tr>
+    <tr><td>최신성</td><td>주기적 갱신 (다소 지연)</td><td>실시간</td></tr>
+    <tr><td>크기</td><td>목록이 커질 수 있음</td><td>단건 응답</td></tr>
+    <tr><td>프라이버시</td><td>CA에 조회 안함</td><td>CA가 조회 내역 파악 가능</td></tr>
+    <tr><td>포트</td><td>HTTP 80</td><td>HTTP 80/443</td></tr>
+  </tbody>
+</table>
+<p><strong>OCSP Stapling</strong>: 서버가 OCSP 응답을 미리 캐시해 TLS 핸드셰이크 시 클라이언트에 제공 → 성능 향상, 프라이버시 보호.</p>
+
+<h3>인증서 검증 체인</h3>
+<pre><code>Root CA (자체 서명, 브라우저/OS 내장)
+  ↓ 서명
+중간 CA (Intermediate CA)
+  ↓ 서명
+사용자(서버) 인증서</code></pre>
+<p>신뢰 체인(Chain of Trust): Root CA를 신뢰하면 중간 CA와 최종 인증서도 신뢰.</p>
+
+<h3>국내 PKI 체계</h3>
+<ul>
+  <li>최상위 인증기관: <strong>KISA (한국인터넷진흥원)</strong></li>
+  <li>공인인증기관 5개: 금융결제원, KOSCOM, 한국정보인증, 이니텍, 한국전자인증</li>
+  <li><strong>2020년 전자서명법 개정</strong>: 공인인증서(구 공인인증기관) 독점 지위 폐지. 사설 인증서와 동등 지위.</li>
+</ul>
+    `,
+  },
+
+  // ===== 정보보안관리및법규 =====
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
     chapter: 'security-concepts',
     chapterLabel: '정보보안 개요',
     keywords: ['기밀성', '무결성', '가용성', 'CIA', '인증', '부인방지', '책임추적성', '보안 정책', '위협', '취약점', '위험', '자산', '보호대책', 'ISMS'],
@@ -2964,8 +3048,123 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     `,
   },
   {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'security-management',
+    chapterLabel: '정보보호 거버넌스·관리',
+    keywords: ['정보보호 거버넌스', 'ISMS', 'ISO 27001', 'PDCA', '보안 조직', 'CISO', '정보보호 정책', '변경관리', '형상관리', '인적보안', '보안 교육', '공급망 보안', '아웃소싱'],
+    content: `
+<h3>정보보호 거버넌스</h3>
+<p>정보보호 거버넌스는 조직의 보안 목표가 경영 목표와 일치하도록 방향을 제시하고 통제하는 체계다.</p>
+<ul>
+  <li><strong>책임 주체</strong>: CEO·이사회 — 보안은 IT 부서만의 문제가 아닌 경영 전략 사안</li>
+  <li>보안 투자 우선순위 결정, 위험 수용 기준 승인</li>
+  <li>규제 준수(Compliance) 책임 부담</li>
+</ul>
+
+<h3>CISO (Chief Information Security Officer)</h3>
+<ul>
+  <li><strong>역할</strong>: 정보보호 전략 수립, 보안 조직 총괄, 이사회 보고</li>
+  <li><strong>책임</strong>: 정보보호 정책 제정, 보안 사고 대응, 컴플라이언스 관리</li>
+  <li><strong>국내 의무 지정</strong>: 정보통신망법 — 매출 100억 이상 또는 이용자 100만명 이상 정보통신서비스 제공자는 CISO 지정 의무</li>
+</ul>
+
+<h3>ISMS PDCA 사이클</h3>
+<table>
+  <thead><tr><th>단계</th><th>활동</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Plan (계획)</strong></td>
+      <td>위험평가 수행, 보안 목표 설정, 정책·절차 수립, 통제 선택</td>
+    </tr>
+    <tr>
+      <td><strong>Do (실행)</strong></td>
+      <td>선택한 보안 통제 구현, 직원 교육, 운영 절차 실행</td>
+    </tr>
+    <tr>
+      <td><strong>Check (점검)</strong></td>
+      <td>성과 모니터링, 내부 감사, 사고 분석, 효과성 측정</td>
+    </tr>
+    <tr>
+      <td><strong>Act (개선)</strong></td>
+      <td>부적합 사항 시정, 예방 조치, 경영진 검토, ISMS 지속 개선</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>ISO/IEC 27001</h3>
+<ul>
+  <li>국제 ISMS 인증 표준. 14개 통제 영역(도메인), 114개 통제항목(Annex A)</li>
+  <li><strong>14개 통제 영역</strong>: 정보보안 정책 / 정보보안 조직 / 인적자원 보안 / 자산관리 / 접근통제 / 암호화 / 물리·환경 보안 / 운영보안 / 통신보안 / 시스템 취득·개발·유지보수 / 공급업체 관계 / 정보보안 사고 관리 / 업무연속성 관리 / 준거성</li>
+  <li>인증 절차: 갭 분석 → ISMS 구축 → 내부 감사 → 인증 심사 → 인증서 획득 → 사후 심사(연1회) → 갱신 심사(3년)</li>
+</ul>
+
+<h3>인적 보안</h3>
+<table>
+  <thead><tr><th>단계</th><th>보안 활동</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>채용 전</strong></td>
+      <td>신원조회(Background Check), NDA 서명, 직무별 보안 요구사항 정의</td>
+    </tr>
+    <tr>
+      <td><strong>재직 중</strong></td>
+      <td>정기 보안 교육, 보안 정책 준수 확인, 최소권한 원칙 적용</td>
+    </tr>
+    <tr>
+      <td><strong>퇴직 시</strong></td>
+      <td>접근권한 즉시 회수, 계정·인증서 폐기, 자산 반납, 퇴직 보안 교육</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>변경·형상 관리</h3>
+<ul>
+  <li><strong>변경관리(Change Management)</strong>: 모든 시스템 변경에 대한 공식 승인 절차. 무단 변경 방지.</li>
+  <li><strong>형상관리(Configuration Management)</strong>: 시스템·소프트웨어의 기준 설정(Baseline) 및 변경 이력 관리.</li>
+  <li>롤백 계획: 변경 실패 시 이전 상태로 복구 절차 사전 준비</li>
+  <li>변경관리위원회(CAB, Change Advisory Board): 중요 변경 사항 심의</li>
+</ul>
+
+<h3>공급망 보안</h3>
+<ul>
+  <li><strong>제3자 위험관리</strong>: 공급업체·파트너의 보안 수준이 자사 위험에 직결</li>
+  <li><strong>SLA 보안 요구사항</strong>: 계약서에 보안 통제 수준, 사고 통보 의무, 감사 권한 명시</li>
+  <li><strong>정기 감사</strong>: 공급업체 보안 현황 정기 점검, 인증서 확인</li>
+  <li><strong>소프트웨어 공급망 공격</strong> 예시: SolarWinds 사태 — 업데이트 서버 해킹 → 정상 업데이트에 악성코드 삽입</li>
+</ul>
+
+<h3>보안 인식 교육</h3>
+<ul>
+  <li><strong>의무화</strong>: ISMS-P, ISO 27001 모두 정기 교육 요구</li>
+  <li><strong>내용</strong>: 피싱 인식, 패스워드 정책, 클린데스크, 물리 보안, 사고 신고 절차</li>
+  <li><strong>피싱 시뮬레이션</strong>: 가짜 피싱 메일 발송 → 클릭자 식별 → 즉시 교육 연계</li>
+  <li><strong>역할별 교육</strong>: 일반 직원·개발자·관리자·경영진별 맞춤 교육 내용</li>
+  <li><strong>측정</strong>: 교육 전·후 인식 수준 비교, 피싱 클릭률 추이 모니터링</li>
+</ul>
+
+<h3>출제 포인트</h3>
+<ul>
+  <li><strong>정보보호 거버넌스</strong>는 보안을 경영 목표와 정렬하고 책임·권한·성과를 관리하는 체계다.</li>
+  <li><strong>정보보호 정책</strong>은 최상위 문서이고, 표준·지침·절차는 이를 구체화하는 하위 문서다.</li>
+  <li><strong>변경관리</strong>는 변경 승인과 영향 검토, <strong>형상관리</strong>는 기준선과 변경 이력 관리에 초점이 있다.</li>
+  <li><strong>공급망 보안</strong>은 계약 단계의 보안 요구사항, 정기 감사, 사고 통보 의무를 함께 본다.</li>
+</ul>
+
+<h3>자주 나오는 오답 함정</h3>
+<table>
+  <thead><tr><th>함정</th><th>정리</th></tr></thead>
+  <tbody>
+    <tr><td>보안을 IT 부서 책임으로만 보는 선택지</td><td>거버넌스 관점에서는 경영진과 이사회 책임이 포함된다</td></tr>
+    <tr><td>변경관리와 형상관리 혼동</td><td>변경관리는 승인 절차, 형상관리는 기준선과 상태 추적</td></tr>
+    <tr><td>교육 대상 축소</td><td>보안 교육은 일반 사용자뿐 아니라 관리자·외주 인력까지 역할별로 수행한다</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
     chapter: 'risk-management',
     chapterLabel: '위험관리 개념',
     keywords: ['위험관리', '위험분석', '위험평가', '위험식별', '자산식별', '위협분석', '취약점분석', '정량적', '정성적', 'ALE', 'SLE', 'ARO', 'EF', 'AV', 'ROI'],
@@ -3037,8 +3236,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     `,
   },
   {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
     chapter: 'risk-analysis',
     chapterLabel: '위험분석 방법론',
     keywords: ['베이스라인 접근법', '상세 위험분석', '복합 접근법', '위험분석 방법론', 'CRAMM', 'OCTAVE', 'FMEA', 'FTA', '위협 모델링', 'STRIDE', 'DREAD', 'PASTA', 'Attack Tree'],
@@ -3160,8 +3359,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     `,
   },
   {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
     chapter: 'risk-treatment',
     chapterLabel: '위험처리 전략',
     keywords: ['위험수용', '위험회피', '위험전가', '위험감소', '위험처리', '잔여위험', '보안통제', '예방통제', '탐지통제', '교정통제', '억제통제', '복구통제', '관리적 통제', '기술적 통제', '물리적 통제'],
@@ -3250,8 +3449,105 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     `,
   },
   {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'security-audit',
+    chapterLabel: '보안 감사·모니터링',
+    keywords: ['보안 감사', '로그', '감사 추적', 'SIEM', 'SOC', '취약점 스캔', '모의해킹', '침투테스트', 'CVE', 'CVSS', 'NVD', 'Nessus', '컴플라이언스', 'ISO 27001', 'CC 인증'],
+    content: `
+<h3>보안 감사 유형</h3>
+<table>
+  <thead><tr><th>유형</th><th>목적</th><th>주체</th><th>산출물</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>내부 감사</strong></td>
+      <td>내부 보안 통제 준수 여부 점검</td>
+      <td>내부 감사팀</td>
+      <td>내부 감사 보고서, 개선 권고</td>
+    </tr>
+    <tr>
+      <td><strong>외부 감사</strong></td>
+      <td>독립적·객관적 보안 평가</td>
+      <td>외부 보안 전문업체</td>
+      <td>취약점 보고서, 컴플라이언스 평가</td>
+    </tr>
+    <tr>
+      <td><strong>인증 감사</strong></td>
+      <td>특정 보안 표준 인증 획득</td>
+      <td>공인 인증기관</td>
+      <td>인증서 (ISO 27001, ISMS-P 등)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>감사 로그 필수 요소</h3>
+<p>감사 로그는 책임추적성(Accountability)의 핵심 수단이다. 최소 포함 요소:</p>
+<ul>
+  <li><strong>날짜·시간(Timestamp)</strong>: 정확한 시각 (타임존 포함)</li>
+  <li><strong>사용자 ID</strong>: 행위 주체 식별자</li>
+  <li><strong>이벤트 유형</strong>: 로그인, 파일 접근, 권한 변경 등</li>
+  <li><strong>결과</strong>: 성공/실패</li>
+  <li><strong>출처 IP/시스템</strong>: 행위 발생 위치</li>
+  <li><strong>대상 자원</strong>: 접근·변경된 객체</li>
+</ul>
+
+<h3>SIEM / SOC</h3>
+<table>
+  <thead><tr><th>구분</th><th>SIEM</th><th>SOC</th></tr></thead>
+  <tbody>
+    <tr><td>정의</td><td>Security Information and Event Management — 로그 수집·상관분석·알림 플랫폼</td><td>Security Operations Center — 24/7 보안 모니터링 조직</td></tr>
+    <tr><td>역할</td><td>다양한 소스의 로그 통합, 이상 패턴 탐지, 알림 생성</td><td>SIEM 알림 분석, 사고 대응, 위협 헌팅</td></tr>
+    <tr><td>사례</td><td>Splunk, IBM QRadar, Microsoft Sentinel</td><td>내부 SOC 또는 MSSP(외부 위탁)</td></tr>
+  </tbody>
+</table>
+
+<h3>취약점 관리</h3>
+<table>
+  <thead><tr><th>구분</th><th>설명</th></tr></thead>
+  <tbody>
+    <tr><td><strong>CVE (Common Vulnerabilities and Exposures)</strong></td><td>공개 취약점 식별자. 형식: CVE-연도-번호 (예: CVE-2021-44228 Log4Shell)</td></tr>
+    <tr><td><strong>CVSS (Common Vulnerability Scoring System)</strong></td><td>취약점 심각도 점수 0~10. NIST 기준: 0=없음, 0.1~3.9=낮음, 4.0~6.9=보통, 7.0~8.9=높음, 9.0~10=위험</td></tr>
+    <tr><td><strong>NVD (National Vulnerability Database)</strong></td><td>NIST 운영 취약점 데이터베이스. CVE 정보 + CVSS 점수 포함.</td></tr>
+    <tr><td><strong>취약점 스캐너</strong></td><td>Nessus, OpenVAS, Qualys 등 — 시스템 자동 취약점 스캔</td></tr>
+  </tbody>
+</table>
+
+<h3>모의해킹 (Penetration Testing)</h3>
+<table>
+  <thead><tr><th>유형</th><th>정보 제공</th><th>특징</th><th>적합 상황</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>블랙박스</strong></td>
+      <td>없음 (공개 정보만)</td>
+      <td>실제 외부 공격자 관점 모사. 가장 현실적.</td>
+      <td>외부 위협 평가</td>
+    </tr>
+    <tr>
+      <td><strong>화이트박스</strong></td>
+      <td>전체 (소스코드·아키텍처)</td>
+      <td>깊은 분석 가능. 시간·비용 효율적.</td>
+      <td>개발 단계 보안 검토</td>
+    </tr>
+    <tr>
+      <td><strong>그레이박스</strong></td>
+      <td>부분 (사용자 계정 수준)</td>
+      <td>내부자 위협 시뮬레이션. 현실적 균형.</td>
+      <td>내부자 위협 평가</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>보안 인증</h3>
+<ul>
+  <li><strong>ISO/IEC 27001</strong>: 국제 ISMS 인증. 14개 통제 영역, Annex A. 2~3년 주기 갱신.</li>
+  <li><strong>ISMS-P</strong>: 국내 정보보호 및 개인정보보호 관리체계 인증 (KISA). 의무 인증 대상 있음.</li>
+  <li><strong>CC (Common Criteria, ISO 15408)</strong>: IT 제품·시스템 보안 기능 국제 평가 기준. EAL1~EAL7 등급.</li>
+</ul>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
     chapter: 'bcp-drp',
     chapterLabel: 'BCP·DRP',
     keywords: ['BCP', 'DRP', '업무연속성계획', '재해복구계획', 'RTO', 'RPO', 'MTD', 'BIA', '업무영향분석', '핫사이트', '웜사이트', '콜드사이트', '미러사이트', 'MTTR', 'MTBF', '가용성'],
@@ -3350,8 +3646,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     `,
   },
   {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
     chapter: 'physical-security',
     chapterLabel: '물리적 보안',
     keywords: ['물리적 보안', '출입통제', '잠금장치', 'CCTV', '생체인식', '카드키', '맨트랩', '가드', '울타리', '조명', '데이터센터', '환경보안', '화재진압', '전력', 'UPS'],
@@ -3421,105 +3717,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     `,
   },
   {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
-    chapter: 'security-audit',
-    chapterLabel: '보안 감사·모니터링',
-    keywords: ['보안 감사', '로그', '감사 추적', 'SIEM', 'SOC', '취약점 스캔', '모의해킹', '침투테스트', 'CVE', 'CVSS', 'NVD', 'Nessus', '컴플라이언스', 'ISO 27001', 'CC 인증'],
-    content: `
-<h3>보안 감사 유형</h3>
-<table>
-  <thead><tr><th>유형</th><th>목적</th><th>주체</th><th>산출물</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><strong>내부 감사</strong></td>
-      <td>내부 보안 통제 준수 여부 점검</td>
-      <td>내부 감사팀</td>
-      <td>내부 감사 보고서, 개선 권고</td>
-    </tr>
-    <tr>
-      <td><strong>외부 감사</strong></td>
-      <td>독립적·객관적 보안 평가</td>
-      <td>외부 보안 전문업체</td>
-      <td>취약점 보고서, 컴플라이언스 평가</td>
-    </tr>
-    <tr>
-      <td><strong>인증 감사</strong></td>
-      <td>특정 보안 표준 인증 획득</td>
-      <td>공인 인증기관</td>
-      <td>인증서 (ISO 27001, ISMS-P 등)</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3>감사 로그 필수 요소</h3>
-<p>감사 로그는 책임추적성(Accountability)의 핵심 수단이다. 최소 포함 요소:</p>
-<ul>
-  <li><strong>날짜·시간(Timestamp)</strong>: 정확한 시각 (타임존 포함)</li>
-  <li><strong>사용자 ID</strong>: 행위 주체 식별자</li>
-  <li><strong>이벤트 유형</strong>: 로그인, 파일 접근, 권한 변경 등</li>
-  <li><strong>결과</strong>: 성공/실패</li>
-  <li><strong>출처 IP/시스템</strong>: 행위 발생 위치</li>
-  <li><strong>대상 자원</strong>: 접근·변경된 객체</li>
-</ul>
-
-<h3>SIEM / SOC</h3>
-<table>
-  <thead><tr><th>구분</th><th>SIEM</th><th>SOC</th></tr></thead>
-  <tbody>
-    <tr><td>정의</td><td>Security Information and Event Management — 로그 수집·상관분석·알림 플랫폼</td><td>Security Operations Center — 24/7 보안 모니터링 조직</td></tr>
-    <tr><td>역할</td><td>다양한 소스의 로그 통합, 이상 패턴 탐지, 알림 생성</td><td>SIEM 알림 분석, 사고 대응, 위협 헌팅</td></tr>
-    <tr><td>사례</td><td>Splunk, IBM QRadar, Microsoft Sentinel</td><td>내부 SOC 또는 MSSP(외부 위탁)</td></tr>
-  </tbody>
-</table>
-
-<h3>취약점 관리</h3>
-<table>
-  <thead><tr><th>구분</th><th>설명</th></tr></thead>
-  <tbody>
-    <tr><td><strong>CVE (Common Vulnerabilities and Exposures)</strong></td><td>공개 취약점 식별자. 형식: CVE-연도-번호 (예: CVE-2021-44228 Log4Shell)</td></tr>
-    <tr><td><strong>CVSS (Common Vulnerability Scoring System)</strong></td><td>취약점 심각도 점수 0~10. NIST 기준: 0=없음, 0.1~3.9=낮음, 4.0~6.9=보통, 7.0~8.9=높음, 9.0~10=위험</td></tr>
-    <tr><td><strong>NVD (National Vulnerability Database)</strong></td><td>NIST 운영 취약점 데이터베이스. CVE 정보 + CVSS 점수 포함.</td></tr>
-    <tr><td><strong>취약점 스캐너</strong></td><td>Nessus, OpenVAS, Qualys 등 — 시스템 자동 취약점 스캔</td></tr>
-  </tbody>
-</table>
-
-<h3>모의해킹 (Penetration Testing)</h3>
-<table>
-  <thead><tr><th>유형</th><th>정보 제공</th><th>특징</th><th>적합 상황</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><strong>블랙박스</strong></td>
-      <td>없음 (공개 정보만)</td>
-      <td>실제 외부 공격자 관점 모사. 가장 현실적.</td>
-      <td>외부 위협 평가</td>
-    </tr>
-    <tr>
-      <td><strong>화이트박스</strong></td>
-      <td>전체 (소스코드·아키텍처)</td>
-      <td>깊은 분석 가능. 시간·비용 효율적.</td>
-      <td>개발 단계 보안 검토</td>
-    </tr>
-    <tr>
-      <td><strong>그레이박스</strong></td>
-      <td>부분 (사용자 계정 수준)</td>
-      <td>내부자 위협 시뮬레이션. 현실적 균형.</td>
-      <td>내부자 위협 평가</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3>보안 인증</h3>
-<ul>
-  <li><strong>ISO/IEC 27001</strong>: 국제 ISMS 인증. 14개 통제 영역, Annex A. 2~3년 주기 갱신.</li>
-  <li><strong>ISMS-P</strong>: 국내 정보보호 및 개인정보보호 관리체계 인증 (KISA). 의무 인증 대상 있음.</li>
-  <li><strong>CC (Common Criteria, ISO 15408)</strong>: IT 제품·시스템 보안 기능 국제 평가 기준. EAL1~EAL7 등급.</li>
-</ul>
-    `,
-  },
-  {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
     chapter: 'forensics',
     chapterLabel: '디지털 포렌식',
     keywords: ['디지털 포렌식', '증거 수집', '무결성', '연계보관성', 'Chain of Custody', '해시', '이미징', '휘발성 데이터', '비휘발성 데이터', '파일 시스템', '타임스탬프', '슬랙 공간', '메타데이터', 'dd', 'FTK', 'EnCase'],
@@ -3597,524 +3796,6 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td><strong>EnCase</strong></td><td>Guidance Software의 상용 포렌식 플랫폼. 법원 인정.</td></tr>
     <tr><td><strong>Autopsy</strong></td><td>오픈소스 디지털 포렌식 플랫폼</td></tr>
     <tr><td><strong>Volatility</strong></td><td>메모리(RAM) 덤프 분석 프레임워크</td></tr>
-  </tbody>
-</table>
-    `,
-  },
-  {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
-    chapter: 'social-engineering',
-    chapterLabel: '사회공학',
-    keywords: ['사회공학', '피싱', '스피어피싱', '보이스피싱', '비싱', '스미싱', '프리텍스팅', '베이팅', '테일게이팅', '큐 프로 쿼', '심리적 조작', '보안 인식 교육'],
-    content: `
-<h3>사회공학 공격 유형</h3>
-<table>
-  <thead><tr><th>유형</th><th>수단</th><th>타겟</th><th>특징</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><strong>피싱(Phishing)</strong></td>
-      <td>이메일, 가짜 웹사이트</td>
-      <td>불특정 다수</td>
-      <td>신뢰 기관(은행, 포털) 위장. 대량 발송.</td>
-    </tr>
-    <tr>
-      <td><strong>스피어피싱(Spear Phishing)</strong></td>
-      <td>이메일</td>
-      <td>특정 개인·조직</td>
-      <td>맞춤형 내용. 성공률 높음. APT 초기 침투 수단.</td>
-    </tr>
-    <tr>
-      <td><strong>웨일링(Whaling)</strong></td>
-      <td>이메일</td>
-      <td>CEO·임원 등 고위직</td>
-      <td>스피어피싱의 일종. 고가치 타겟 전문.</td>
-    </tr>
-    <tr>
-      <td><strong>비싱(Vishing)</strong></td>
-      <td>전화(Voice)</td>
-      <td>개인</td>
-      <td>전화로 개인정보·계좌 정보 탈취. 콜센터 직원 사칭.</td>
-    </tr>
-    <tr>
-      <td><strong>스미싱(Smishing)</strong></td>
-      <td>SMS/문자</td>
-      <td>스마트폰 사용자</td>
-      <td>URL 포함 문자. 악성 앱 설치 유도.</td>
-    </tr>
-    <tr>
-      <td><strong>프리텍스팅(Pretexting)</strong></td>
-      <td>전화, 대면, 이메일</td>
-      <td>직원</td>
-      <td>가짜 신분·상황 설정. IT 직원·감사관 사칭.</td>
-    </tr>
-    <tr>
-      <td><strong>베이팅(Baiting)</strong></td>
-      <td>물리적 미디어</td>
-      <td>호기심 많은 직원</td>
-      <td>악성 USB를 주차장·엘리베이터에 방치.</td>
-    </tr>
-    <tr>
-      <td><strong>테일게이팅(Tailgating)</strong></td>
-      <td>물리적 접근</td>
-      <td>물리 보안 구역</td>
-      <td>인가자 뒤에 따라 들어감. 사회적 예의를 이용.</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3>공격에 이용되는 심리 기법</h3>
-<table>
-  <thead><tr><th>심리 기법</th><th>설명</th><th>공격 예시</th></tr></thead>
-  <tbody>
-    <tr><td><strong>권위(Authority)</strong></td><td>상위 직급·기관처럼 행세</td><td>"CEO입니다, 지금 당장 계좌 이체 해주세요"</td></tr>
-    <tr><td><strong>긴박감(Urgency)</strong></td><td>즉각 행동을 유도해 판단력 저하</td><td>"지금 처리 안 하면 계정이 삭제됩니다"</td></tr>
-    <tr><td><strong>친밀감(Familiarity)</strong></td><td>아는 사람인 척하여 경계 해제</td><td>"저 지난번에 미팅했던 김대리입니다"</td></tr>
-    <tr><td><strong>사회적 증거(Social Proof)</strong></td><td>다른 사람도 했다고 안심시킴</td><td>"다른 부서는 이미 다 클릭했어요"</td></tr>
-    <tr><td><strong>상호성(Reciprocity)</strong></td><td>뭔가를 줄 테니 정보를 달라는 교환</td><td>"무료 USB 드릴게요, 설문 하나만..."</td></tr>
-  </tbody>
-</table>
-
-<h3>피싱 유형 비교</h3>
-<table>
-  <thead><tr><th>구분</th><th>피싱</th><th>스피어피싱</th><th>웨일링</th></tr></thead>
-  <tbody>
-    <tr><td>타겟</td><td>불특정 다수</td><td>특정 개인·부서</td><td>고위 임원(CEO, CFO)</td></tr>
-    <tr><td>맞춤화</td><td>없음</td><td>높음</td><td>매우 높음</td></tr>
-    <tr><td>성공률</td><td>낮음</td><td>높음</td><td>매우 높음</td></tr>
-    <tr><td>준비 시간</td><td>짧음</td><td>중간</td><td>길음</td></tr>
-  </tbody>
-</table>
-
-<h3>APT와 사회공학</h3>
-<p><strong>APT(Advanced Persistent Threat)</strong> 공격에서 사회공학은 초기 침투(Initial Access) 수단으로 가장 많이 활용된다.</p>
-<ul>
-  <li>스피어피싱 → 악성 첨부파일 실행 → 내부망 침투</li>
-  <li>가장 기술적으로 완벽한 방어도 사람의 실수 하나로 무력화</li>
-</ul>
-
-<h3>대응책</h3>
-<ul>
-  <li><strong>보안 인식 교육</strong>: 전직원 정기 교육, 피싱 시뮬레이션 훈련</li>
-  <li><strong>이중 확인 절차</strong>: 이메일 요청 시 전화 콜백으로 본인 확인</li>
-  <li><strong>정보 공개 최소화</strong>: SNS에 조직 정보·직위 과다 공개 자제</li>
-  <li><strong>물리 보안 강화</strong>: 맨트랩, 방문자 등록·동반, 테일게이팅 방지 교육</li>
-  <li><strong>이메일 보안</strong>: SPF·DKIM·DMARC 적용으로 발신자 위조 방지</li>
-  <li><strong>USB 정책</strong>: 허가되지 않은 USB 사용 금지, AutoRun 비활성화</li>
-</ul>
-    `,
-  },
-  {
-    subject: 'general',
-    subjectLabel: '정보보안일반',
-    chapter: 'security-management',
-    chapterLabel: '정보보호 거버넌스·관리',
-    keywords: ['정보보호 거버넌스', 'ISMS', 'ISO 27001', 'PDCA', '보안 조직', 'CISO', '정보보호 정책', '변경관리', '형상관리', '인적보안', '보안 교육', '공급망 보안', '아웃소싱'],
-    content: `
-<h3>정보보호 거버넌스</h3>
-<p>정보보호 거버넌스는 조직의 보안 목표가 경영 목표와 일치하도록 방향을 제시하고 통제하는 체계다.</p>
-<ul>
-  <li><strong>책임 주체</strong>: CEO·이사회 — 보안은 IT 부서만의 문제가 아닌 경영 전략 사안</li>
-  <li>보안 투자 우선순위 결정, 위험 수용 기준 승인</li>
-  <li>규제 준수(Compliance) 책임 부담</li>
-</ul>
-
-<h3>CISO (Chief Information Security Officer)</h3>
-<ul>
-  <li><strong>역할</strong>: 정보보호 전략 수립, 보안 조직 총괄, 이사회 보고</li>
-  <li><strong>책임</strong>: 정보보호 정책 제정, 보안 사고 대응, 컴플라이언스 관리</li>
-  <li><strong>국내 의무 지정</strong>: 정보통신망법 — 매출 100억 이상 또는 이용자 100만명 이상 정보통신서비스 제공자는 CISO 지정 의무</li>
-</ul>
-
-<h3>ISMS PDCA 사이클</h3>
-<table>
-  <thead><tr><th>단계</th><th>활동</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><strong>Plan (계획)</strong></td>
-      <td>위험평가 수행, 보안 목표 설정, 정책·절차 수립, 통제 선택</td>
-    </tr>
-    <tr>
-      <td><strong>Do (실행)</strong></td>
-      <td>선택한 보안 통제 구현, 직원 교육, 운영 절차 실행</td>
-    </tr>
-    <tr>
-      <td><strong>Check (점검)</strong></td>
-      <td>성과 모니터링, 내부 감사, 사고 분석, 효과성 측정</td>
-    </tr>
-    <tr>
-      <td><strong>Act (개선)</strong></td>
-      <td>부적합 사항 시정, 예방 조치, 경영진 검토, ISMS 지속 개선</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3>ISO/IEC 27001</h3>
-<ul>
-  <li>국제 ISMS 인증 표준. 14개 통제 영역(도메인), 114개 통제항목(Annex A)</li>
-  <li><strong>14개 통제 영역</strong>: 정보보안 정책 / 정보보안 조직 / 인적자원 보안 / 자산관리 / 접근통제 / 암호화 / 물리·환경 보안 / 운영보안 / 통신보안 / 시스템 취득·개발·유지보수 / 공급업체 관계 / 정보보안 사고 관리 / 업무연속성 관리 / 준거성</li>
-  <li>인증 절차: 갭 분석 → ISMS 구축 → 내부 감사 → 인증 심사 → 인증서 획득 → 사후 심사(연1회) → 갱신 심사(3년)</li>
-</ul>
-
-<h3>인적 보안</h3>
-<table>
-  <thead><tr><th>단계</th><th>보안 활동</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><strong>채용 전</strong></td>
-      <td>신원조회(Background Check), NDA 서명, 직무별 보안 요구사항 정의</td>
-    </tr>
-    <tr>
-      <td><strong>재직 중</strong></td>
-      <td>정기 보안 교육, 보안 정책 준수 확인, 최소권한 원칙 적용</td>
-    </tr>
-    <tr>
-      <td><strong>퇴직 시</strong></td>
-      <td>접근권한 즉시 회수, 계정·인증서 폐기, 자산 반납, 퇴직 보안 교육</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3>변경·형상 관리</h3>
-<ul>
-  <li><strong>변경관리(Change Management)</strong>: 모든 시스템 변경에 대한 공식 승인 절차. 무단 변경 방지.</li>
-  <li><strong>형상관리(Configuration Management)</strong>: 시스템·소프트웨어의 기준 설정(Baseline) 및 변경 이력 관리.</li>
-  <li>롤백 계획: 변경 실패 시 이전 상태로 복구 절차 사전 준비</li>
-  <li>변경관리위원회(CAB, Change Advisory Board): 중요 변경 사항 심의</li>
-</ul>
-
-<h3>공급망 보안</h3>
-<ul>
-  <li><strong>제3자 위험관리</strong>: 공급업체·파트너의 보안 수준이 자사 위험에 직결</li>
-  <li><strong>SLA 보안 요구사항</strong>: 계약서에 보안 통제 수준, 사고 통보 의무, 감사 권한 명시</li>
-  <li><strong>정기 감사</strong>: 공급업체 보안 현황 정기 점검, 인증서 확인</li>
-  <li><strong>소프트웨어 공급망 공격</strong> 예시: SolarWinds 사태 — 업데이트 서버 해킹 → 정상 업데이트에 악성코드 삽입</li>
-</ul>
-
-<h3>보안 인식 교육</h3>
-<ul>
-  <li><strong>의무화</strong>: ISMS-P, ISO 27001 모두 정기 교육 요구</li>
-  <li><strong>내용</strong>: 피싱 인식, 패스워드 정책, 클린데스크, 물리 보안, 사고 신고 절차</li>
-  <li><strong>피싱 시뮬레이션</strong>: 가짜 피싱 메일 발송 → 클릭자 식별 → 즉시 교육 연계</li>
-  <li><strong>역할별 교육</strong>: 일반 직원·개발자·관리자·경영진별 맞춤 교육 내용</li>
-  <li><strong>측정</strong>: 교육 전·후 인식 수준 비교, 피싱 클릭률 추이 모니터링</li>
-</ul>
-
-<h3>출제 포인트</h3>
-<ul>
-  <li><strong>정보보호 거버넌스</strong>는 보안을 경영 목표와 정렬하고 책임·권한·성과를 관리하는 체계다.</li>
-  <li><strong>정보보호 정책</strong>은 최상위 문서이고, 표준·지침·절차는 이를 구체화하는 하위 문서다.</li>
-  <li><strong>변경관리</strong>는 변경 승인과 영향 검토, <strong>형상관리</strong>는 기준선과 변경 이력 관리에 초점이 있다.</li>
-  <li><strong>공급망 보안</strong>은 계약 단계의 보안 요구사항, 정기 감사, 사고 통보 의무를 함께 본다.</li>
-</ul>
-
-<h3>자주 나오는 오답 함정</h3>
-<table>
-  <thead><tr><th>함정</th><th>정리</th></tr></thead>
-  <tbody>
-    <tr><td>보안을 IT 부서 책임으로만 보는 선택지</td><td>거버넌스 관점에서는 경영진과 이사회 책임이 포함된다</td></tr>
-    <tr><td>변경관리와 형상관리 혼동</td><td>변경관리는 승인 절차, 형상관리는 기준선과 상태 추적</td></tr>
-    <tr><td>교육 대상 축소</td><td>보안 교육은 일반 사용자뿐 아니라 관리자·외주 인력까지 역할별로 수행한다</td></tr>
-  </tbody>
-</table>
-    `,
-  },
-
-  // ===== 정보보안관리및법규 =====
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'law-overview',
-    chapterLabel: '정보보호 법체계 개요',
-    keywords: ['정보보호법', '개인정보보호법', '정보통신망법', '전자서명법', '사이버보안', '법체계', '행정법', '형사법', '과태료', '과징금', '벌칙', '신고의무', '침해사고'],
-    content: `
-<h3>국내 정보보호 관련 법률 체계</h3>
-<table>
-  <thead><tr><th>법률명</th><th>소관부처</th><th>주요 규율 대상</th><th>핵심 내용</th></tr></thead>
-  <tbody>
-    <tr><td><strong>개인정보 보호법</strong></td><td>개인정보보호위원회</td><td>개인정보 처리 전반</td><td>개인정보 수집·이용·제공·파기, 정보주체 권리, 안전조치 의무</td></tr>
-    <tr><td><strong>정보통신망 이용촉진 및 정보보호 등에 관한 법률</strong></td><td>과기부·방통위</td><td>정보통신서비스 제공자</td><td>스팸 규제, 해킹·악성프로그램 금지, ISMS 의무, 침해사고 신고</td></tr>
-    <tr><td><strong>정보통신기반 보호법</strong></td><td>과기부</td><td>주요정보통신기반시설</td><td>보호계획 수립, 취약점 분석·평가, 침해사고 신고</td></tr>
-    <tr><td><strong>전자서명법</strong></td><td>과기부</td><td>전자서명·공인인증</td><td>전자서명 법적 효력, 전자서명인증사업자 평가·인정</td></tr>
-    <tr><td><strong>전자금융거래법</strong></td><td>금융위</td><td>전자금융</td><td>금융 분야 전자거래 보안 기준, 금융사고 신고 의무</td></tr>
-    <tr><td><strong>클라우드컴퓨팅법</strong></td><td>과기부</td><td>클라우드 보안</td><td>클라우드서비스 보안인증, 공공기관 이용 기준</td></tr>
-  </tbody>
-</table>
-
-<h3>제재 유형</h3>
-<table>
-  <thead><tr><th>제재 유형</th><th>종류</th><th>주요 위반 사례</th></tr></thead>
-  <tbody>
-    <tr><td><strong>형사처벌</strong></td><td>징역·벌금</td><td>해킹, 개인정보 대규모 유출·불법 제공, 악성프로그램 유포</td></tr>
-    <tr><td><strong>행정제재 — 과징금</strong></td><td>매출액 비례 부과</td><td>안전조치 미이행으로 개인정보 유출, 동의 없는 개인정보 제3자 제공</td></tr>
-    <tr><td><strong>행정제재 — 과태료</strong></td><td>정액 부과</td><td>처리방침 미공개, 접속기록 미보관, 신고 의무 위반</td></tr>
-    <tr><td><strong>시정명령</strong></td><td>행정명령</td><td>위반 행위 중지, 개선 조치 이행 명령</td></tr>
-  </tbody>
-</table>
-
-<h3>침해사고 신고 의무</h3>
-<ul>
-  <li><strong>정보통신서비스 제공자</strong>: 침해사고 발생 인지 후 <strong>24시간 이내</strong> 과학기술정보통신부장관 또는 KISA에 신고</li>
-  <li><strong>주요정보통신기반시설 운영기관</strong>: 침해사고 인지 시 관계 행정기관, 수사기관 또는 KISA에 통지</li>
-  <li><strong>개인정보 유출</strong>: 정보주체에게 72시간 이내 통지. 1천 명 이상, 민감정보·고유식별정보, 외부 불법 접근에 의한 유출 중 하나에 해당하면 72시간 이내 개인정보보호위원회 또는 KISA에 신고</li>
-</ul>
-
-<h3>주요 기관 역할</h3>
-<ul>
-  <li><strong>KISA (한국인터넷진흥원)</strong>: 인터넷침해대응센터 운영, 침해사고 분석·대응, ISMS 인증 심사</li>
-  <li><strong>개인정보보호위원회</strong>: 개인정보 보호법 집행, 과징금·과태료 부과, 법령 해석</li>
-  <li><strong>CSIRT (Computer Security Incident Response Team)</strong>: 기관·기업 내 침해사고 대응팀, 탐지·분석·복구</li>
-</ul>
-
-<h3>출제 포인트</h3>
-<ul>
-  <li>개인정보 보호법은 모든 개인정보처리자에게 적용되는 일반법 성격이 강하다.</li>
-  <li>정보통신망법은 정보통신서비스 제공자의 망 이용, 침해사고, 스팸, ISMS 의무와 자주 연결된다.</li>
-  <li>정보통신기반 보호법은 주요정보통신기반시설의 지정, 보호계획, 취약점 분석·평가가 핵심이다.</li>
-  <li>과징금은 매출액 비례 제재, 과태료는 행정질서벌 성격의 정액 제재로 구분한다.</li>
-</ul>
-
-<h3>자주 나오는 오답 함정</h3>
-<table>
-  <thead><tr><th>함정</th><th>정리</th></tr></thead>
-  <tbody>
-    <tr><td>과태료와 과징금 혼동</td><td>과징금은 위반행위 관련 매출액 기준, 과태료는 신고·공개 등 의무 위반에 자주 출제</td></tr>
-    <tr><td>신고 대상 기관 혼동</td><td>개인정보 유출 신고는 개인정보보호위원회 또는 KISA, 정보통신서비스 제공자의 침해사고 신고는 과학기술정보통신부장관 또는 KISA가 대상이다. 주요정보통신기반시설은 관계 행정기관, 수사기관 또는 KISA에 통지한다.</td></tr>
-    <tr><td>법률 적용 대상 혼동</td><td>개인정보 보호법은 일반 개인정보 처리, 기반보호법은 주요정보통신기반시설 중심</td></tr>
-  </tbody>
-</table>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'privacy-law',
-    chapterLabel: '개인정보 보호법',
-    keywords: ['개인정보', '개인정보보호법', '정보주체', '개인정보처리자', '수집', '이용', '제공', '파기', '동의', '열람', '정정', '삭제', '처리정지', '개인정보보호위원회', '고유식별정보', '민감정보'],
-    content: `
-<h3>개인정보 정의</h3>
-<p>살아있는 개인에 관한 정보로서 성명·주민등록번호·영상 등을 통해 개인을 알아볼 수 있는 정보. <strong>다른 정보와 쉽게 결합하여 알아볼 수 있는 정보도 포함.</strong></p>
-
-<h3>개인정보 처리 8대 원칙</h3>
-<ol>
-  <li>목적 명확화 — 처리 목적을 명확히 하여야 함</li>
-  <li>최소 수집 — 목적에 필요한 최소한의 정보만 수집</li>
-  <li>목적 외 이용 금지 — 명시한 목적 범위 내에서만 처리</li>
-  <li>처리의 적법성·정당성</li>
-  <li>정확성·최신성 보장</li>
-  <li>안전한 관리 — 안전성 확보 조치</li>
-  <li>비밀 보장</li>
-  <li>투명성 — 처리 현황 공개</li>
-</ol>
-
-<h3>정보주체 권리</h3>
-<table>
-  <thead><tr><th>권리</th><th>내용</th><th>행사 방법</th></tr></thead>
-  <tbody>
-    <tr><td><strong>열람권</strong></td><td>자신의 개인정보 처리 여부·내용 확인</td><td>서면·전자문서 등으로 개인정보처리자에게 청구</td></tr>
-    <tr><td><strong>정정권</strong></td><td>부정확한 정보 정정 요청</td><td>정정 완료 전까지 이용·제공 정지 가능</td></tr>
-    <tr><td><strong>삭제권</strong></td><td>불필요한 정보 삭제 요청</td><td>법령 의무 보존 정보는 삭제 제한</td></tr>
-    <tr><td><strong>처리정지권</strong></td><td>개인정보 처리 일시 정지 요청</td><td>정당한 사유 없으면 10일 이내 조치</td></tr>
-    <tr><td><strong>이동권</strong></td><td>본인 개인정보를 다른 기관으로 이전 요청</td><td>정보이동권(개정 추진 중)</td></tr>
-    <tr><td><strong>자동화 의사결정 거부권</strong></td><td>프로파일링·자동화 처리 결과에 이의 제기</td><td>설명 요구 및 거부 가능</td></tr>
-  </tbody>
-</table>
-
-<h3>수집·이용 법적 근거</h3>
-<ul>
-  <li>정보주체의 <strong>동의</strong></li>
-  <li><strong>계약 이행</strong>에 필요한 경우</li>
-  <li><strong>법령 의무</strong> 준수</li>
-  <li>공공기관의 <strong>법령 직무</strong> 수행</li>
-  <li>개인정보처리자의 <strong>정당한 이익</strong> (정보주체 권리보다 명백히 우선하는 경우)</li>
-</ul>
-
-<h3>민감정보·고유식별정보</h3>
-<p><strong>민감정보</strong> (별도 동의 필요): 사상·신념, 노동조합 가입·탈퇴, 정치적 견해, 건강·성생활, 유전정보, 범죄경력, 생체인식정보(지문·홍채·얼굴)</p>
-<p><strong>고유식별정보</strong> (법령 근거 또는 별도 동의 필요): 주민등록번호, 여권번호, 운전면허번호, 외국인등록번호. 주민등록번호는 법적 의무 없으면 처리 금지.</p>
-
-<h3>개인정보 처리방침 의무 공개 사항</h3>
-<ul>
-  <li>개인정보의 처리 목적</li>
-  <li>처리하는 개인정보의 항목</li>
-  <li>개인정보의 처리 및 보유 기간</li>
-  <li>개인정보의 제3자 제공 현황</li>
-  <li>개인정보 처리 위탁 현황</li>
-  <li>정보주체 권리·의무 및 행사 방법</li>
-  <li>개인정보 보호책임자 정보</li>
-</ul>
-
-<h3>파기 의무</h3>
-<p>보유 목적 달성 후 <strong>지체없이 파기</strong> (복구 불가능한 방법). 전자파일은 덮어쓰기·디가우징·파쇄, 출력물은 파쇄·소각.</p>
-
-<h3>주요 벌칙</h3>
-<table>
-  <thead><tr><th>위반 유형</th><th>형사처벌</th><th>과태료</th></tr></thead>
-  <tbody>
-    <tr><td>개인정보 불법 수집·제공·누설</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td><td>—</td></tr>
-    <tr><td>안전조치 의무 위반으로 유출</td><td>—</td><td>3천만원 이하</td></tr>
-    <tr><td>주민등록번호 암호화 미적용</td><td>—</td><td>3천만원 이하</td></tr>
-    <tr><td>처리방침 미공개</td><td>—</td><td>1천만원 이하</td></tr>
-    <tr><td>과징금</td><td colspan="2">위반행위 관련 매출액의 3% 이하</td></tr>
-  </tbody>
-</table>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'privacy-advanced',
-    chapterLabel: '개인정보 보호 심화',
-    keywords: ['개인정보 영향평가', 'PIA', '가명처리', '익명처리', '개인정보 보호책임자', 'CPO', 'DPO', '국외이전', '개인정보 유출통지', '72시간', '개인정보 안전성 확보조치', '개인정보 암호화', '개인정보 접근권한', '개인정보 접속기록'],
-    content: `
-<h3>개인정보 안전성 확보조치 기준</h3>
-<table>
-  <thead><tr><th>조치 항목</th><th>의무 내용</th></tr></thead>
-  <tbody>
-    <tr><td><strong>내부 관리계획</strong></td><td>수립·시행, 개인정보 보호책임자(CPO) 지정, 연 1회 이상 교육</td></tr>
-    <tr><td><strong>접근통제</strong></td><td>권한 없는 자의 접근 차단, 외부 접속 시 VPN 등 안전한 인증</td></tr>
-    <tr><td><strong>접근권한 관리</strong></td><td>최소 권한 부여, 퇴직자 즉시 권한 회수, 권한 부여·변경 기록 보관</td></tr>
-    <tr><td><strong>암호화</strong></td><td>고유식별정보·비밀번호·바이오정보 암호화 필수, 전송 시 SSL/TLS</td></tr>
-    <tr><td><strong>접속기록 보관</strong></td><td>최소 6개월 보관, 5만 명 이상 또는 민감정보 처리 시 2년</td></tr>
-    <tr><td><strong>접속기록 위변조 방지</strong></td><td>접속기록의 무결성 보장, 별도 저장·관리</td></tr>
-    <tr><td><strong>보안프로그램</strong></td><td>악성프로그램 방지 소프트웨어 설치·운영, 자동 업데이트</td></tr>
-    <tr><td><strong>물리보안</strong></td><td>출입 통제, 잠금장치, 개인정보 처리 구역 접근 제한</td></tr>
-  </tbody>
-</table>
-
-<h3>개인정보 영향평가(PIA)</h3>
-<ul>
-  <li><strong>대상</strong>: 공공기관이 대규모 개인정보 파일 구축·운용·변경 시 의무</li>
-  <li><strong>절차</strong>: 사전 계획 → 전문기관 평가 → 개인정보보호위원회 제출</li>
-  <li><strong>전문기관</strong>: KISA 등 개인정보보호위원회 지정 기관</li>
-  <li>민간기업은 의무 아니나 권고</li>
-</ul>
-
-<h3>가명처리 vs 익명처리 비교</h3>
-<table>
-  <thead><tr><th>구분</th><th>가명처리</th><th>익명처리</th></tr></thead>
-  <tbody>
-    <tr><td><strong>정의</strong></td><td>추가 정보 없이 개인 식별 불가하게 처리 (추가 정보 결합 시 재식별 가능)</td><td>모든 식별 가능 정보 제거, 재식별 불가</td></tr>
-    <tr><td><strong>활용 범위</strong></td><td>통계 작성, 과학적 연구, 공익적 기록 보존 — 동의 없이 활용 가능</td><td>개인정보 보호법 미적용, 자유롭게 활용</td></tr>
-    <tr><td><strong>재식별 위험</strong></td><td>추가 정보 결합 시 재식별 가능 — 안전조치 및 결합제한기관 이용 의무</td><td>재식별 불가 (사실상 불가능한 수준)</td></tr>
-    <tr><td><strong>법적 지위</strong></td><td>개인정보 보호법 일부 적용 (가명정보 특례)</td><td>개인정보 아님 — 법 미적용</td></tr>
-  </tbody>
-</table>
-
-<h3>개인정보 보호책임자(CPO)</h3>
-<ul>
-  <li><strong>지정 의무</strong>: 개인정보를 처리하는 사업자는 CPO 지정 의무</li>
-  <li><strong>역할</strong>: 내부 관리계획 수립, 접근권한 관리, 직원 교육, 개인정보 파기 확인, 처리방침 점검</li>
-</ul>
-
-<h3>국외이전</h3>
-<ul>
-  <li>정보주체 동의 또는 법적 근거 필요</li>
-  <li>이전 받는 국가·기관의 안전성 확보 조치 의무</li>
-  <li>계약서에 보호 조치 명시</li>
-</ul>
-
-<h3>개인정보 유출 통지·신고</h3>
-<ul>
-  <li><strong>정보주체 통지</strong>: 유출 인지 후 <strong>72시간 이내</strong> (통지 내용: 유출 항목, 시점, 경위, 조치사항, 담당자)</li>
-  <li><strong>개인정보보호위원회 신고</strong>: 1천 명 이상 유출 시 즉시 신고</li>
-</ul>
-
-<h3>개인정보 처리 위탁</h3>
-<ul>
-  <li>수탁자 선정 기준 마련, 정기적 관리·감독 의무</li>
-  <li>위탁 계약서 필수 항목: 위탁 업무 목적·범위, 재위탁 제한, 안전조치 의무, 비밀유지, 손해배상</li>
-  <li>수탁자의 개인정보 침해 시 위탁자도 책임</li>
-</ul>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'network-act',
-    chapterLabel: '정보통신망법·전자서명법',
-    keywords: ['정보통신망법', '정보통신서비스', '청소년 보호', '스팸', '해킹', '악성프로그램', '개인정보', 'ISMS', '침해사고', '전자서명법', '공인전자서명', '공동인증서', '타임스탬프', '전자문서'],
-    content: `
-<h3>정보통신망법 주요 내용</h3>
-
-<h4>정보통신서비스 제공자 의무</h4>
-<ul>
-  <li>개인정보 보호 (수집·이용·제공·파기)</li>
-  <li>청소년 유해 정보 차단</li>
-  <li>광고성 정보 규제 준수</li>
-  <li>침해사고 신고 의무</li>
-</ul>
-
-<h4>스팸(영리목적 광고성 정보) 규제</h4>
-<ul>
-  <li>수신 <strong>동의 없는 전송 금지</strong></li>
-  <li>야간(21:00~08:00) 전송 금지 (별도 동의 필요)</li>
-  <li>수신거부 수단 제공 의무</li>
-  <li>광고임을 표시 의무</li>
-</ul>
-
-<h4>사이버 침해 행위 금지 및 벌칙</h4>
-<table>
-  <thead><tr><th>금지 행위</th><th>벌칙</th></tr></thead>
-  <tbody>
-    <tr><td>해킹 — 권한 없이 정보통신망 침입</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td></tr>
-    <tr><td>악성프로그램 유포</td><td>7년 이하 징역 또는 7천만원 이하 벌금</td></tr>
-    <tr><td>DDoS 공격 — 장애 유발</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td></tr>
-    <tr><td>스팸 전송</td><td>3천만원 이하 과태료</td></tr>
-  </tbody>
-</table>
-
-<h4>ISMS 의무 인증 대상 (정보통신망법 기준)</h4>
-<ul>
-  <li>ISP: 기간통신사업자 (KT, SKT, LGU+ 등)</li>
-  <li>IDC: 인터넷데이터센터</li>
-  <li>정보통신서비스 제공자: 연간 매출액 <strong>100억 원 이상</strong> 또는 일일평균 이용자 수 <strong>100만 명 이상</strong></li>
-  <li>병원: 일일평균 이용자 수 100만 명 이상</li>
-</ul>
-
-<h3>전자서명법</h3>
-
-<h4>전자서명의 법적 효력</h4>
-<ul>
-  <li>법령에서 서명·기명날인을 요구하는 경우, 전자서명으로 대체 가능 (법적 효력 동일)</li>
-  <li>전자문서는 서면과 동일한 효력</li>
-</ul>
-
-<h4>공동인증서 (구 공인인증서)</h4>
-<ul>
-  <li>2020년 전자서명법 개정으로 <strong>공인인증서 법적 우대 폐지</strong></li>
-  <li>공인인증서 독점 지위 없어짐 → 다양한 전자서명 수단 (PASS, 카카오, 네이버 등) 법적 인정</li>
-  <li>기존 공인인증서는 '공동인증서'로 명칭 변경, 계속 사용 가능</li>
-</ul>
-
-<h4>전자서명인증사업자</h4>
-<ul>
-  <li>임의 인정제: KISA 평가·인정 → 신뢰 서비스 목록 공고</li>
-  <li>평가 기준: 기술적·운영적 보안 수준</li>
-</ul>
-
-<h4>타임스탬프</h4>
-<ul>
-  <li>전자문서·전자서명의 <strong>존재 증명</strong> (특정 시점에 존재했음을 증명)</li>
-  <li>법적 효력: 서명 시점 증명, 위변조 탐지</li>
-  <li>TSA (Time Stamping Authority): 공인 타임스탬프 발급 기관</li>
-</ul>
-
-<h3>출제 포인트</h3>
-<ul>
-  <li>광고성 정보는 수신 동의, 광고 표시, 수신거부 수단 제공 여부를 함께 본다.</li>
-  <li>해킹과 악성프로그램 유포는 정보통신망법상 금지행위로 형사처벌 대상이다.</li>
-  <li>전자서명법 개정 후 공인인증서의 독점적 지위가 사라졌고, 기존 명칭은 공동인증서로 바뀌었다.</li>
-  <li>타임스탬프는 전자문서나 전자서명이 특정 시점에 존재했다는 사실을 증명하는 수단이다.</li>
-</ul>
-
-<h3>자주 나오는 오답 함정</h3>
-<table>
-  <thead><tr><th>함정</th><th>정리</th></tr></thead>
-  <tbody>
-    <tr><td>전자서명과 암호화 혼동</td><td>전자서명은 무결성·인증·부인방지, 암호화는 기밀성 중심</td></tr>
-    <tr><td>공인인증서 법적 우대</td><td>2020년 개정으로 우대가 폐지되었고 다양한 전자서명 수단이 인정된다</td></tr>
-    <tr><td>스팸 규제 요건 누락</td><td>동의, 표시, 수신거부, 야간 전송 제한을 묶어서 확인한다</td></tr>
   </tbody>
 </table>
     `,
@@ -4419,6 +4100,304 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li><strong>탐지</strong>: 사용자 행위 분석(UBA/UEBA), 이상 접근 모니터링, DLP</li>
   <li><strong>예방</strong>: 최소 권한 원칙, 직무 분리, 보안 인식 교육</li>
   <li><strong>대응</strong>: 사고 조사 절차, 법적 증거 확보, 인사·법적 조치</li>
+</ul>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'law-overview',
+    chapterLabel: '정보보호 법체계 개요',
+    keywords: ['정보보호법', '개인정보보호법', '정보통신망법', '전자서명법', '사이버보안', '법체계', '행정법', '형사법', '과태료', '과징금', '벌칙', '신고의무', '침해사고'],
+    content: `
+<h3>국내 정보보호 관련 법률 체계</h3>
+<table>
+  <thead><tr><th>법률명</th><th>소관부처</th><th>주요 규율 대상</th><th>핵심 내용</th></tr></thead>
+  <tbody>
+    <tr><td><strong>개인정보 보호법</strong></td><td>개인정보보호위원회</td><td>개인정보 처리 전반</td><td>개인정보 수집·이용·제공·파기, 정보주체 권리, 안전조치 의무</td></tr>
+    <tr><td><strong>정보통신망 이용촉진 및 정보보호 등에 관한 법률</strong></td><td>과기부·방통위</td><td>정보통신서비스 제공자</td><td>스팸 규제, 해킹·악성프로그램 금지, ISMS 의무, 침해사고 신고</td></tr>
+    <tr><td><strong>정보통신기반 보호법</strong></td><td>과기부</td><td>주요정보통신기반시설</td><td>보호계획 수립, 취약점 분석·평가, 침해사고 신고</td></tr>
+    <tr><td><strong>전자서명법</strong></td><td>과기부</td><td>전자서명·공인인증</td><td>전자서명 법적 효력, 전자서명인증사업자 평가·인정</td></tr>
+    <tr><td><strong>전자금융거래법</strong></td><td>금융위</td><td>전자금융</td><td>금융 분야 전자거래 보안 기준, 금융사고 신고 의무</td></tr>
+    <tr><td><strong>클라우드컴퓨팅법</strong></td><td>과기부</td><td>클라우드 보안</td><td>클라우드서비스 보안인증, 공공기관 이용 기준</td></tr>
+  </tbody>
+</table>
+
+<h3>제재 유형</h3>
+<table>
+  <thead><tr><th>제재 유형</th><th>종류</th><th>주요 위반 사례</th></tr></thead>
+  <tbody>
+    <tr><td><strong>형사처벌</strong></td><td>징역·벌금</td><td>해킹, 개인정보 대규모 유출·불법 제공, 악성프로그램 유포</td></tr>
+    <tr><td><strong>행정제재 — 과징금</strong></td><td>매출액 비례 부과</td><td>안전조치 미이행으로 개인정보 유출, 동의 없는 개인정보 제3자 제공</td></tr>
+    <tr><td><strong>행정제재 — 과태료</strong></td><td>정액 부과</td><td>처리방침 미공개, 접속기록 미보관, 신고 의무 위반</td></tr>
+    <tr><td><strong>시정명령</strong></td><td>행정명령</td><td>위반 행위 중지, 개선 조치 이행 명령</td></tr>
+  </tbody>
+</table>
+
+<h3>침해사고 신고 의무</h3>
+<ul>
+  <li><strong>정보통신서비스 제공자</strong>: 침해사고 발생 인지 후 <strong>24시간 이내</strong> 과학기술정보통신부장관 또는 KISA에 신고</li>
+  <li><strong>주요정보통신기반시설 운영기관</strong>: 침해사고 인지 시 관계 행정기관, 수사기관 또는 KISA에 통지</li>
+  <li><strong>개인정보 유출</strong>: 정보주체에게 72시간 이내 통지. 1천 명 이상, 민감정보·고유식별정보, 외부 불법 접근에 의한 유출 중 하나에 해당하면 72시간 이내 개인정보보호위원회 또는 KISA에 신고</li>
+</ul>
+
+<h3>주요 기관 역할</h3>
+<ul>
+  <li><strong>KISA (한국인터넷진흥원)</strong>: 인터넷침해대응센터 운영, 침해사고 분석·대응, ISMS 인증 심사</li>
+  <li><strong>개인정보보호위원회</strong>: 개인정보 보호법 집행, 과징금·과태료 부과, 법령 해석</li>
+  <li><strong>CSIRT (Computer Security Incident Response Team)</strong>: 기관·기업 내 침해사고 대응팀, 탐지·분석·복구</li>
+</ul>
+
+<h3>출제 포인트</h3>
+<ul>
+  <li>개인정보 보호법은 모든 개인정보처리자에게 적용되는 일반법 성격이 강하다.</li>
+  <li>정보통신망법은 정보통신서비스 제공자의 망 이용, 침해사고, 스팸, ISMS 의무와 자주 연결된다.</li>
+  <li>정보통신기반 보호법은 주요정보통신기반시설의 지정, 보호계획, 취약점 분석·평가가 핵심이다.</li>
+  <li>과징금은 매출액 비례 제재, 과태료는 행정질서벌 성격의 정액 제재로 구분한다.</li>
+</ul>
+
+<h3>자주 나오는 오답 함정</h3>
+<table>
+  <thead><tr><th>함정</th><th>정리</th></tr></thead>
+  <tbody>
+    <tr><td>과태료와 과징금 혼동</td><td>과징금은 위반행위 관련 매출액 기준, 과태료는 신고·공개 등 의무 위반에 자주 출제</td></tr>
+    <tr><td>신고 대상 기관 혼동</td><td>개인정보 유출 신고는 개인정보보호위원회 또는 KISA, 정보통신서비스 제공자의 침해사고 신고는 과학기술정보통신부장관 또는 KISA가 대상이다. 주요정보통신기반시설은 관계 행정기관, 수사기관 또는 KISA에 통지한다.</td></tr>
+    <tr><td>법률 적용 대상 혼동</td><td>개인정보 보호법은 일반 개인정보 처리, 기반보호법은 주요정보통신기반시설 중심</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'network-act',
+    chapterLabel: '정보통신망법·전자서명법',
+    keywords: ['정보통신망법', '정보통신서비스', '청소년 보호', '스팸', '해킹', '악성프로그램', '개인정보', 'ISMS', '침해사고', '전자서명법', '공인전자서명', '공동인증서', '타임스탬프', '전자문서'],
+    content: `
+<h3>정보통신망법 주요 내용</h3>
+
+<h4>정보통신서비스 제공자 의무</h4>
+<ul>
+  <li>개인정보 보호 (수집·이용·제공·파기)</li>
+  <li>청소년 유해 정보 차단</li>
+  <li>광고성 정보 규제 준수</li>
+  <li>침해사고 신고 의무</li>
+</ul>
+
+<h4>스팸(영리목적 광고성 정보) 규제</h4>
+<ul>
+  <li>수신 <strong>동의 없는 전송 금지</strong></li>
+  <li>야간(21:00~08:00) 전송 금지 (별도 동의 필요)</li>
+  <li>수신거부 수단 제공 의무</li>
+  <li>광고임을 표시 의무</li>
+</ul>
+
+<h4>사이버 침해 행위 금지 및 벌칙</h4>
+<table>
+  <thead><tr><th>금지 행위</th><th>벌칙</th></tr></thead>
+  <tbody>
+    <tr><td>해킹 — 권한 없이 정보통신망 침입</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td></tr>
+    <tr><td>악성프로그램 유포</td><td>7년 이하 징역 또는 7천만원 이하 벌금</td></tr>
+    <tr><td>DDoS 공격 — 장애 유발</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td></tr>
+    <tr><td>스팸 전송</td><td>3천만원 이하 과태료</td></tr>
+  </tbody>
+</table>
+
+<h4>ISMS 의무 인증 대상 (정보통신망법 기준)</h4>
+<ul>
+  <li>ISP: 기간통신사업자 (KT, SKT, LGU+ 등)</li>
+  <li>IDC: 인터넷데이터센터</li>
+  <li>정보통신서비스 제공자: 연간 매출액 <strong>100억 원 이상</strong> 또는 일일평균 이용자 수 <strong>100만 명 이상</strong></li>
+  <li>병원: 일일평균 이용자 수 100만 명 이상</li>
+</ul>
+
+<h3>전자서명법</h3>
+
+<h4>전자서명의 법적 효력</h4>
+<ul>
+  <li>법령에서 서명·기명날인을 요구하는 경우, 전자서명으로 대체 가능 (법적 효력 동일)</li>
+  <li>전자문서는 서면과 동일한 효력</li>
+</ul>
+
+<h4>공동인증서 (구 공인인증서)</h4>
+<ul>
+  <li>2020년 전자서명법 개정으로 <strong>공인인증서 법적 우대 폐지</strong></li>
+  <li>공인인증서 독점 지위 없어짐 → 다양한 전자서명 수단 (PASS, 카카오, 네이버 등) 법적 인정</li>
+  <li>기존 공인인증서는 '공동인증서'로 명칭 변경, 계속 사용 가능</li>
+</ul>
+
+<h4>전자서명인증사업자</h4>
+<ul>
+  <li>임의 인정제: KISA 평가·인정 → 신뢰 서비스 목록 공고</li>
+  <li>평가 기준: 기술적·운영적 보안 수준</li>
+</ul>
+
+<h4>타임스탬프</h4>
+<ul>
+  <li>전자문서·전자서명의 <strong>존재 증명</strong> (특정 시점에 존재했음을 증명)</li>
+  <li>법적 효력: 서명 시점 증명, 위변조 탐지</li>
+  <li>TSA (Time Stamping Authority): 공인 타임스탬프 발급 기관</li>
+</ul>
+
+<h3>출제 포인트</h3>
+<ul>
+  <li>광고성 정보는 수신 동의, 광고 표시, 수신거부 수단 제공 여부를 함께 본다.</li>
+  <li>해킹과 악성프로그램 유포는 정보통신망법상 금지행위로 형사처벌 대상이다.</li>
+  <li>전자서명법 개정 후 공인인증서의 독점적 지위가 사라졌고, 기존 명칭은 공동인증서로 바뀌었다.</li>
+  <li>타임스탬프는 전자문서나 전자서명이 특정 시점에 존재했다는 사실을 증명하는 수단이다.</li>
+</ul>
+
+<h3>자주 나오는 오답 함정</h3>
+<table>
+  <thead><tr><th>함정</th><th>정리</th></tr></thead>
+  <tbody>
+    <tr><td>전자서명과 암호화 혼동</td><td>전자서명은 무결성·인증·부인방지, 암호화는 기밀성 중심</td></tr>
+    <tr><td>공인인증서 법적 우대</td><td>2020년 개정으로 우대가 폐지되었고 다양한 전자서명 수단이 인정된다</td></tr>
+    <tr><td>스팸 규제 요건 누락</td><td>동의, 표시, 수신거부, 야간 전송 제한을 묶어서 확인한다</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'privacy-law',
+    chapterLabel: '개인정보 보호법',
+    keywords: ['개인정보', '개인정보보호법', '정보주체', '개인정보처리자', '수집', '이용', '제공', '파기', '동의', '열람', '정정', '삭제', '처리정지', '개인정보보호위원회', '고유식별정보', '민감정보'],
+    content: `
+<h3>개인정보 정의</h3>
+<p>살아있는 개인에 관한 정보로서 성명·주민등록번호·영상 등을 통해 개인을 알아볼 수 있는 정보. <strong>다른 정보와 쉽게 결합하여 알아볼 수 있는 정보도 포함.</strong></p>
+
+<h3>개인정보 처리 8대 원칙</h3>
+<ol>
+  <li>목적 명확화 — 처리 목적을 명확히 하여야 함</li>
+  <li>최소 수집 — 목적에 필요한 최소한의 정보만 수집</li>
+  <li>목적 외 이용 금지 — 명시한 목적 범위 내에서만 처리</li>
+  <li>처리의 적법성·정당성</li>
+  <li>정확성·최신성 보장</li>
+  <li>안전한 관리 — 안전성 확보 조치</li>
+  <li>비밀 보장</li>
+  <li>투명성 — 처리 현황 공개</li>
+</ol>
+
+<h3>정보주체 권리</h3>
+<table>
+  <thead><tr><th>권리</th><th>내용</th><th>행사 방법</th></tr></thead>
+  <tbody>
+    <tr><td><strong>열람권</strong></td><td>자신의 개인정보 처리 여부·내용 확인</td><td>서면·전자문서 등으로 개인정보처리자에게 청구</td></tr>
+    <tr><td><strong>정정권</strong></td><td>부정확한 정보 정정 요청</td><td>정정 완료 전까지 이용·제공 정지 가능</td></tr>
+    <tr><td><strong>삭제권</strong></td><td>불필요한 정보 삭제 요청</td><td>법령 의무 보존 정보는 삭제 제한</td></tr>
+    <tr><td><strong>처리정지권</strong></td><td>개인정보 처리 일시 정지 요청</td><td>정당한 사유 없으면 10일 이내 조치</td></tr>
+    <tr><td><strong>이동권</strong></td><td>본인 개인정보를 다른 기관으로 이전 요청</td><td>정보이동권(개정 추진 중)</td></tr>
+    <tr><td><strong>자동화 의사결정 거부권</strong></td><td>프로파일링·자동화 처리 결과에 이의 제기</td><td>설명 요구 및 거부 가능</td></tr>
+  </tbody>
+</table>
+
+<h3>수집·이용 법적 근거</h3>
+<ul>
+  <li>정보주체의 <strong>동의</strong></li>
+  <li><strong>계약 이행</strong>에 필요한 경우</li>
+  <li><strong>법령 의무</strong> 준수</li>
+  <li>공공기관의 <strong>법령 직무</strong> 수행</li>
+  <li>개인정보처리자의 <strong>정당한 이익</strong> (정보주체 권리보다 명백히 우선하는 경우)</li>
+</ul>
+
+<h3>민감정보·고유식별정보</h3>
+<p><strong>민감정보</strong> (별도 동의 필요): 사상·신념, 노동조합 가입·탈퇴, 정치적 견해, 건강·성생활, 유전정보, 범죄경력, 생체인식정보(지문·홍채·얼굴)</p>
+<p><strong>고유식별정보</strong> (법령 근거 또는 별도 동의 필요): 주민등록번호, 여권번호, 운전면허번호, 외국인등록번호. 주민등록번호는 법적 의무 없으면 처리 금지.</p>
+
+<h3>개인정보 처리방침 의무 공개 사항</h3>
+<ul>
+  <li>개인정보의 처리 목적</li>
+  <li>처리하는 개인정보의 항목</li>
+  <li>개인정보의 처리 및 보유 기간</li>
+  <li>개인정보의 제3자 제공 현황</li>
+  <li>개인정보 처리 위탁 현황</li>
+  <li>정보주체 권리·의무 및 행사 방법</li>
+  <li>개인정보 보호책임자 정보</li>
+</ul>
+
+<h3>파기 의무</h3>
+<p>보유 목적 달성 후 <strong>지체없이 파기</strong> (복구 불가능한 방법). 전자파일은 덮어쓰기·디가우징·파쇄, 출력물은 파쇄·소각.</p>
+
+<h3>주요 벌칙</h3>
+<table>
+  <thead><tr><th>위반 유형</th><th>형사처벌</th><th>과태료</th></tr></thead>
+  <tbody>
+    <tr><td>개인정보 불법 수집·제공·누설</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td><td>—</td></tr>
+    <tr><td>안전조치 의무 위반으로 유출</td><td>—</td><td>3천만원 이하</td></tr>
+    <tr><td>주민등록번호 암호화 미적용</td><td>—</td><td>3천만원 이하</td></tr>
+    <tr><td>처리방침 미공개</td><td>—</td><td>1천만원 이하</td></tr>
+    <tr><td>과징금</td><td colspan="2">위반행위 관련 매출액의 3% 이하</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'privacy-advanced',
+    chapterLabel: '개인정보 보호 심화',
+    keywords: ['개인정보 영향평가', 'PIA', '가명처리', '익명처리', '개인정보 보호책임자', 'CPO', 'DPO', '국외이전', '개인정보 유출통지', '72시간', '개인정보 안전성 확보조치', '개인정보 암호화', '개인정보 접근권한', '개인정보 접속기록'],
+    content: `
+<h3>개인정보 안전성 확보조치 기준</h3>
+<table>
+  <thead><tr><th>조치 항목</th><th>의무 내용</th></tr></thead>
+  <tbody>
+    <tr><td><strong>내부 관리계획</strong></td><td>수립·시행, 개인정보 보호책임자(CPO) 지정, 연 1회 이상 교육</td></tr>
+    <tr><td><strong>접근통제</strong></td><td>권한 없는 자의 접근 차단, 외부 접속 시 VPN 등 안전한 인증</td></tr>
+    <tr><td><strong>접근권한 관리</strong></td><td>최소 권한 부여, 퇴직자 즉시 권한 회수, 권한 부여·변경 기록 보관</td></tr>
+    <tr><td><strong>암호화</strong></td><td>고유식별정보·비밀번호·바이오정보 암호화 필수, 전송 시 SSL/TLS</td></tr>
+    <tr><td><strong>접속기록 보관</strong></td><td>최소 6개월 보관, 5만 명 이상 또는 민감정보 처리 시 2년</td></tr>
+    <tr><td><strong>접속기록 위변조 방지</strong></td><td>접속기록의 무결성 보장, 별도 저장·관리</td></tr>
+    <tr><td><strong>보안프로그램</strong></td><td>악성프로그램 방지 소프트웨어 설치·운영, 자동 업데이트</td></tr>
+    <tr><td><strong>물리보안</strong></td><td>출입 통제, 잠금장치, 개인정보 처리 구역 접근 제한</td></tr>
+  </tbody>
+</table>
+
+<h3>개인정보 영향평가(PIA)</h3>
+<ul>
+  <li><strong>대상</strong>: 공공기관이 대규모 개인정보 파일 구축·운용·변경 시 의무</li>
+  <li><strong>절차</strong>: 사전 계획 → 전문기관 평가 → 개인정보보호위원회 제출</li>
+  <li><strong>전문기관</strong>: KISA 등 개인정보보호위원회 지정 기관</li>
+  <li>민간기업은 의무 아니나 권고</li>
+</ul>
+
+<h3>가명처리 vs 익명처리 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>가명처리</th><th>익명처리</th></tr></thead>
+  <tbody>
+    <tr><td><strong>정의</strong></td><td>추가 정보 없이 개인 식별 불가하게 처리 (추가 정보 결합 시 재식별 가능)</td><td>모든 식별 가능 정보 제거, 재식별 불가</td></tr>
+    <tr><td><strong>활용 범위</strong></td><td>통계 작성, 과학적 연구, 공익적 기록 보존 — 동의 없이 활용 가능</td><td>개인정보 보호법 미적용, 자유롭게 활용</td></tr>
+    <tr><td><strong>재식별 위험</strong></td><td>추가 정보 결합 시 재식별 가능 — 안전조치 및 결합제한기관 이용 의무</td><td>재식별 불가 (사실상 불가능한 수준)</td></tr>
+    <tr><td><strong>법적 지위</strong></td><td>개인정보 보호법 일부 적용 (가명정보 특례)</td><td>개인정보 아님 — 법 미적용</td></tr>
+  </tbody>
+</table>
+
+<h3>개인정보 보호책임자(CPO)</h3>
+<ul>
+  <li><strong>지정 의무</strong>: 개인정보를 처리하는 사업자는 CPO 지정 의무</li>
+  <li><strong>역할</strong>: 내부 관리계획 수립, 접근권한 관리, 직원 교육, 개인정보 파기 확인, 처리방침 점검</li>
+</ul>
+
+<h3>국외이전</h3>
+<ul>
+  <li>정보주체 동의 또는 법적 근거 필요</li>
+  <li>이전 받는 국가·기관의 안전성 확보 조치 의무</li>
+  <li>계약서에 보호 조치 명시</li>
+</ul>
+
+<h3>개인정보 유출 통지·신고</h3>
+<ul>
+  <li><strong>정보주체 통지</strong>: 유출 인지 후 <strong>72시간 이내</strong> (통지 내용: 유출 항목, 시점, 경위, 조치사항, 담당자)</li>
+  <li><strong>개인정보보호위원회 신고</strong>: 1천 명 이상 유출 시 즉시 신고</li>
+</ul>
+
+<h3>개인정보 처리 위탁</h3>
+<ul>
+  <li>수탁자 선정 기준 마련, 정기적 관리·감독 의무</li>
+  <li>위탁 계약서 필수 항목: 위탁 업무 목적·범위, 재위탁 제한, 안전조치 의무, 비밀유지, 손해배상</li>
+  <li>수탁자의 개인정보 침해 시 위탁자도 책임</li>
 </ul>
     `,
   },
