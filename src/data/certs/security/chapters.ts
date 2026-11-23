@@ -6,6 +6,7 @@ export type Chapter = {
   subjectLabel: string;  // 표시명
   chapter: string;       // URL slug (access-control, ...)
   chapterLabel: string;  // 표시명
+  aliases?: string[];    // 합쳐진 예전 챕터 slug (옛 URL은 이 챕터로 넘긴다)
   content: string;       // HTML (prose 스타일 적용됨)
   keywords: string[];    // 기출문제 필터링용 키워드 (question 필드에 포함 여부)
 };
@@ -3427,10 +3428,12 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   {
     subject: 'law',
     subjectLabel: '정보보안관리및법규',
-    chapter: 'security-concepts',
-    chapterLabel: '정보보안 개요',
-    keywords: ['기밀성', '무결성', '가용성', 'CIA', '인증', '부인방지', '책임추적성', '보안 정책', '위협', '취약점', '위험', '자산', '보호대책', 'ISMS'],
+    chapter: 'security-management',
+    chapterLabel: '정보보안 개요·거버넌스',
+    aliases: ['security-concepts', 'compliance'],
+    keywords: ['기밀성', '무결성', '가용성', 'CIA', '인증', '부인방지', '책임추적성', '보안 정책', '위협', '취약점', '위험', '자산', '보호대책', 'ISMS', '정보보호 거버넌스', 'ISO 27001', 'PDCA', '보안 조직', 'CISO', '정보보호 정책', '변경관리', '형상관리', '인적보안', '보안 교육', '공급망 보안', '아웃소싱', '컴플라이언스', '개인정보 보호책임자', 'DPO', '내부감사', '외부감사', '보안감사', '보안사고 대응', 'IR', '사고 대응 절차', 'CERT', 'CSIRT', '법적 증거', '연계보관성', '정보보호 예산'],
     content: `
+<h2>정보보안 개요</h2>
 <h3>정보보안 3대 목표 (CIA Triad)</h3>
 <table>
   <thead><tr><th>목표</th><th>정의</th><th>위협 예시</th><th>보호수단</th></tr></thead>
@@ -3500,15 +3503,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li>국내: ISMS-P (개인정보보호 포함), 한국인터넷진흥원(KISA) 인증</li>
   <li>국제: ISO/IEC 27001</li>
 </ul>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'security-management',
-    chapterLabel: '정보보호 거버넌스·관리',
-    keywords: ['정보보호 거버넌스', 'ISMS', 'ISO 27001', 'PDCA', '보안 조직', 'CISO', '정보보호 정책', '변경관리', '형상관리', '인적보안', '보안 교육', '공급망 보안', '아웃소싱'],
-    content: `
+
+<h2>정보보호 거버넌스·관리</h2>
 <h3>정보보호 거버넌스</h3>
 <p>정보보호 거버넌스는 조직의 보안 목표가 경영 목표와 일치하도록 방향을 제시하고 통제하는 체계다.</p>
 <ul>
@@ -3615,15 +3611,86 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td>교육 대상 축소</td><td>보안 교육은 일반 사용자뿐 아니라 관리자·외주 인력까지 역할별로 수행한다</td></tr>
   </tbody>
 </table>
+
+<h2>컴플라이언스·거버넌스 실무</h2>
+<h3>컴플라이언스 관리 체계</h3>
+<ol>
+  <li><strong>법령 요구사항 파악</strong>: 적용 법률·규정 목록화, 의무사항 식별</li>
+  <li><strong>갭 분석</strong>: 현재 상태 vs 요구사항 비교, 미충족 영역 도출</li>
+  <li><strong>통제 구현</strong>: 정책·절차 수립, 기술적·관리적 통제 적용</li>
+  <li><strong>감사</strong>: 내부감사 및 외부감사를 통한 준수 여부 확인</li>
+  <li><strong>개선</strong>: 결함 시정, 지속적 개선 (PDCA)</li>
+</ol>
+
+<h3>사고 대응(Incident Response) 절차</h3>
+<table>
+  <thead><tr><th>단계</th><th>활동</th></tr></thead>
+  <tbody>
+    <tr><td><strong>1. 준비 (Preparation)</strong></td><td>IR 계획 수립, CSIRT 구성, 도구 준비, 교육·훈련</td></tr>
+    <tr><td><strong>2. 식별 (Identification)</strong></td><td>사고 탐지, 범위·영향 분석, 사고 분류 및 우선순위 결정</td></tr>
+    <tr><td><strong>3. 봉쇄 (Containment)</strong></td><td>단기 봉쇄(격리), 장기 봉쇄(취약점 제거), 추가 피해 방지</td></tr>
+    <tr><td><strong>4. 근절 (Eradication)</strong></td><td>악성코드 제거, 침해 원인 제거, 시스템 강화</td></tr>
+    <tr><td><strong>5. 복구 (Recovery)</strong></td><td>서비스 복구, 정상 운영 확인, 모니터링 강화</td></tr>
+    <tr><td><strong>6. 사후분석 (Lessons Learned)</strong></td><td>원인 분석, 개선사항 도출, 보고서 작성</td></tr>
+  </tbody>
+</table>
+
+<h3>CERT·CSIRT 운영</h3>
+<ul>
+  <li><strong>CERT</strong> (Computer Emergency Response Team): 침해사고 긴급 대응 조직</li>
+  <li><strong>CSIRT</strong> (Computer Security Incident Response Team): 보안 사고 전반 대응</li>
+  <li><strong>내부 CSIRT</strong>: 기업·기관 내부 운영, 자사 시스템 보호</li>
+  <li><strong>외부 CSIRT</strong>: KISA 인터넷침해대응센터 등 국가·공공 대응 조직</li>
+</ul>
+
+<h3>법적 증거 요건 (디지털 포렌식)</h3>
+<ul>
+  <li><strong>진정성 (Authenticity)</strong>: 증거가 주장하는 그것임을 입증</li>
+  <li><strong>무결성 (Integrity)</strong>: 수집 이후 변조 없음 (해시값으로 증명)</li>
+  <li><strong>신뢰성 (Reliability)</strong>: 수집·분석 방법의 신뢰성</li>
+  <li><strong>원본성 (Best Evidence)</strong>: 가능한 원본 사용</li>
+  <li><strong>연계보관성 (Chain of Custody)</strong>: 증거 수집~제출까지 관리 이력 기록</li>
+</ul>
+
+<h3>정보보호 예산</h3>
+<ul>
+  <li>정보보호 공시 대상 기업은 IT 투자 대비 정보보호 투자 비율, IT 인력 대비 정보보호 전담인력 비율을 매년 공시한다(정보보호산업법 제13조)</li>
+  <li>ROI (Return on Investment) 산정: 예상 손실 감소액 대비 보안 투자 비용</li>
+  <li>ALE (Annual Loss Expectancy) = SLE × ARO (단일 손실 기댓값 × 연간 발생률)</li>
+</ul>
+
+<h3>DPO (Data Protection Officer)</h3>
+<ul>
+  <li><strong>GDPR 의무 지정 기준</strong>: 공공기관, 대규모 민감정보 처리, 대규모 개인 모니터링 수행 기업</li>
+  <li><strong>독립성 보장</strong>: 업무 지시 금지, 해임 불가 원칙</li>
+  <li><strong>역할</strong>: GDPR 준수 감독, 개인정보 영향평가 자문, 감독기관 협력</li>
+</ul>
+
+<h3>공급망 보안 컴플라이언스</h3>
+<ul>
+  <li><strong>SBOM</strong> (Software Bill of Materials): 소프트웨어 구성 요소 목록 — 취약 컴포넌트 식별</li>
+  <li><strong>제3자 위험평가</strong>: 공급업체·파트너의 보안 수준 정기 평가</li>
+  <li><strong>SLA 보안 조항</strong>: 계약서에 보안 요구사항·사고 통지 의무·감사 권한 명시</li>
+</ul>
+
+<h3>내부자 위협 프로그램</h3>
+<ul>
+  <li><strong>탐지</strong>: 사용자 행위 분석(UBA/UEBA), 이상 접근 모니터링, DLP</li>
+  <li><strong>예방</strong>: 최소 권한 원칙, 직무 분리, 보안 인식 교육</li>
+  <li><strong>대응</strong>: 사고 조사 절차, 법적 증거 확보, 인사·법적 조치</li>
+</ul>
+
     `,
   },
   {
     subject: 'law',
     subjectLabel: '정보보안관리및법규',
     chapter: 'risk-management',
-    chapterLabel: '위험관리 개념',
-    keywords: ['위험관리', '위험분석', '위험평가', '위험식별', '자산식별', '위협분석', '취약점분석', '정량적', '정성적', 'ALE', 'SLE', 'ARO', 'EF', 'AV', 'ROI'],
+    chapterLabel: '위험관리',
+    aliases: ['risk-analysis', 'risk-treatment'],
+    keywords: ['위험관리', '위험분석', '위험평가', '위험식별', '자산식별', '위협분석', '취약점분석', '정량적', '정성적', 'ALE', 'SLE', 'ARO', 'EF', 'AV', 'ROI', '베이스라인 접근법', '상세 위험분석', '복합 접근법', '위험분석 방법론', 'CRAMM', 'OCTAVE', 'FMEA', 'FTA', '위협 모델링', 'STRIDE', 'DREAD', 'PASTA', 'Attack Tree', '위험수용', '위험회피', '위험전가', '위험감소', '위험처리', '잔여위험', '보안통제', '예방통제', '탐지통제', '교정통제', '억제통제', '복구통제', '관리적 통제', '기술적 통제', '물리적 통제'],
     content: `
+<h2>위험관리 개념</h2>
 <h3>위험관리 프로세스</h3>
 <p>위험관리는 조직의 정보자산을 보호하기 위해 위험을 식별·분석·평가·처리하는 반복적 과정이다.</p>
 <ol>
@@ -3688,15 +3755,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td>대책 비용 판단</td><td>대책 비용이 ALE 절감액보다 작을 때 도입 타당성이 높다</td></tr>
   </tbody>
 </table>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'risk-analysis',
-    chapterLabel: '위험분석 방법론',
-    keywords: ['베이스라인 접근법', '상세 위험분석', '복합 접근법', '위험분석 방법론', 'CRAMM', 'OCTAVE', 'FMEA', 'FTA', '위협 모델링', 'STRIDE', 'DREAD', 'PASTA', 'Attack Tree'],
-    content: `
+
+<h2>위험분석 방법론</h2>
 <h3>위험분석 접근법 비교</h3>
 <table>
   <thead><tr><th>접근법</th><th>방법</th><th>장점</th><th>단점</th><th>적용 시점</th></tr></thead>
@@ -3811,15 +3871,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td>STRIDE 항목 암기</td><td>위장·변조·부인·정보노출·서비스거부·권한상승 순서로 묶어 기억</td></tr>
   </tbody>
 </table>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'risk-treatment',
-    chapterLabel: '위험처리 전략',
-    keywords: ['위험수용', '위험회피', '위험전가', '위험감소', '위험처리', '잔여위험', '보안통제', '예방통제', '탐지통제', '교정통제', '억제통제', '복구통제', '관리적 통제', '기술적 통제', '물리적 통제'],
-    content: `
+
+<h2>위험처리 전략</h2>
 <h3>4가지 위험처리 전략</h3>
 <table>
   <thead><tr><th>전략</th><th>정의</th><th>예시</th><th>적용 기준</th></tr></thead>
@@ -3901,15 +3954,18 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td>통제 유형 혼동</td><td>방화벽은 예방, IDS는 탐지, 백업 복구는 교정·복구 통제</td></tr>
   </tbody>
 </table>
+
     `,
   },
   {
     subject: 'law',
     subjectLabel: '정보보안관리및법규',
     chapter: 'security-audit',
-    chapterLabel: '보안 감사·모니터링',
-    keywords: ['보안 감사', '로그', '감사 추적', 'SIEM', 'SOC', '취약점 스캔', '모의해킹', '침투테스트', 'CVE', 'CVSS', 'NVD', 'Nessus', '컴플라이언스', 'ISO 27001', 'CC 인증'],
+    chapterLabel: '보안 감사·물리적 보안',
+    aliases: ['physical-security'],
+    keywords: ['보안 감사', '로그', '감사 추적', 'SIEM', 'SOC', '취약점 스캔', '모의해킹', '침투테스트', 'CVE', 'CVSS', 'NVD', 'Nessus', '컴플라이언스', 'ISO 27001', 'CC 인증', '물리적 보안', '출입통제', '잠금장치', 'CCTV', '생체인식', '카드키', '맨트랩', '가드', '울타리', '조명', '데이터센터', '환경보안', '화재진압', '전력', 'UPS'],
     content: `
+<h2>보안 감사·모니터링</h2>
 <h3>보안 감사 유형</h3>
 <table>
   <thead><tr><th>유형</th><th>목적</th><th>주체</th><th>산출물</th></tr></thead>
@@ -3998,6 +4054,71 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li><strong>ISMS-P</strong>: 국내 정보보호 및 개인정보보호 관리체계 인증 (KISA). 의무 인증 대상 있음.</li>
   <li><strong>CC (Common Criteria, ISO 15408)</strong>: IT 제품·시스템 보안 기능 국제 평가 기준. EAL1~EAL7 등급.</li>
 </ul>
+
+<h2>물리적 보안</h2>
+<h3>물리적 보안 계층 구조</h3>
+<p>물리적 보안은 외부에서 내부로 갈수록 통제가 강화되는 동심원 구조(Defense in Depth)로 설계한다.</p>
+<table>
+  <thead><tr><th>계층</th><th>위치</th><th>수단</th></tr></thead>
+  <tbody>
+    <tr><td><strong>외부 경계</strong></td><td>부지 경계</td><td>울타리, 조명, 경비원(가드), CCTV, 차량 차단기</td></tr>
+    <tr><td><strong>건물 진입</strong></td><td>건물 출입구</td><td>잠금장치, 카드키, 경비 데스크, 방문자 등록</td></tr>
+    <tr><td><strong>내부 구역</strong></td><td>민감 구역</td><td>맨트랩(Mantrap), 생체인식, PIN 패드, 이중 인증</td></tr>
+    <tr><td><strong>장비 보호</strong></td><td>서버·장비</td><td>케이블 잠금(Kensington Lock), 랙 보안, 장비 봉인</td></tr>
+  </tbody>
+</table>
+
+<h3>출입통제 수단 비교</h3>
+<table>
+  <thead><tr><th>수단</th><th>보안 수준</th><th>비용</th><th>주요 취약점</th></tr></thead>
+  <tbody>
+    <tr><td><strong>카드키(RF/IC)</strong></td><td>중간</td><td>중간</td><td>카드 분실·도용, 클로닝 공격</td></tr>
+    <tr><td><strong>PIN/패스워드</strong></td><td>중간</td><td>낮음</td><td>숄더 서핑(어깨너머 훔쳐보기), 공유</td></tr>
+    <tr><td><strong>생체인식</strong></td><td>높음</td><td>높음</td><td>FAR/FRR(오인식/오거부), 스푸핑</td></tr>
+    <tr><td><strong>맨트랩(Mantrap)</strong></td><td>매우 높음</td><td>높음</td><td>운영 불편, 테일게이팅 완전 차단</td></tr>
+    <tr><td><strong>경비원(가드)</strong></td><td>높음 (판단력)</td><td>높음 (인건비)</td><td>사회공학에 취약, 24/7 운영 비용</td></tr>
+  </tbody>
+</table>
+
+<h4>맨트랩(Mantrap)</h4>
+<p>이중 문 구조 — 첫 번째 문이 닫혀야 두 번째 문 열림. 동시 2인 이상 진입 차단. 테일게이팅(꼬리잡기) 방지에 가장 효과적.</p>
+
+<h3>데이터센터 환경보안</h3>
+
+<h4>전력 보호</h4>
+<ul>
+  <li><strong>UPS(Uninterruptible Power Supply)</strong>: 순간 정전 대응, 발전기 가동까지 브리지 역할</li>
+  <li><strong>비상발전기</strong>: 장시간 정전 대비, 연료 비축</li>
+  <li><strong>이중 전원(Dual Power Feed)</strong>: 서로 다른 변전소 전원 사용</li>
+  <li>전력 이상(서지·낙뢰) 대비 SPD(서지보호장치)</li>
+</ul>
+
+<h4>냉각·환경</h4>
+<ul>
+  <li>적정 온도: 18~27°C (ASHRAE 권장)</li>
+  <li>적정 습도: 40~60% RH (정전기 방지)</li>
+  <li>핫 아일·콜드 아일(Hot/Cold Aisle) 분리 배치</li>
+</ul>
+
+<h4>화재진압 시스템</h4>
+<table>
+  <thead><tr><th>시스템</th><th>전산실 적합성</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td><strong>할론 대체제 (FM-200, Novec 1230)</strong></td><td>적합</td><td>청정소화약제. 잔류물 없음. 장비 손상 없음.</td></tr>
+    <tr><td><strong>이산화탄소(CO2)</strong></td><td>제한적</td><td>전기 화재 효과적. 밀폐 공간 인체 위험.</td></tr>
+    <tr><td><strong>스프링클러(물)</strong></td><td>부적합</td><td>전기장비 손상. 전산실에는 원칙적으로 미사용.</td></tr>
+    <tr><td><strong>조기연기감지(VESDA)</strong></td><td>적합</td><td>미세 연기 조기 탐지. 가스 소화 연동.</td></tr>
+  </tbody>
+</table>
+
+<h3>CCTV 및 기타 통제</h3>
+<ul>
+  <li><strong>CCTV</strong>: 억제(Deterrent) 및 탐지(Detective) 목적. 녹화 보관 기간 법규 준수. 사각지대 최소화.</li>
+  <li><strong>클린데스크 정책(Clean Desk Policy)</strong>: 퇴근 시 중요 문서·매체를 책상 위에 방치 금지. 잠금 보관.</li>
+  <li><strong>클린 스크린 정책</strong>: 자리 이탈 시 화면 잠금(Win+L 등).</li>
+  <li><strong>테이핑(Taping)</strong>: 노트북 카메라 차단용 물리적 커버 부착.</li>
+</ul>
+
     `,
   },
   {
@@ -4103,77 +4224,6 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   {
     subject: 'law',
     subjectLabel: '정보보안관리및법규',
-    chapter: 'physical-security',
-    chapterLabel: '물리적 보안',
-    keywords: ['물리적 보안', '출입통제', '잠금장치', 'CCTV', '생체인식', '카드키', '맨트랩', '가드', '울타리', '조명', '데이터센터', '환경보안', '화재진압', '전력', 'UPS'],
-    content: `
-<h3>물리적 보안 계층 구조</h3>
-<p>물리적 보안은 외부에서 내부로 갈수록 통제가 강화되는 동심원 구조(Defense in Depth)로 설계한다.</p>
-<table>
-  <thead><tr><th>계층</th><th>위치</th><th>수단</th></tr></thead>
-  <tbody>
-    <tr><td><strong>외부 경계</strong></td><td>부지 경계</td><td>울타리, 조명, 경비원(가드), CCTV, 차량 차단기</td></tr>
-    <tr><td><strong>건물 진입</strong></td><td>건물 출입구</td><td>잠금장치, 카드키, 경비 데스크, 방문자 등록</td></tr>
-    <tr><td><strong>내부 구역</strong></td><td>민감 구역</td><td>맨트랩(Mantrap), 생체인식, PIN 패드, 이중 인증</td></tr>
-    <tr><td><strong>장비 보호</strong></td><td>서버·장비</td><td>케이블 잠금(Kensington Lock), 랙 보안, 장비 봉인</td></tr>
-  </tbody>
-</table>
-
-<h3>출입통제 수단 비교</h3>
-<table>
-  <thead><tr><th>수단</th><th>보안 수준</th><th>비용</th><th>주요 취약점</th></tr></thead>
-  <tbody>
-    <tr><td><strong>카드키(RF/IC)</strong></td><td>중간</td><td>중간</td><td>카드 분실·도용, 클로닝 공격</td></tr>
-    <tr><td><strong>PIN/패스워드</strong></td><td>중간</td><td>낮음</td><td>숄더 서핑(어깨너머 훔쳐보기), 공유</td></tr>
-    <tr><td><strong>생체인식</strong></td><td>높음</td><td>높음</td><td>FAR/FRR(오인식/오거부), 스푸핑</td></tr>
-    <tr><td><strong>맨트랩(Mantrap)</strong></td><td>매우 높음</td><td>높음</td><td>운영 불편, 테일게이팅 완전 차단</td></tr>
-    <tr><td><strong>경비원(가드)</strong></td><td>높음 (판단력)</td><td>높음 (인건비)</td><td>사회공학에 취약, 24/7 운영 비용</td></tr>
-  </tbody>
-</table>
-
-<h4>맨트랩(Mantrap)</h4>
-<p>이중 문 구조 — 첫 번째 문이 닫혀야 두 번째 문 열림. 동시 2인 이상 진입 차단. 테일게이팅(꼬리잡기) 방지에 가장 효과적.</p>
-
-<h3>데이터센터 환경보안</h3>
-
-<h4>전력 보호</h4>
-<ul>
-  <li><strong>UPS(Uninterruptible Power Supply)</strong>: 순간 정전 대응, 발전기 가동까지 브리지 역할</li>
-  <li><strong>비상발전기</strong>: 장시간 정전 대비, 연료 비축</li>
-  <li><strong>이중 전원(Dual Power Feed)</strong>: 서로 다른 변전소 전원 사용</li>
-  <li>전력 이상(서지·낙뢰) 대비 SPD(서지보호장치)</li>
-</ul>
-
-<h4>냉각·환경</h4>
-<ul>
-  <li>적정 온도: 18~27°C (ASHRAE 권장)</li>
-  <li>적정 습도: 40~60% RH (정전기 방지)</li>
-  <li>핫 아일·콜드 아일(Hot/Cold Aisle) 분리 배치</li>
-</ul>
-
-<h4>화재진압 시스템</h4>
-<table>
-  <thead><tr><th>시스템</th><th>전산실 적합성</th><th>특징</th></tr></thead>
-  <tbody>
-    <tr><td><strong>할론 대체제 (FM-200, Novec 1230)</strong></td><td>적합</td><td>청정소화약제. 잔류물 없음. 장비 손상 없음.</td></tr>
-    <tr><td><strong>이산화탄소(CO2)</strong></td><td>제한적</td><td>전기 화재 효과적. 밀폐 공간 인체 위험.</td></tr>
-    <tr><td><strong>스프링클러(물)</strong></td><td>부적합</td><td>전기장비 손상. 전산실에는 원칙적으로 미사용.</td></tr>
-    <tr><td><strong>조기연기감지(VESDA)</strong></td><td>적합</td><td>미세 연기 조기 탐지. 가스 소화 연동.</td></tr>
-  </tbody>
-</table>
-
-<h3>CCTV 및 기타 통제</h3>
-<ul>
-  <li><strong>CCTV</strong>: 억제(Deterrent) 및 탐지(Detective) 목적. 녹화 보관 기간 법규 준수. 사각지대 최소화.</li>
-  <li><strong>클린데스크 정책(Clean Desk Policy)</strong>: 퇴근 시 중요 문서·매체를 책상 위에 방치 금지. 잠금 보관.</li>
-  <li><strong>클린 스크린 정책</strong>: 자리 이탈 시 화면 잠금(Win+L 등).</li>
-  <li><strong>테이핑(Taping)</strong>: 노트북 카메라 차단용 물리적 커버 부착.</li>
-</ul>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
     chapter: 'forensics',
     chapterLabel: '디지털 포렌식',
     keywords: ['디지털 포렌식', '증거 수집', '무결성', '연계보관성', 'Chain of Custody', '해시', '이미징', '휘발성 데이터', '비휘발성 데이터', '파일 시스템', '타임스탬프', '슬랙 공간', '메타데이터', 'dd', 'FTK', 'EnCase'],
@@ -4259,9 +4309,11 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subject: 'law',
     subjectLabel: '정보보안관리및법규',
     chapter: 'isms-p',
-    chapterLabel: 'ISMS·ISMS-P',
-    keywords: ['ISMS', 'ISMS-P', '정보보호 관리체계', '인증', 'ISMS 의무대상', '인증심사', '사후심사', '갱신심사', '관리체계', '보호대책', '개인정보처리단계', '결함', '시정조치'],
+    chapterLabel: '정보보호 인증·국제 표준',
+    aliases: ['certification', 'international-standard'],
+    keywords: ['ISMS', 'ISMS-P', '정보보호 관리체계', '인증', 'ISMS 의무대상', '인증심사', '사후심사', '갱신심사', '관리체계', '보호대책', '개인정보처리단계', '결함', '시정조치', 'CC 인증', 'CC인증', 'Common Criteria', '공통평가기준', 'EAL', '보호프로파일', 'PP', '보안목표명세서', 'ST', 'TOE', '보안기능 확인서', 'KCMVP', '검증필 암호모듈', 'CSAP', '클라우드 보안인증', '보안인증', 'ISO 27001', 'ISO 27002', 'NIST CSF', 'NIST SP 800', 'COBIT', 'ITIL', 'PCI-DSS', 'GDPR', 'SOC 2', 'CC', 'FIPS', 'Zero Trust Architecture'],
     content: `
+<h2>ISMS·ISMS-P</h2>
 <h3>ISMS vs ISMS-P 비교</h3>
 <table>
   <thead><tr><th>구분</th><th>ISMS</th><th>ISMS-P</th></tr></thead>
@@ -4316,15 +4368,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li><strong>결함</strong>: 인증 기준을 충족하지 못하는 사항 — 시정 후 인증 가능</li>
   <li>결함은 보완조치 계획을 세워 정해진 기간(고시 기준 40일, 재조치 요구 시 추가 60일) 안에 이행하고 확인받아야 인증된다</li>
 </ul>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'certification',
-    chapterLabel: '정보보호 제품인증·클라우드 보안인증',
-    keywords: ['CC 인증', 'CC인증', 'Common Criteria', '공통평가기준', 'EAL', '보호프로파일', 'PP', '보안목표명세서', 'ST', 'TOE', '보안기능 확인서', 'KCMVP', '검증필 암호모듈', 'CSAP', '클라우드 보안인증', '보안인증'],
-    content: `
+
+<h2>정보보호 제품인증·클라우드 보안인증</h2>
 <h3>정보보호 인증제도 한눈에 보기</h3>
 <table>
   <thead><tr><th>인증</th><th>대상</th><th>핵심</th></tr></thead>
@@ -4356,15 +4401,148 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 
 <h3>주요정보통신기반시설 보호제도</h3>
 <p>국가 안전·경제에 중대한 영향을 주는 시설을 지정해 취약점 분석·평가와 보호대책을 의무화하는 제도. 세부 내용은 주요정보통신기반시설 보호 챕터에 정리했다.</p>
+
+<h2>국제 표준·프레임워크</h2>
+<h3>국제 보안 표준 비교</h3>
+<table>
+  <thead><tr><th>표준</th><th>목적</th><th>범위</th><th>인증여부</th><th>주요 적용 분야</th></tr></thead>
+  <tbody>
+    <tr><td><strong>ISO/IEC 27001</strong></td><td>ISMS 요구사항</td><td>조직 전체</td><td>인증 가능</td><td>전 산업</td></tr>
+    <tr><td><strong>ISO/IEC 27002</strong></td><td>보안 통제 가이드</td><td>통제 항목</td><td>인증 없음</td><td>전 산업 (실무 참조)</td></tr>
+    <tr><td><strong>NIST CSF</strong></td><td>사이버보안 프레임워크</td><td>위험 기반</td><td>인증 없음</td><td>미국 민간·공공</td></tr>
+    <tr><td><strong>COBIT</strong></td><td>IT 거버넌스</td><td>IT 전반</td><td>인증 가능</td><td>IT 감사·거버넌스</td></tr>
+    <tr><td><strong>PCI-DSS</strong></td><td>카드 결제 보안</td><td>결제 시스템</td><td>준수 확인</td><td>카드사·가맹점</td></tr>
+    <tr><td><strong>SOC 2</strong></td><td>서비스 보안 감사</td><td>클라우드·서비스</td><td>보고서 발행</td><td>SaaS·클라우드</td></tr>
+  </tbody>
+</table>
+
+<h3>ISO/IEC 27001:2022</h3>
+<ul>
+  <li>4개 필수 조항 (4~10조): 조직 상황, 리더십, 계획, 지원, 운영, 성과 평가, 개선</li>
+  <li>Annex A: 4개 테마 93개 통제 항목 (조직·인원·물리·기술)</li>
+  <li>PDCA (Plan-Do-Check-Act) 사이클 기반</li>
+  <li>위험 평가 → 위험 처리 계획 → 통제 구현 → 모니터링</li>
+</ul>
+
+<h3>ISO/IEC 27002:2022</h3>
+<ul>
+  <li>4개 테마: <strong>조직적 통제</strong>(37개), <strong>인원 통제</strong>(8개), <strong>물리적 통제</strong>(14개), <strong>기술적 통제</strong>(34개)</li>
+  <li>각 통제 항목: 통제명, 목적, 지침, 기타 정보</li>
+  <li>ISO 27001 Annex A의 실무 구현 가이드</li>
+</ul>
+
+<h3>NIST CSF 2.0</h3>
+<p>6개 핵심 기능 (Core Function):</p>
+<ul>
+  <li><strong>Govern (거버넌스)</strong>: 사이버보안 전략·정책·역할 수립 — 2.0 신규 추가</li>
+  <li><strong>Identify (식별)</strong>: 자산·위험 파악</li>
+  <li><strong>Protect (보호)</strong>: 보호대책 구현</li>
+  <li><strong>Detect (탐지)</strong>: 이상 징후 탐지</li>
+  <li><strong>Respond (대응)</strong>: 사고 대응</li>
+  <li><strong>Recover (복구)</strong>: 서비스 복구·개선</li>
+</ul>
+
+<h3>GDPR (EU 일반 데이터 보호 규정)</h3>
+<ul>
+  <li>EU·EEA 시민의 개인정보 보호</li>
+  <li><strong>역외 적용</strong>: EU 시민 대상 서비스 제공 시 국내 기업도 적용</li>
+  <li><strong>위반 제재</strong>: 전 세계 연간 매출액 4% 또는 2천만 유로 중 높은 금액</li>
+  <li>DPO (Data Protection Officer) 지정 의무 (일정 규모 이상)</li>
+  <li>72시간 이내 감독기관 유출 통지</li>
+</ul>
+
+<h3>PCI-DSS v4.0</h3>
+<ul>
+  <li>12개 요구사항: 네트워크 보안, 카드정보 보호, 취약점 관리, 접근통제, 모니터링, 보안정책 등</li>
+  <li>카드사·가맹점·서비스 제공자 적용</li>
+  <li>연 1회 이상 심사 또는 자가 평가</li>
+</ul>
+
+<h3>CC (Common Criteria, ISO/IEC 15408)</h3>
+<ul>
+  <li>보안 제품(IT 제품·시스템)의 보안 기능을 평가하는 국제 기준</li>
+  <li><strong>EAL (Evaluation Assurance Level)</strong>: 1~7 등급 (숫자 클수록 높은 보증)</li>
+  <li>EAL4: 일반 상업용 제품 수준, EAL7: 형식 검증 최고 수준</li>
+  <li>PP (Protection Profile): 제품 유형별 보안 요구사항 명세</li>
+  <li>ST (Security Target): 특정 제품의 보안 목표 명세</li>
+</ul>
+
+<h3>Zero Trust Architecture (NIST SP 800-207)</h3>
+<ul>
+  <li>원칙: <strong>Never Trust, Always Verify</strong> — 내부망도 신뢰 불가</li>
+  <li>모든 접근 요청을 사용자·기기·네트워크 위치 무관하게 검증</li>
+  <li>핵심 원칙: 최소 권한, 마이크로세그멘테이션, 지속적 인증·인가·모니터링</li>
+  <li>구성요소: ID 공급자, 정책 엔진, 정책 관리자, 정책 시행 포인트(PEP)</li>
+</ul>
+
     `,
   },
   {
     subject: 'law',
     subjectLabel: '정보보안관리및법규',
-    chapter: 'critical-infrastructure',
-    chapterLabel: '주요정보통신기반시설 보호',
-    keywords: ['주요정보통신기반시설', '취약점 분석', '보호계획', '정보공유', 'ISAC', '제어시스템', 'SCADA', 'ICS', '사이버위기경보', '사이버위기관리', '관계중앙행정기관'],
+    chapter: 'law-overview',
+    chapterLabel: '정보보호 법체계·기반시설·산업법',
+    aliases: ['critical-infrastructure', 'cyber-laws'],
+    keywords: ['정보보호법', '개인정보보호법', '정보통신망법', '전자서명법', '사이버보안', '법체계', '행정법', '형사법', '과태료', '과징금', '벌칙', '신고의무', '침해사고', '주요정보통신기반시설', '취약점 분석', '보호계획', '정보공유', 'ISAC', '제어시스템', 'SCADA', 'ICS', '사이버위기경보', '사이버위기관리', '관계중앙행정기관', '정보보호산업법', '정보보호산업의 진흥에 관한 법률', '정보보호 공시', '공시', '3,000억', '정보보호 준비도', '클라우드컴퓨팅법', '클라우드컴퓨팅 발전 및 이용자 보호', '이용자 정보', '클라우드컴퓨팅서비스 제공자', '반환', '임치', '저장되는 국가', 'CISO', '정보보호 최고책임자'],
     content: `
+<h2>정보보호 법체계 개요</h2>
+<h3>국내 정보보호 관련 법률 체계</h3>
+<table>
+  <thead><tr><th>법률명</th><th>소관부처</th><th>주요 규율 대상</th><th>핵심 내용</th></tr></thead>
+  <tbody>
+    <tr><td><strong>개인정보 보호법</strong></td><td>개인정보보호위원회</td><td>개인정보 처리 전반</td><td>개인정보 수집·이용·제공·파기, 정보주체 권리, 안전조치 의무</td></tr>
+    <tr><td><strong>정보통신망 이용촉진 및 정보보호 등에 관한 법률</strong></td><td>과학기술정보통신부·방송미디어통신위원회·개인정보보호위원회(분야별)</td><td>정보통신서비스 제공자</td><td>스팸 규제, 해킹·악성프로그램 금지, ISMS 의무, 침해사고 신고</td></tr>
+    <tr><td><strong>정보통신기반 보호법</strong></td><td>과기부</td><td>주요정보통신기반시설</td><td>보호계획 수립, 취약점 분석·평가, 침해사고 신고</td></tr>
+    <tr><td><strong>전자서명법</strong></td><td>과기부</td><td>전자서명·전자서명인증사업자</td><td>전자서명 법적 효력, 전자서명인증사업자 평가·인정</td></tr>
+    <tr><td><strong>전자금융거래법</strong></td><td>금융위</td><td>전자금융</td><td>금융 분야 전자거래 보안 기준, 금융사고 신고 의무</td></tr>
+    <tr><td><strong>클라우드컴퓨팅법</strong></td><td>과기부</td><td>클라우드 보안</td><td>클라우드서비스 보안인증, 공공기관 이용 기준</td></tr>
+  </tbody>
+</table>
+
+<h3>제재 유형</h3>
+<table>
+  <thead><tr><th>제재 유형</th><th>종류</th><th>주요 위반 사례</th></tr></thead>
+  <tbody>
+    <tr><td><strong>형사처벌</strong></td><td>징역·벌금</td><td>해킹, 개인정보 대규모 유출·불법 제공, 악성프로그램 유포</td></tr>
+    <tr><td><strong>행정제재 — 과징금</strong></td><td>매출액 비례 부과</td><td>안전조치 미이행으로 개인정보 유출, 동의 없는 개인정보 제3자 제공</td></tr>
+    <tr><td><strong>행정제재 — 과태료</strong></td><td>정액 부과</td><td>처리방침 미공개, 접속기록 미보관, 신고 의무 위반</td></tr>
+    <tr><td><strong>시정명령</strong></td><td>행정명령</td><td>위반 행위 중지, 개선 조치 이행 명령</td></tr>
+  </tbody>
+</table>
+
+<h3>침해사고 신고 의무</h3>
+<ul>
+  <li><strong>정보통신서비스 제공자</strong>: 침해사고 발생 인지 후 <strong>24시간 이내</strong> 과학기술정보통신부장관 또는 KISA에 신고</li>
+  <li><strong>주요정보통신기반시설 운영기관</strong>: 침해사고 인지 시 관계 행정기관, 수사기관 또는 KISA에 통지</li>
+  <li><strong>개인정보 유출</strong>: 정보주체에게 72시간 이내 통지. 1천 명 이상, 민감정보·고유식별정보, 외부 불법 접근에 의한 유출 중 하나에 해당하면 72시간 이내 개인정보보호위원회 또는 KISA에 신고</li>
+</ul>
+
+<h3>주요 기관 역할</h3>
+<ul>
+  <li><strong>KISA (한국인터넷진흥원)</strong>: 인터넷침해대응센터 운영, 침해사고 분석·대응, ISMS 인증 심사</li>
+  <li><strong>개인정보보호위원회</strong>: 개인정보 보호법 집행, 과징금·과태료 부과, 법령 해석</li>
+  <li><strong>CSIRT (Computer Security Incident Response Team)</strong>: 기관·기업 내 침해사고 대응팀, 탐지·분석·복구</li>
+</ul>
+
+<h3>출제 포인트</h3>
+<ul>
+  <li>개인정보 보호법은 모든 개인정보처리자에게 적용되는 일반법 성격이 강하다.</li>
+  <li>정보통신망법은 정보통신서비스 제공자의 망 이용, 침해사고, 스팸, ISMS 의무와 자주 연결된다.</li>
+  <li>정보통신기반 보호법은 주요정보통신기반시설의 지정, 보호계획, 취약점 분석·평가가 핵심이다.</li>
+  <li>과징금은 매출액 비례 제재, 과태료는 행정질서벌 성격의 정액 제재로 구분한다.</li>
+</ul>
+
+<h3>자주 나오는 오답 함정</h3>
+<table>
+  <thead><tr><th>함정</th><th>정리</th></tr></thead>
+  <tbody>
+    <tr><td>과태료와 과징금 혼동</td><td>개인정보 보호법 과징금은 전체 매출액 기준(위반과 관련 없는 매출 제외) 3% 이하, 과태료는 신고·공개 등 의무 위반에 자주 출제</td></tr>
+    <tr><td>신고 대상 기관 혼동</td><td>개인정보 유출 신고는 개인정보보호위원회 또는 KISA, 정보통신서비스 제공자의 침해사고 신고는 과학기술정보통신부장관 또는 KISA가 대상이다. 주요정보통신기반시설은 관계 행정기관, 수사기관 또는 KISA에 통지한다.</td></tr>
+    <tr><td>법률 적용 대상 혼동</td><td>개인정보 보호법은 일반 개인정보 처리, 기반보호법은 주요정보통신기반시설 중심</td></tr>
+  </tbody>
+</table>
+
+<h2>주요정보통신기반시설 보호</h2>
 <h3>주요정보통신기반시설 정의·지정</h3>
 <p>전자적 침해가 발생할 경우 국가안보, 경제, 사회, 국민 생활에 심각한 피해를 줄 우려가 있는 정보통신기반시설. <strong>관계중앙행정기관의 장이 지정.</strong></p>
 
@@ -4444,234 +4622,56 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td>IT와 OT 보안 동일시</td><td>OT는 장기 운영과 가용성 우선 특성 때문에 패치와 중단이 어렵다</td></tr>
   </tbody>
 </table>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'international-standard',
-    chapterLabel: '국제 표준·프레임워크',
-    keywords: ['ISO 27001', 'ISO 27002', 'NIST CSF', 'NIST SP 800', 'COBIT', 'ITIL', 'PCI-DSS', 'GDPR', 'SOC 2', 'CC', 'Common Criteria', 'EAL', 'FIPS', 'Zero Trust Architecture'],
-    content: `
-<h3>국제 보안 표준 비교</h3>
+
+<h2>정보보호산업법·클라우드컴퓨팅법</h2>
+<h3>정보보호산업법 — 정보보호 공시 (제13조, 시행령 제8조)</h3>
+<ul>
+  <li>정보통신서비스 제공자는 정보보호 투자·인력 현황, 인증 등 정보보호 현황을 자율적으로 공개할 수 있다. 자율 공시하면 ISMS 인증 수수료 30% 할인</li>
+  <li><strong>의무 공시 대상</strong>
+    <ul>
+      <li>회선설비를 보유한 기간통신사업자, 집적정보통신시설(IDC) 사업자, 상급종합병원, 클라우드(IaaS) 서비스 제공자</li>
+      <li>CISO 지정·신고 의무가 있는 상장법인 중 직전 사업연도 매출액 <strong>3,000억원 이상</strong></li>
+      <li>정보통신서비스 일일평균 이용자 <strong>100만명 이상</strong></li>
+      <li>제외: 공공기관, (일부 유형의) 소기업, 금융회사 등</li>
+    </ul>
+  </li>
+  <li>공시 내용: IT 투자 대비 정보보호 투자, IT 인력 대비 정보보호 전담인력, 정보보호 인증·평가·점검, 이용자 보호 활동</li>
+  <li>CISO가 주관하고 최고경영자 확인을 거쳐 <strong>매년 6월 30일까지</strong> 전자공시시스템에 입력. 과학기술정보통신부장관이 내용을 검증하고 수정을 요청할 수 있다</li>
+</ul>
+
+<h3>정보통신망법 — 정보보호 최고책임자(CISO, 제45조의3)</h3>
+<ul>
+  <li>정보통신서비스 제공자는 대통령령 기준의 임원을 CISO로 지정하고 과학기술정보통신부장관에게 신고(일정 규모 이하는 신고 면제)</li>
+  <li>일정 규모 이상은 CISO가 다른 업무를 겸직할 수 없다</li>
+  <li>업무: 정보보호 계획 수립·시행, 실태 감사, 위험 식별·대책, 교육·모의훈련, 인력·예산, 이사회 보고 등</li>
+</ul>
+
+<h3>클라우드컴퓨팅법 (클라우드컴퓨팅 발전 및 이용자 보호에 관한 법률)</h3>
 <table>
-  <thead><tr><th>표준</th><th>목적</th><th>범위</th><th>인증여부</th><th>주요 적용 분야</th></tr></thead>
+  <thead><tr><th>조문</th><th>내용</th></tr></thead>
   <tbody>
-    <tr><td><strong>ISO/IEC 27001</strong></td><td>ISMS 요구사항</td><td>조직 전체</td><td>인증 가능</td><td>전 산업</td></tr>
-    <tr><td><strong>ISO/IEC 27002</strong></td><td>보안 통제 가이드</td><td>통제 항목</td><td>인증 없음</td><td>전 산업 (실무 참조)</td></tr>
-    <tr><td><strong>NIST CSF</strong></td><td>사이버보안 프레임워크</td><td>위험 기반</td><td>인증 없음</td><td>미국 민간·공공</td></tr>
-    <tr><td><strong>COBIT</strong></td><td>IT 거버넌스</td><td>IT 전반</td><td>인증 가능</td><td>IT 감사·거버넌스</td></tr>
-    <tr><td><strong>PCI-DSS</strong></td><td>카드 결제 보안</td><td>결제 시스템</td><td>준수 확인</td><td>카드사·가맹점</td></tr>
-    <tr><td><strong>SOC 2</strong></td><td>서비스 보안 감사</td><td>클라우드·서비스</td><td>보고서 발행</td><td>SaaS·클라우드</td></tr>
+    <tr><td>제2조 정의</td><td>클라우드컴퓨팅: 집적·공유된 정보통신자원을 이용자 요구에 따라 정보통신망으로 신축적으로 이용하게 하는 정보처리체계. 이용자 정보: 이용자가 제공자의 자원에 저장한, 이용자가 소유·관리하는 정보</td></tr>
+    <tr><td>제4조 관계</td><td>다른 법률보다 우선 적용하되, 개인정보 보호는 개인정보 보호법·정보통신망법에 따른다</td></tr>
+    <tr><td>제23조의2 보안인증</td><td>CSAP. 유효기간 5년 이내</td></tr>
+    <tr><td>제25조 침해사고 통지</td><td>침해사고 발생, 이용자 정보 유출, 사전 예고 없는 일정 기간 이상 서비스 중단 시 지체 없이 이용자에게 통지. 유출은 즉시 과학기술정보통신부장관에게도 통지</td></tr>
+    <tr><td>제26조 정보 공개</td><td>이용자는 이용자 정보가 <strong>저장되는 국가의 명칭</strong>을 알려 달라고 요구할 수 있다</td></tr>
+    <tr><td>제27조 이용자 정보 보호</td><td>법원 제출명령·영장 없이는 이용자 동의 없이 제3자 제공·목적 외 이용 금지. 계약 종료·사업 종료 시 이용자 정보를 <strong>반환하고 파기</strong>(계약으로 달리 정하면 그에 따름)</td></tr>
+    <tr><td>제28조 임치</td><td>제공자와 이용자가 합의해 이용자 정보를 전문기관(수치인)에 맡길 수 있다</td></tr>
+    <tr><td>제29조 손해배상</td><td>제공자가 고의·과실이 없음을 입증하지 못하면 책임(입증책임 전환)</td></tr>
   </tbody>
 </table>
 
-<h3>ISO/IEC 27001:2022</h3>
-<ul>
-  <li>4개 필수 조항 (4~10조): 조직 상황, 리더십, 계획, 지원, 운영, 성과 평가, 개선</li>
-  <li>Annex A: 4개 테마 93개 통제 항목 (조직·인원·물리·기술)</li>
-  <li>PDCA (Plan-Do-Check-Act) 사이클 기반</li>
-  <li>위험 평가 → 위험 처리 계획 → 통제 구현 → 모니터링</li>
-</ul>
-
-<h3>ISO/IEC 27002:2022</h3>
-<ul>
-  <li>4개 테마: <strong>조직적 통제</strong>(37개), <strong>인원 통제</strong>(8개), <strong>물리적 통제</strong>(14개), <strong>기술적 통제</strong>(34개)</li>
-  <li>각 통제 항목: 통제명, 목적, 지침, 기타 정보</li>
-  <li>ISO 27001 Annex A의 실무 구현 가이드</li>
-</ul>
-
-<h3>NIST CSF 2.0</h3>
-<p>6개 핵심 기능 (Core Function):</p>
-<ul>
-  <li><strong>Govern (거버넌스)</strong>: 사이버보안 전략·정책·역할 수립 — 2.0 신규 추가</li>
-  <li><strong>Identify (식별)</strong>: 자산·위험 파악</li>
-  <li><strong>Protect (보호)</strong>: 보호대책 구현</li>
-  <li><strong>Detect (탐지)</strong>: 이상 징후 탐지</li>
-  <li><strong>Respond (대응)</strong>: 사고 대응</li>
-  <li><strong>Recover (복구)</strong>: 서비스 복구·개선</li>
-</ul>
-
-<h3>GDPR (EU 일반 데이터 보호 규정)</h3>
-<ul>
-  <li>EU·EEA 시민의 개인정보 보호</li>
-  <li><strong>역외 적용</strong>: EU 시민 대상 서비스 제공 시 국내 기업도 적용</li>
-  <li><strong>위반 제재</strong>: 전 세계 연간 매출액 4% 또는 2천만 유로 중 높은 금액</li>
-  <li>DPO (Data Protection Officer) 지정 의무 (일정 규모 이상)</li>
-  <li>72시간 이내 감독기관 유출 통지</li>
-</ul>
-
-<h3>PCI-DSS v4.0</h3>
-<ul>
-  <li>12개 요구사항: 네트워크 보안, 카드정보 보호, 취약점 관리, 접근통제, 모니터링, 보안정책 등</li>
-  <li>카드사·가맹점·서비스 제공자 적용</li>
-  <li>연 1회 이상 심사 또는 자가 평가</li>
-</ul>
-
-<h3>CC (Common Criteria, ISO/IEC 15408)</h3>
-<ul>
-  <li>보안 제품(IT 제품·시스템)의 보안 기능을 평가하는 국제 기준</li>
-  <li><strong>EAL (Evaluation Assurance Level)</strong>: 1~7 등급 (숫자 클수록 높은 보증)</li>
-  <li>EAL4: 일반 상업용 제품 수준, EAL7: 형식 검증 최고 수준</li>
-  <li>PP (Protection Profile): 제품 유형별 보안 요구사항 명세</li>
-  <li>ST (Security Target): 특정 제품의 보안 목표 명세</li>
-</ul>
-
-<h3>Zero Trust Architecture (NIST SP 800-207)</h3>
-<ul>
-  <li>원칙: <strong>Never Trust, Always Verify</strong> — 내부망도 신뢰 불가</li>
-  <li>모든 접근 요청을 사용자·기기·네트워크 위치 무관하게 검증</li>
-  <li>핵심 원칙: 최소 권한, 마이크로세그멘테이션, 지속적 인증·인가·모니터링</li>
-  <li>구성요소: ID 공급자, 정책 엔진, 정책 관리자, 정책 시행 포인트(PEP)</li>
-</ul>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'compliance',
-    chapterLabel: '컴플라이언스·거버넌스 실무',
-    keywords: ['컴플라이언스', '개인정보 보호책임자', 'DPO', '내부감사', '외부감사', '보안감사', '보안사고 대응', 'IR', '사고 대응 절차', 'CERT', 'CSIRT', '법적 증거', '연계보관성', '정보보호 예산'],
-    content: `
-<h3>컴플라이언스 관리 체계</h3>
-<ol>
-  <li><strong>법령 요구사항 파악</strong>: 적용 법률·규정 목록화, 의무사항 식별</li>
-  <li><strong>갭 분석</strong>: 현재 상태 vs 요구사항 비교, 미충족 영역 도출</li>
-  <li><strong>통제 구현</strong>: 정책·절차 수립, 기술적·관리적 통제 적용</li>
-  <li><strong>감사</strong>: 내부감사 및 외부감사를 통한 준수 여부 확인</li>
-  <li><strong>개선</strong>: 결함 시정, 지속적 개선 (PDCA)</li>
-</ol>
-
-<h3>사고 대응(Incident Response) 절차</h3>
-<table>
-  <thead><tr><th>단계</th><th>활동</th></tr></thead>
-  <tbody>
-    <tr><td><strong>1. 준비 (Preparation)</strong></td><td>IR 계획 수립, CSIRT 구성, 도구 준비, 교육·훈련</td></tr>
-    <tr><td><strong>2. 식별 (Identification)</strong></td><td>사고 탐지, 범위·영향 분석, 사고 분류 및 우선순위 결정</td></tr>
-    <tr><td><strong>3. 봉쇄 (Containment)</strong></td><td>단기 봉쇄(격리), 장기 봉쇄(취약점 제거), 추가 피해 방지</td></tr>
-    <tr><td><strong>4. 근절 (Eradication)</strong></td><td>악성코드 제거, 침해 원인 제거, 시스템 강화</td></tr>
-    <tr><td><strong>5. 복구 (Recovery)</strong></td><td>서비스 복구, 정상 운영 확인, 모니터링 강화</td></tr>
-    <tr><td><strong>6. 사후분석 (Lessons Learned)</strong></td><td>원인 분석, 개선사항 도출, 보고서 작성</td></tr>
-  </tbody>
-</table>
-
-<h3>CERT·CSIRT 운영</h3>
-<ul>
-  <li><strong>CERT</strong> (Computer Emergency Response Team): 침해사고 긴급 대응 조직</li>
-  <li><strong>CSIRT</strong> (Computer Security Incident Response Team): 보안 사고 전반 대응</li>
-  <li><strong>내부 CSIRT</strong>: 기업·기관 내부 운영, 자사 시스템 보호</li>
-  <li><strong>외부 CSIRT</strong>: KISA 인터넷침해대응센터 등 국가·공공 대응 조직</li>
-</ul>
-
-<h3>법적 증거 요건 (디지털 포렌식)</h3>
-<ul>
-  <li><strong>진정성 (Authenticity)</strong>: 증거가 주장하는 그것임을 입증</li>
-  <li><strong>무결성 (Integrity)</strong>: 수집 이후 변조 없음 (해시값으로 증명)</li>
-  <li><strong>신뢰성 (Reliability)</strong>: 수집·분석 방법의 신뢰성</li>
-  <li><strong>원본성 (Best Evidence)</strong>: 가능한 원본 사용</li>
-  <li><strong>연계보관성 (Chain of Custody)</strong>: 증거 수집~제출까지 관리 이력 기록</li>
-</ul>
-
-<h3>정보보호 예산</h3>
-<ul>
-  <li>정보보호 공시 대상 기업은 IT 투자 대비 정보보호 투자 비율, IT 인력 대비 정보보호 전담인력 비율을 매년 공시한다(정보보호산업법 제13조)</li>
-  <li>ROI (Return on Investment) 산정: 예상 손실 감소액 대비 보안 투자 비용</li>
-  <li>ALE (Annual Loss Expectancy) = SLE × ARO (단일 손실 기댓값 × 연간 발생률)</li>
-</ul>
-
-<h3>DPO (Data Protection Officer)</h3>
-<ul>
-  <li><strong>GDPR 의무 지정 기준</strong>: 공공기관, 대규모 민감정보 처리, 대규모 개인 모니터링 수행 기업</li>
-  <li><strong>독립성 보장</strong>: 업무 지시 금지, 해임 불가 원칙</li>
-  <li><strong>역할</strong>: GDPR 준수 감독, 개인정보 영향평가 자문, 감독기관 협력</li>
-</ul>
-
-<h3>공급망 보안 컴플라이언스</h3>
-<ul>
-  <li><strong>SBOM</strong> (Software Bill of Materials): 소프트웨어 구성 요소 목록 — 취약 컴포넌트 식별</li>
-  <li><strong>제3자 위험평가</strong>: 공급업체·파트너의 보안 수준 정기 평가</li>
-  <li><strong>SLA 보안 조항</strong>: 계약서에 보안 요구사항·사고 통지 의무·감사 권한 명시</li>
-</ul>
-
-<h3>내부자 위협 프로그램</h3>
-<ul>
-  <li><strong>탐지</strong>: 사용자 행위 분석(UBA/UEBA), 이상 접근 모니터링, DLP</li>
-  <li><strong>예방</strong>: 최소 권한 원칙, 직무 분리, 보안 인식 교육</li>
-  <li><strong>대응</strong>: 사고 조사 절차, 법적 증거 확보, 인사·법적 조치</li>
-</ul>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'law-overview',
-    chapterLabel: '정보보호 법체계 개요',
-    keywords: ['정보보호법', '개인정보보호법', '정보통신망법', '전자서명법', '사이버보안', '법체계', '행정법', '형사법', '과태료', '과징금', '벌칙', '신고의무', '침해사고'],
-    content: `
-<h3>국내 정보보호 관련 법률 체계</h3>
-<table>
-  <thead><tr><th>법률명</th><th>소관부처</th><th>주요 규율 대상</th><th>핵심 내용</th></tr></thead>
-  <tbody>
-    <tr><td><strong>개인정보 보호법</strong></td><td>개인정보보호위원회</td><td>개인정보 처리 전반</td><td>개인정보 수집·이용·제공·파기, 정보주체 권리, 안전조치 의무</td></tr>
-    <tr><td><strong>정보통신망 이용촉진 및 정보보호 등에 관한 법률</strong></td><td>과학기술정보통신부·방송미디어통신위원회·개인정보보호위원회(분야별)</td><td>정보통신서비스 제공자</td><td>스팸 규제, 해킹·악성프로그램 금지, ISMS 의무, 침해사고 신고</td></tr>
-    <tr><td><strong>정보통신기반 보호법</strong></td><td>과기부</td><td>주요정보통신기반시설</td><td>보호계획 수립, 취약점 분석·평가, 침해사고 신고</td></tr>
-    <tr><td><strong>전자서명법</strong></td><td>과기부</td><td>전자서명·전자서명인증사업자</td><td>전자서명 법적 효력, 전자서명인증사업자 평가·인정</td></tr>
-    <tr><td><strong>전자금융거래법</strong></td><td>금융위</td><td>전자금융</td><td>금융 분야 전자거래 보안 기준, 금융사고 신고 의무</td></tr>
-    <tr><td><strong>클라우드컴퓨팅법</strong></td><td>과기부</td><td>클라우드 보안</td><td>클라우드서비스 보안인증, 공공기관 이용 기준</td></tr>
-  </tbody>
-</table>
-
-<h3>제재 유형</h3>
-<table>
-  <thead><tr><th>제재 유형</th><th>종류</th><th>주요 위반 사례</th></tr></thead>
-  <tbody>
-    <tr><td><strong>형사처벌</strong></td><td>징역·벌금</td><td>해킹, 개인정보 대규모 유출·불법 제공, 악성프로그램 유포</td></tr>
-    <tr><td><strong>행정제재 — 과징금</strong></td><td>매출액 비례 부과</td><td>안전조치 미이행으로 개인정보 유출, 동의 없는 개인정보 제3자 제공</td></tr>
-    <tr><td><strong>행정제재 — 과태료</strong></td><td>정액 부과</td><td>처리방침 미공개, 접속기록 미보관, 신고 의무 위반</td></tr>
-    <tr><td><strong>시정명령</strong></td><td>행정명령</td><td>위반 행위 중지, 개선 조치 이행 명령</td></tr>
-  </tbody>
-</table>
-
-<h3>침해사고 신고 의무</h3>
-<ul>
-  <li><strong>정보통신서비스 제공자</strong>: 침해사고 발생 인지 후 <strong>24시간 이내</strong> 과학기술정보통신부장관 또는 KISA에 신고</li>
-  <li><strong>주요정보통신기반시설 운영기관</strong>: 침해사고 인지 시 관계 행정기관, 수사기관 또는 KISA에 통지</li>
-  <li><strong>개인정보 유출</strong>: 정보주체에게 72시간 이내 통지. 1천 명 이상, 민감정보·고유식별정보, 외부 불법 접근에 의한 유출 중 하나에 해당하면 72시간 이내 개인정보보호위원회 또는 KISA에 신고</li>
-</ul>
-
-<h3>주요 기관 역할</h3>
-<ul>
-  <li><strong>KISA (한국인터넷진흥원)</strong>: 인터넷침해대응센터 운영, 침해사고 분석·대응, ISMS 인증 심사</li>
-  <li><strong>개인정보보호위원회</strong>: 개인정보 보호법 집행, 과징금·과태료 부과, 법령 해석</li>
-  <li><strong>CSIRT (Computer Security Incident Response Team)</strong>: 기관·기업 내 침해사고 대응팀, 탐지·분석·복구</li>
-</ul>
-
-<h3>출제 포인트</h3>
-<ul>
-  <li>개인정보 보호법은 모든 개인정보처리자에게 적용되는 일반법 성격이 강하다.</li>
-  <li>정보통신망법은 정보통신서비스 제공자의 망 이용, 침해사고, 스팸, ISMS 의무와 자주 연결된다.</li>
-  <li>정보통신기반 보호법은 주요정보통신기반시설의 지정, 보호계획, 취약점 분석·평가가 핵심이다.</li>
-  <li>과징금은 매출액 비례 제재, 과태료는 행정질서벌 성격의 정액 제재로 구분한다.</li>
-</ul>
-
-<h3>자주 나오는 오답 함정</h3>
-<table>
-  <thead><tr><th>함정</th><th>정리</th></tr></thead>
-  <tbody>
-    <tr><td>과태료와 과징금 혼동</td><td>개인정보 보호법 과징금은 전체 매출액 기준(위반과 관련 없는 매출 제외) 3% 이하, 과태료는 신고·공개 등 의무 위반에 자주 출제</td></tr>
-    <tr><td>신고 대상 기관 혼동</td><td>개인정보 유출 신고는 개인정보보호위원회 또는 KISA, 정보통신서비스 제공자의 침해사고 신고는 과학기술정보통신부장관 또는 KISA가 대상이다. 주요정보통신기반시설은 관계 행정기관, 수사기관 또는 KISA에 통지한다.</td></tr>
-    <tr><td>법률 적용 대상 혼동</td><td>개인정보 보호법은 일반 개인정보 처리, 기반보호법은 주요정보통신기반시설 중심</td></tr>
-  </tbody>
-</table>
     `,
   },
   {
     subject: 'law',
     subjectLabel: '정보보안관리및법규',
     chapter: 'network-act',
-    chapterLabel: '정보통신망법·전자서명법',
-    keywords: ['정보통신망법', '정보통신서비스', '청소년 보호', '스팸', '해킹', '악성프로그램', '개인정보', 'ISMS', '침해사고', '전자서명법', '공인전자서명', '공동인증서', '타임스탬프', '전자문서', '특례'],
+    chapterLabel: '정보통신망법·전자서명법·사이버 윤리',
+    aliases: ['cyber-ethics'],
+    keywords: ['정보통신망법', '정보통신서비스', '청소년 보호', '스팸', '해킹', '악성프로그램', '개인정보', 'ISMS', '침해사고', '전자서명법', '공인전자서명', '공동인증서', '타임스탬프', '전자문서', '특례', '사이버 윤리', '정보윤리', '저작권', 'DRM', '워터마킹', '핑거프린팅', '불법정보', '명예훼손', '사이버 폭력', '사이버 사기', '침해행위', '제48조', '제49조', '정당한 접근권한', '비밀 침해', '개인정보취급자', '금지행위', '제59조', '속이는 행위'],
     content: `
+<h2>정보통신망법·전자서명법</h2>
 <h3>정보통신망법 주요 내용</h3>
 
 <h4>정보통신서비스 제공자 의무</h4>
@@ -4758,60 +4758,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 
 <h3>개인정보 규정의 이동</h3>
 <p>예전 정보통신망법의 정보통신서비스 제공자 개인정보 보호 규정은 2020년 8월 개인정보 보호법으로 옮겨졌고(특례 규정), 2023년 개정으로 특례가 일반 규정에 통합됐다. 지금은 개인정보 처리 문제는 개인정보 보호법으로, 망 침해·침해사고·스팸·ISMS·CISO는 정보통신망법으로 구분해 본다.</p>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'cyber-laws',
-    chapterLabel: '정보보호산업법·클라우드컴퓨팅법',
-    keywords: ['정보보호산업법', '정보보호산업의 진흥에 관한 법률', '정보보호 공시', '공시', '3,000억', '정보보호 준비도', '클라우드컴퓨팅법', '클라우드컴퓨팅 발전 및 이용자 보호', '이용자 정보', '클라우드컴퓨팅서비스 제공자', '반환', '임치', '저장되는 국가', 'CISO', '정보보호 최고책임자'],
-    content: `
-<h3>정보보호산업법 — 정보보호 공시 (제13조, 시행령 제8조)</h3>
-<ul>
-  <li>정보통신서비스 제공자는 정보보호 투자·인력 현황, 인증 등 정보보호 현황을 자율적으로 공개할 수 있다. 자율 공시하면 ISMS 인증 수수료 30% 할인</li>
-  <li><strong>의무 공시 대상</strong>
-    <ul>
-      <li>회선설비를 보유한 기간통신사업자, 집적정보통신시설(IDC) 사업자, 상급종합병원, 클라우드(IaaS) 서비스 제공자</li>
-      <li>CISO 지정·신고 의무가 있는 상장법인 중 직전 사업연도 매출액 <strong>3,000억원 이상</strong></li>
-      <li>정보통신서비스 일일평균 이용자 <strong>100만명 이상</strong></li>
-      <li>제외: 공공기관, (일부 유형의) 소기업, 금융회사 등</li>
-    </ul>
-  </li>
-  <li>공시 내용: IT 투자 대비 정보보호 투자, IT 인력 대비 정보보호 전담인력, 정보보호 인증·평가·점검, 이용자 보호 활동</li>
-  <li>CISO가 주관하고 최고경영자 확인을 거쳐 <strong>매년 6월 30일까지</strong> 전자공시시스템에 입력. 과학기술정보통신부장관이 내용을 검증하고 수정을 요청할 수 있다</li>
-</ul>
 
-<h3>정보통신망법 — 정보보호 최고책임자(CISO, 제45조의3)</h3>
-<ul>
-  <li>정보통신서비스 제공자는 대통령령 기준의 임원을 CISO로 지정하고 과학기술정보통신부장관에게 신고(일정 규모 이하는 신고 면제)</li>
-  <li>일정 규모 이상은 CISO가 다른 업무를 겸직할 수 없다</li>
-  <li>업무: 정보보호 계획 수립·시행, 실태 감사, 위험 식별·대책, 교육·모의훈련, 인력·예산, 이사회 보고 등</li>
-</ul>
-
-<h3>클라우드컴퓨팅법 (클라우드컴퓨팅 발전 및 이용자 보호에 관한 법률)</h3>
-<table>
-  <thead><tr><th>조문</th><th>내용</th></tr></thead>
-  <tbody>
-    <tr><td>제2조 정의</td><td>클라우드컴퓨팅: 집적·공유된 정보통신자원을 이용자 요구에 따라 정보통신망으로 신축적으로 이용하게 하는 정보처리체계. 이용자 정보: 이용자가 제공자의 자원에 저장한, 이용자가 소유·관리하는 정보</td></tr>
-    <tr><td>제4조 관계</td><td>다른 법률보다 우선 적용하되, 개인정보 보호는 개인정보 보호법·정보통신망법에 따른다</td></tr>
-    <tr><td>제23조의2 보안인증</td><td>CSAP. 유효기간 5년 이내</td></tr>
-    <tr><td>제25조 침해사고 통지</td><td>침해사고 발생, 이용자 정보 유출, 사전 예고 없는 일정 기간 이상 서비스 중단 시 지체 없이 이용자에게 통지. 유출은 즉시 과학기술정보통신부장관에게도 통지</td></tr>
-    <tr><td>제26조 정보 공개</td><td>이용자는 이용자 정보가 <strong>저장되는 국가의 명칭</strong>을 알려 달라고 요구할 수 있다</td></tr>
-    <tr><td>제27조 이용자 정보 보호</td><td>법원 제출명령·영장 없이는 이용자 동의 없이 제3자 제공·목적 외 이용 금지. 계약 종료·사업 종료 시 이용자 정보를 <strong>반환하고 파기</strong>(계약으로 달리 정하면 그에 따름)</td></tr>
-    <tr><td>제28조 임치</td><td>제공자와 이용자가 합의해 이용자 정보를 전문기관(수치인)에 맡길 수 있다</td></tr>
-    <tr><td>제29조 손해배상</td><td>제공자가 고의·과실이 없음을 입증하지 못하면 책임(입증책임 전환)</td></tr>
-  </tbody>
-</table>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'cyber-ethics',
-    chapterLabel: '사이버 윤리·정보통신망 침해행위',
-    keywords: ['사이버 윤리', '정보윤리', '저작권', 'DRM', '워터마킹', '핑거프린팅', '불법정보', '명예훼손', '사이버 폭력', '사이버 사기', '침해행위', '제48조', '제49조', '악성프로그램', '정당한 접근권한', '비밀 침해', '개인정보취급자', '금지행위', '제59조', '속이는 행위'],
-    content: `
+<h2>사이버 윤리·정보통신망 침해행위</h2>
 <h3>사이버 윤리와 사이버 범죄</h3>
 <ul>
   <li>사이버 윤리: 정보통신망을 이용할 때 지켜야 할 책임·존중·정의·해악 금지의 원칙</li>
@@ -4856,6 +4804,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li>정당한 권한 없이 또는 허용된 권한을 넘어 다른 사람의 개인정보를 이용·훼손·멸실·변경·위조·유출하는 행위</li>
 </ol>
 <p>①은 3년 이하 징역 또는 3천만원 이하 벌금, ②③은 5년 이하 징역 또는 5천만원 이하 벌금이다.</p>
+
     `,
   },
   {
@@ -4863,8 +4812,10 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안관리및법규',
     chapter: 'privacy-law',
     chapterLabel: '개인정보 보호법',
-    keywords: ['개인정보', '개인정보보호법', '개인정보 보호법', '정보주체', '개인정보처리자', '수집', '이용', '제3자 제공', '파기', '동의', '열람', '정정', '삭제', '처리정지', '전송 요구', '자동화된 결정', '개인정보 보호위원회', '고유식별정보', '민감정보', '주민등록번호', '14세 미만', '법정대리인', '처리방침', '과징금', '정당한 이익'],
+    aliases: ['privacy-advanced'],
+    keywords: ['개인정보', '개인정보보호법', '개인정보 보호법', '정보주체', '개인정보처리자', '수집', '이용', '제3자 제공', '파기', '동의', '열람', '정정', '삭제', '처리정지', '전송 요구', '자동화된 결정', '개인정보 보호위원회', '고유식별정보', '민감정보', '주민등록번호', '14세 미만', '법정대리인', '처리방침', '과징금', '정당한 이익', '안전성 확보조치', '내부 관리계획', '접속기록', '개인정보처리시스템', '인터넷망 차단', '개인정보 영향평가', '영향평가', '가명처리', '가명정보', '익명처리', '결합전문기관', '개인정보 보호책임자', 'CPO', '국외 이전', '국외이전', '유출 통지', '유출 신고', '72시간', '1천명', '위탁', '수탁자'],
     content: `
+<h2>개인정보 보호법</h2>
 <p>기준: 개인정보 보호법(2026. 9. 11. 시행본). 2023년 전면 개정으로 정보통신서비스 제공자 특례가 일반 규정으로 통합됐고, 이후 전송요구권·자동화된 결정 대응권이 시행됐다.</p>
 
 <h3>개인정보의 정의 (제2조)</h3>
@@ -4949,15 +4900,8 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 
 <h3>파기 (제21조)</h3>
 <p>보유기간이 지나거나 처리 목적을 달성해 불필요해지면 지체 없이 파기한다. 다른 법령에 따라 보존해야 하면 다른 개인정보와 분리해 보관한다. 전자파일은 복구할 수 없는 방법(완전 삭제, 디가우징, 물리적 파괴), 출력물은 파쇄·소각.</p>
-    `,
-  },
-  {
-    subject: 'law',
-    subjectLabel: '정보보안관리및법규',
-    chapter: 'privacy-advanced',
-    chapterLabel: '개인정보 보호 심화 (안전조치·유출·국외이전)',
-    keywords: ['안전성 확보조치', '내부 관리계획', '접속기록', '개인정보처리시스템', '인터넷망 차단', '개인정보 영향평가', '영향평가', '가명처리', '가명정보', '익명처리', '결합전문기관', '개인정보 보호책임자', 'CPO', '국외 이전', '국외이전', '유출 통지', '유출 신고', '72시간', '1천명', '위탁', '수탁자'],
-    content: `
+
+<h2>개인정보 보호 심화 (안전조치·유출·국외이전)</h2>
 <h3>안전성 확보조치 (제29조, 시행령 제30조)</h3>
 <table>
   <thead><tr><th>조치</th><th>핵심 내용</th></tr></thead>
@@ -5025,6 +4969,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li>위탁 사실은 처리방침 등으로 공개(마케팅 업무 위탁은 정보주체에게 알림). 재위탁은 위탁자 동의 필요</li>
   <li>수탁자가 법을 위반해 발생한 손해는 수탁자를 처리자의 소속 직원으로 보아 위탁자에게도 책임</li>
 </ul>
+
     `,
   },
 

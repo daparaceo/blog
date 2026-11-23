@@ -8,14 +8,19 @@ import {
 
 export function getStaticPaths() {
   return listCerts().flatMap(config =>
-    getChapters(config.slug).map(chapter => ({
-      params: { cert: config.slug, subject: chapter.subject, chapter: chapter.chapter },
-      props: { config, chapter },
-    }))
+    getChapters(config.slug).flatMap(chapter => [
+      { params: { cert: config.slug, subject: chapter.subject, chapter: chapter.chapter }, props: { config, chapter } },
+      // 합쳐진 예전 챕터 URL은 합친 챕터로 넘긴다
+      ...(chapter.aliases ?? []).map(alias => ({
+        params: { cert: config.slug, subject: chapter.subject, chapter: alias },
+        props: { config, chapter, redirect: true },
+      })),
+    ])
   );
 }
 
-const { config, chapter } = Astro.props as { config: CertConfig; chapter: CertChapter };
+const { config, chapter, redirect } = Astro.props as { config: CertConfig; chapter: CertChapter; redirect?: boolean };
+if (redirect) return Astro.redirect(`/learn/certs/${config.slug}/${chapter.subject}/${chapter.chapter}/`, 301);
 const subject = config.subjects.find(s => s.slug === chapter.subject)!;
 const relatedQuestions = getRelatedQuestions(config, chapter, loadAllQuestions(config.slug).filter(q => !(config.hideWritten && q.examKind === 'written')));
 ---

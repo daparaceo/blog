@@ -2,10 +2,10 @@
 import { CHAPTERS } from '../../../data/certs/security/chapters';
 
 export async function getStaticPaths() {
-  return CHAPTERS.map(ch => ({
-    params: { subject: ch.subject, chapter: ch.chapter },
+  return CHAPTERS.flatMap(ch => [ch.chapter, ...(ch.aliases ?? [])].map(slug => ({
+    params: { subject: ch.subject, chapter: slug },
     props: { subject: ch.subject, chapter: ch.chapter },
-  }));
+  })));
 }
 
 const { subject, chapter } = Astro.props;

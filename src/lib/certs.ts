@@ -26,6 +26,7 @@ export type CertChapter = {
   subject: string;
   chapter: string;
   chapterLabel: string;
+  aliases?: string[];   // 합쳐진 예전 챕터 slug: 옛 URL은 이 챕터로 넘긴다
   content: string;
   keywords: string[];
 };
