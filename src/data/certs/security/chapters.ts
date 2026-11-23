@@ -150,6 +150,64 @@ ALL: ALL</code></pre>
   {
     subject: 'system',
     subjectLabel: '시스템보안',
+    chapter: 'system-logs',
+    chapterLabel: '시스템 정보·로그',
+    keywords: ['utmp', 'wtmp', 'btmp', 'lastlog', 'lastb', 'last', 'xferlog', 'syslog', 'rsyslog', '/var/log', 'secure', 'messages', 'pacct', 'lastcomm', 'CloudTrail', '감사 로그', '메타데이터', 'IMDS', '169.254.169.254'],
+    content: `
+<h3>리눅스 주요 로그 파일</h3>
+<table>
+  <thead><tr><th>파일</th><th>내용</th><th>확인 명령</th></tr></thead>
+  <tbody>
+    <tr><td>utmp</td><td>현재 로그인한 사용자</td><td>w, who, users</td></tr>
+    <tr><td>wtmp</td><td>로그인·로그아웃·재부팅 이력</td><td>last</td></tr>
+    <tr><td>btmp</td><td>실패한 로그인 시도</td><td>lastb</td></tr>
+    <tr><td>lastlog</td><td>사용자별 마지막 로그인 시각</td><td>lastlog</td></tr>
+    <tr><td>pacct</td><td>사용자가 실행한 명령(프로세스 계정)</td><td>lastcomm</td></tr>
+    <tr><td>/var/log/secure (RHEL 계열), auth.log (Debian 계열)</td><td>인증·su·sshd 관련 기록</td><td>텍스트</td></tr>
+    <tr><td>/var/log/messages</td><td>시스템 전반 메시지</td><td>텍스트</td></tr>
+    <tr><td>xferlog</td><td>FTP 파일 전송 기록</td><td>텍스트</td></tr>
+    <tr><td>dmesg</td><td>커널 부팅·장치 메시지</td><td>dmesg</td></tr>
+  </tbody>
+</table>
+<p>utmp·wtmp·btmp·lastlog는 바이너리 파일이라 cat이 아니라 전용 명령으로 본다. 침입자는 흔적을 지우려 이 파일들을 삭제·변조하므로 원격 로그 서버로 따로 보내 두는 것이 좋다.</p>
+
+<h3>syslog 설정</h3>
+<ul>
+  <li>/etc/rsyslog.conf(예전 syslog.conf)에 <strong>facility.priority 대상</strong> 형식으로 적는다. 예: authpriv.* /var/log/secure</li>
+  <li>facility: kern, user, mail, daemon, auth, authpriv, cron, local0~7 등</li>
+  <li>priority(높은 순): emerg, alert, crit, err, warning, notice, info, debug. 지정한 등급 이상이 기록된다</li>
+  <li>원격 전송: *.* @로그서버(UDP 514), @@로그서버(TCP)</li>
+</ul>
+
+<h3>윈도우 이벤트 로그</h3>
+<ul>
+  <li>기본 로그: 응용 프로그램, 보안, 시스템 (이벤트 뷰어에서 확인)</li>
+  <li>자주 보는 보안 이벤트 ID: 4624 로그온 성공, 4625 로그온 실패, 4634 로그오프, 4720 계정 생성, 4688 프로세스 생성, 1102 감사 로그 삭제</li>
+</ul>
+
+<h3>클라우드 감사 로그</h3>
+<table>
+  <thead><tr><th>서비스</th><th>기록 내용</th></tr></thead>
+  <tbody>
+    <tr><td>AWS CloudTrail</td><td>누가 언제 어떤 API를 호출했는지(콘솔·CLI·SDK 작업)</td></tr>
+    <tr><td>Azure Activity Log</td><td>구독 수준의 리소스 생성·변경·삭제 작업</td></tr>
+    <tr><td>Google Cloud Audit Logs</td><td>관리 활동·데이터 액세스 기록</td></tr>
+    <tr><td>VPC Flow Logs</td><td>가상 네트워크 인터페이스를 오간 트래픽의 출발지·목적지·포트·허용 여부</td></tr>
+  </tbody>
+</table>
+<p>감사 로그는 비활성화되거나 삭제되면 침해 원인을 밝힐 수 없으므로 별도 계정·저장소에 보관하고 무결성(변경 방지)을 보장한다.</p>
+
+<h3>클라우드 인스턴스 메타데이터</h3>
+<ul>
+  <li>가상 서버 안에서 링크 로컬 주소 <strong>169.254.169.254</strong>로 조회하는 인스턴스 정보: 인스턴스 ID, 네트워크 설정, 사용자 데이터(user-data), IAM 역할의 임시 자격증명 등</li>
+  <li>위협: 웹 애플리케이션의 SSRF 취약점으로 메타데이터 주소를 요청하게 해 임시 자격증명을 탈취한다</li>
+  <li>대응: AWS IMDSv2처럼 PUT 요청으로 받은 세션 토큰이 있어야 조회되게 강제하고, 응답 홉 수를 제한한다. user-data에 비밀번호·키를 넣지 않는다</li>
+</ul>
+    `,
+  },
+  {
+    subject: 'system',
+    subjectLabel: '시스템보안',
     chapter: 'windows-security',
     chapterLabel: '윈도우 보안',
     keywords: ['SAM', '레지스트리', 'NTFS', 'DACL', 'SACL', '이벤트 로그', 'UAC', '계정 잠금', 'BitLocker', 'NTLM'],
@@ -547,7 +605,7 @@ ALL: ALL</code></pre>
     subjectLabel: '시스템보안',
     chapter: 'cloud-security',
     chapterLabel: '클라우드 보안',
-    keywords: ['클라우드', 'IaaS', 'PaaS', 'SaaS', '공유 책임 모델', 'CASB', 'CSPM', 'Zero Trust', 'IAM', 'MFA', '컨테이너', 'Docker', 'Kubernetes', 'API 보안', 'S3 버킷', '데이터 주권'],
+    keywords: ['클라우드', 'IaaS', 'PaaS', 'SaaS', '공유 책임 모델', 'CASB', 'CSPM', 'Zero Trust', 'IAM', 'MFA', '컨테이너', 'Docker', 'Kubernetes', 'API 보안', 'S3 버킷', '데이터 주권', '구성 오류', 'Misconfiguration', '과도한 권한', '보안 그룹', 'privileged', 'cluster-admin', '크립토재킹'],
     content: `
 
 <h3>클라우드 서비스 모델 비교</h3>
@@ -607,6 +665,83 @@ ALL: ALL</code></pre>
     <tr><td>컨테이너 권한 상승</td><td>비특권(non-root) 컨테이너 실행, --privileged 금지</td></tr>
     <tr><td>시크릿 하드코딩</td><td>환경변수·시크릿 관리 도구(Vault, K8s Secrets) 사용</td></tr>
     <tr><td>컨테이너 탈출</td><td>컨테이너 런타임 최신 유지, seccomp/AppArmor 프로파일 적용</td></tr>
+  </tbody>
+</table>
+
+<h3>클라우드·컨테이너 구성 오류와 과도한 권한</h3>
+<table>
+  <thead><tr><th>구성 오류</th><th>위험</th><th>대응</th></tr></thead>
+  <tbody>
+    <tr><td>스토리지 버킷 공개 설정</td><td>누구나 데이터 열람·다운로드</td><td>퍼블릭 액세스 차단, 정책 점검</td></tr>
+    <tr><td>보안 그룹에 0.0.0.0/0으로 SSH(22)·RDP(3389) 허용</td><td>전 세계에서 무차별 대입 공격</td><td>관리 IP만 허용, 배스천·세션 관리 도구 사용</td></tr>
+    <tr><td>IAM 정책에 모든 작업·모든 리소스 허용(*)</td><td>계정 하나 탈취로 전체 장악</td><td>최소 권한, 역할 기반 임시 자격증명</td></tr>
+    <tr><td>장기 액세스 키를 코드·저장소에 노출</td><td>키 탈취 후 자원 악용(크립토재킹 등)</td><td>시크릿 관리 서비스, 키 주기적 교체, 시크릿 스캔</td></tr>
+    <tr><td>감사 로그·암호화 비활성화</td><td>침해 추적 불가, 유출 시 평문 노출</td><td>로그 상시 활성화, 저장 데이터 암호화</td></tr>
+    <tr><td>컨테이너 privileged 실행·root 실행, 호스트 docker.sock 마운트</td><td>컨테이너 탈출로 호스트 장악</td><td>비루트 사용자, 권한 최소화, 읽기 전용 파일시스템</td></tr>
+    <tr><td>쿠버네티스 cluster-admin 남용</td><td>클러스터 전체 권한 노출</td><td>RBAC 최소 권한, 네임스페이스 분리</td></tr>
+  </tbody>
+</table>
+
+<h3>클라우드 서비스 형태별 서버 시스템</h3>
+<ul>
+  <li><strong>IaaS VM</strong>: 사용자가 OS 패치·계정·방화벽까지 관리 (예: 가상 머신)</li>
+  <li><strong>PaaS 서비스</strong>: 런타임·OS는 공급자가 관리하고 사용자는 앱과 설정을 관리 (예: 관리형 DB, 앱 실행 플랫폼)</li>
+  <li><strong>SaaS 애플리케이션</strong>: 사용자는 계정·권한·데이터와 공유 설정만 관리</li>
+  <li>클라우드 기반 운영체계: 하이퍼바이저 위의 게스트 OS, 컨테이너 전용 경량 OS, 서버리스(함수) 실행 환경</li>
+</ul>
+    `,
+  },
+  {
+    subject: 'system',
+    subjectLabel: '시스템보안',
+    chapter: 'system-tools',
+    chapterLabel: '시스템 분석 도구·보안 솔루션',
+    keywords: ['Nmap', 'nmap', '-sS', '-sT', '-sU', '-sV', '-Pn', 'NSE', 'Trivy', 'ScoutSuite', 'Prowler', 'kube-bench', 'Lynis', 'EDR', 'EPP', 'HIDS', 'Tripwire', 'AIDE', '무결성 검사', 'DLP', 'PMS', '서버 접근제어'],
+    content: `
+<h3>Nmap 주요 옵션</h3>
+<table>
+  <thead><tr><th>옵션</th><th>기능</th></tr></thead>
+  <tbody>
+    <tr><td>-sS</td><td>TCP SYN 스캔(하프 오픈). 연결을 완성하지 않아 로그가 덜 남는다. 관리자 권한일 때 기본값</td></tr>
+    <tr><td>-sT</td><td>TCP Connect 스캔. 3-way handshake를 완성한다. 일반 사용자 권한일 때 기본값</td></tr>
+    <tr><td>-sU</td><td>UDP 스캔. 응답이 없으면 open|filtered, ICMP Port Unreachable이면 closed</td></tr>
+    <tr><td>-sF / -sX / -sN</td><td>FIN / Xmas(FIN·PSH·URG) / Null 스캔. 닫힌 포트는 RST로 응답</td></tr>
+    <tr><td>-sA</td><td>ACK 스캔. 포트 개방 여부가 아니라 방화벽이 상태 기반 필터링을 하는지 확인</td></tr>
+    <tr><td>-sV / -O</td><td>서비스 버전 탐지 / 운영체제 탐지(OS Fingerprinting)</td></tr>
+    <tr><td>-A</td><td>OS 탐지, 버전 탐지, 기본 스크립트, traceroute를 한꺼번에</td></tr>
+    <tr><td>-Pn</td><td>호스트 탐색(ping)을 건너뛰고 모든 대상이 살아 있다고 보고 스캔</td></tr>
+    <tr><td>-p</td><td>포트 지정. 예: -p 22,80,443 / -p- (전체 65535)</td></tr>
+    <tr><td>-T0~-T5</td><td>타이밍. 숫자가 작을수록 느리고 탐지 회피에 유리</td></tr>
+    <tr><td>--script (NSE)</td><td>Nmap Scripting Engine으로 취약점 점검·정보 수집 스크립트 실행</td></tr>
+    <tr><td>-oN / -oX / -oG</td><td>결과 저장: 일반 / XML / grep용 형식</td></tr>
+  </tbody>
+</table>
+<p>포트 상태: open, closed, filtered(방화벽 차단으로 판단 불가), unfiltered, open|filtered, closed|filtered</p>
+
+<h3>컨테이너·클라우드 보안 취약점 분석 도구</h3>
+<table>
+  <thead><tr><th>도구</th><th>대상</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Trivy</strong></td><td>컨테이너 이미지, 파일시스템, Git 저장소, IaC(Terraform·쿠버네티스 매니페스트 등)</td><td>오픈소스. 알려진 취약점(CVE), 구성 오류, 하드코딩된 시크릿, 라이선스 점검, SBOM 생성. CI/CD 파이프라인에 넣어 배포 전에 검사</td></tr>
+    <tr><td><strong>ScoutSuite</strong></td><td>AWS, Azure, GCP 등 멀티 클라우드 계정</td><td>오픈소스 클라우드 보안 감사 도구. 에이전트 없이 클라우드 API로 설정을 수집해 위험한 설정(공개 버킷, 과도한 권한 등)을 HTML 보고서로 보여 준다</td></tr>
+    <tr><td>Prowler</td><td>AWS 등 클라우드 계정</td><td>CIS 벤치마크 등 기준에 따른 클라우드 설정 점검</td></tr>
+    <tr><td>kube-bench</td><td>쿠버네티스 클러스터</td><td>CIS Kubernetes Benchmark 준수 여부 점검</td></tr>
+    <tr><td>Lynis</td><td>리눅스·유닉스 서버</td><td>호스트 보안 설정 감사</td></tr>
+  </tbody>
+</table>
+<p>2027년 출제기준에서 분석 도구 예시의 Kali Linux는 삭제됐다. Kali Linux는 도구가 아니라 여러 도구를 담은 운영체제이기 때문이다.</p>
+
+<h3>시스템 보호용 보안 솔루션</h3>
+<table>
+  <thead><tr><th>솔루션</th><th>기능</th></tr></thead>
+  <tbody>
+    <tr><td>EPP(백신)</td><td>시그니처·평판 기반으로 알려진 악성코드 실행을 사전 차단</td></tr>
+    <tr><td>EDR</td><td>엔드포인트 행위를 지속 기록·분석해 이상 행위를 탐지하고 격리·조사·대응. 침투 이후 대응에 초점</td></tr>
+    <tr><td>HIDS</td><td>호스트의 로그·파일·프로세스를 감시하는 침입탐지 (예: OSSEC)</td></tr>
+    <tr><td>무결성 검사</td><td>중요 파일의 해시를 기준값과 비교해 위·변조 탐지 (예: Tripwire, AIDE)</td></tr>
+    <tr><td>서버 접근제어</td><td>서버 접속 경로·명령을 통제하고 작업 기록을 남김</td></tr>
+    <tr><td>PMS(패치관리시스템)</td><td>OS·소프트웨어 보안 패치를 중앙에서 배포·확인</td></tr>
+    <tr><td>DLP / DRM</td><td>중요 데이터 외부 유출 탐지·차단 / 문서 자체를 암호화해 권한자만 열람</td></tr>
   </tbody>
 </table>
     `,
@@ -1064,6 +1199,46 @@ ALL: ALL</code></pre>
   {
     subject: 'network',
     subjectLabel: '네트워크보안',
+    chapter: 'network-tools',
+    chapterLabel: '네트워크 도구·원격접속 공격',
+    keywords: ['ping', 'traceroute', 'tracert', 'netstat', 'tcpdump', 'Wireshark', 'arp -a', 'arp -s', 'nslookup', 'dig', 'TIME_WAIT', 'SYN_RECV', 'TTL', '원격접속', '리버스 셸', '백도어', 'RAT', '무차별 대입', 'fail2ban'],
+    content: `
+<h3>기본 네트워크 도구</h3>
+<table>
+  <thead><tr><th>도구</th><th>동작·용도</th></tr></thead>
+  <tbody>
+    <tr><td>ping</td><td>ICMP Echo Request(Type 8)를 보내고 Echo Reply(Type 0)로 도달 여부·왕복 시간 확인</td></tr>
+    <tr><td>traceroute / tracert</td><td>TTL을 1부터 늘려 보내며 각 라우터가 돌려주는 ICMP Time Exceeded(Type 11)로 경로 파악. 유닉스 traceroute는 기본적으로 UDP, 윈도우 tracert는 ICMP Echo를 사용</td></tr>
+    <tr><td>netstat</td><td>연결 상태·열린 포트·라우팅 테이블 확인. -a(전체), -n(숫자 표시), -r(라우팅), 리눅스 -p / 윈도우 -o(프로세스). 최근 리눅스는 ss로 대체</td></tr>
+    <tr><td>arp</td><td>arp -a로 ARP 캐시(IP-MAC 대응) 확인, arp -s로 정적 항목 등록(ARP 스푸핑 대응)</td></tr>
+    <tr><td>tcpdump</td><td>명령행 패킷 캡처. -i(인터페이스), -n(이름 변환 안 함), -w(파일 저장), -r(파일 읽기), -X(내용 16진수·ASCII). 필터 예: tcp port 80 and host 10.0.0.5</td></tr>
+    <tr><td>Wireshark</td><td>GUI 패킷 캡처·분석. 표시 필터 예: ip.addr == 10.0.0.5, tcp.port == 443, tcp.flags.syn == 1 and tcp.flags.ack == 0</td></tr>
+    <tr><td>nslookup / dig</td><td>DNS 질의 확인. dig axfr로 영역 전송 허용 여부 점검</td></tr>
+  </tbody>
+</table>
+<p>netstat에서 SYN_RECV 상태가 비정상적으로 많으면 SYN Flooding을 의심한다. 2027년 출제기준에서 rarp는 빠지고 Wireshark가 들어갔다.</p>
+
+<h3>원격접속 공격</h3>
+<ul>
+  <li><strong>트로이목마·RAT</strong>: 정상 프로그램으로 위장해 설치된 뒤 공격자에게 원격 제어 권한을 준다</li>
+  <li><strong>백도어</strong>: 인증을 우회해 다시 접속할 수 있게 남겨 둔 비밀 통로</li>
+  <li><strong>리버스 셸</strong>: 피해 서버가 공격자에게 먼저 연결을 맺는 방식. 외부에서 내부로 들어오는 연결만 막는 방화벽을 우회한다</li>
+  <li><strong>무차별 대입·사전 공격</strong>: SSH(22), RDP(3389), 텔넷(23) 등 원격 접속 서비스의 계정·비밀번호를 반복 시도</li>
+  <li><strong>원격 코드 실행 취약점(익스플로잇)</strong>: 패치되지 않은 서비스 취약점으로 원격에서 명령 실행</li>
+</ul>
+
+<h3>원격접속 공격 대응</h3>
+<ul>
+  <li>불필요한 원격 서비스 중지, 텔넷 대신 SSH 사용, 관리 접속은 허용 IP만</li>
+  <li>키 기반 인증·MFA, 계정 잠금 임계값, fail2ban처럼 반복 실패 IP 자동 차단</li>
+  <li>이그레스(외부로 나가는) 필터링으로 리버스 셸·C&amp;C 통신 차단</li>
+  <li>보안 패치 적용, 원격 접속 로그(secure, 이벤트 4625 등) 모니터링</li>
+</ul>
+    `,
+  },
+  {
+    subject: 'network',
+    subjectLabel: '네트워크보안',
     chapter: 'firewall',
     chapterLabel: '방화벽',
     keywords: ['방화벽', 'Firewall', '패킷 필터링', '상태 기반 검사', 'Stateful Inspection', '애플리케이션 게이트웨이', '서킷 게이트웨이', 'NGFW', 'WAF', 'DMZ', '스크리닝 라우터', '베스천 호스트', '듀얼홈드 게이트웨이', '트리플홈드'],
@@ -1377,6 +1552,58 @@ ALL: ALL</code></pre>
     <tr><td><strong>클라이언트리스</strong></td><td>웹 브라우저만으로 접근. 포털 방식.</td><td>별도 소프트웨어 불필요. 웹 기반 앱만 지원.</td></tr>
     <tr><td><strong>씬 클라이언트</strong></td><td>브라우저 플러그인 또는 Java 앱렛.</td><td>TCP 기반 앱 지원 확장.</td></tr>
     <tr><td><strong>터널 모드</strong></td><td>전용 클라이언트 소프트웨어 설치.</td><td>전체 네트워크 접근. IPSec VPN과 유사한 경험.</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'network',
+    subjectLabel: '네트워크보안',
+    chapter: 'next-gen-security',
+    chapterLabel: '차세대 네트워크 보안 (SDN·SASE·ZTNA·XDR)',
+    keywords: ['SDN', 'OpenFlow', '제어 평면', 'SASE', 'SSE', 'SD-WAN', 'SWG', 'FWaaS', 'ZTNA', '제로 트러스트', 'XDR', 'NDR', 'ESM', 'SIEM', 'SOAR', '역추적'],
+    content: `
+<h3>SDN (Software Defined Networking)</h3>
+<ul>
+  <li>네트워크 장비의 <strong>제어 평면(Control Plane)</strong>과 <strong>데이터 평면(Data Plane)</strong>을 분리하고, 중앙 컨트롤러가 소프트웨어로 전체 네트워크 경로를 제어한다</li>
+  <li>컨트롤러와 스위치 사이 표준 프로토콜: <strong>OpenFlow</strong> (남향 API). 애플리케이션과 컨트롤러 사이는 북향 API</li>
+  <li>보안 장점: 정책 일괄 적용, 이상 트래픽을 빠르게 우회·차단</li>
+  <li>보안 위험: 컨트롤러가 단일 실패 지점이 되어 DoS·탈취 대상이 된다. 컨트롤러 이중화와 통신 암호화(TLS)가 필요</li>
+</ul>
+
+<h3>SASE와 SSE</h3>
+<ul>
+  <li><strong>SASE</strong>(Secure Access Service Edge): 네트워크 기능(SD-WAN)과 보안 기능을 클라우드에서 하나의 서비스로 제공하는 구조. 사용자가 어디서 접속하든 가까운 클라우드 거점에서 보안 정책을 적용한다</li>
+  <li><strong>SSE</strong>(Security Service Edge): SASE 가운데 보안 부분만 묶은 것 — SWG(보안 웹 게이트웨이), CASB, ZTNA, FWaaS(서비스형 방화벽)</li>
+  <li>배경: 클라우드 서비스와 원격 근무가 늘어 모든 트래픽을 본사 데이터센터로 되돌려 검사하는 방식이 비효율적이 됐다</li>
+</ul>
+
+<h3>ZTNA와 VPN 비교</h3>
+<table>
+  <thead><tr><th>구분</th><th>기존 VPN</th><th>ZTNA</th></tr></thead>
+  <tbody>
+    <tr><td>접근 단위</td><td>네트워크(접속하면 내부망 전체에 닿을 수 있음)</td><td>애플리케이션 단위</td></tr>
+    <tr><td>신뢰 모델</td><td>한 번 인증하면 내부를 신뢰</td><td>기본 거부, 사용자·기기 상태·위치를 매 요청마다 검증</td></tr>
+    <tr><td>노출</td><td>VPN 게이트웨이가 인터넷에 노출</td><td>애플리케이션을 외부에 드러내지 않음</td></tr>
+    <tr><td>측면 이동</td><td>내부망에서 다른 서버로 이동하기 쉬움</td><td>허용된 앱 외에는 보이지 않아 측면 이동 어려움</td></tr>
+  </tbody>
+</table>
+
+<h3>XDR, EDR, NDR</h3>
+<ul>
+  <li><strong>EDR</strong>: 엔드포인트(PC·서버) 행위 탐지·대응</li>
+  <li><strong>NDR</strong>: 네트워크 트래픽 분석으로 이상 행위 탐지·대응</li>
+  <li><strong>XDR</strong>(Extended Detection and Response): 엔드포인트·네트워크·클라우드·이메일·계정 등 여러 계층의 데이터를 연계 분석해 하나의 공격 흐름으로 탐지하고 대응을 자동화한다</li>
+</ul>
+
+<h3>보안 관제 솔루션</h3>
+<table>
+  <thead><tr><th>솔루션</th><th>역할</th></tr></thead>
+  <tbody>
+    <tr><td>ESM</td><td>방화벽·IDS 등 여러 보안 장비를 통합 관리하고 이벤트를 한곳에서 관제</td></tr>
+    <tr><td>SIEM</td><td>다양한 로그를 수집·정규화·상관 분석해 위협 탐지 (ESM보다 로그 범위가 넓다)</td></tr>
+    <tr><td>SOAR</td><td>플레이북에 따라 탐지 이후 대응 절차를 자동화·조율</td></tr>
+    <tr><td>역추적 시스템</td><td>공격 패킷의 실제 근원지를 추적 (IP 스푸핑·경유지 공격 대응)</td></tr>
   </tbody>
 </table>
     `,
@@ -1722,6 +1949,93 @@ ALL: ALL</code></pre>
             - p=reject: 메일 거부
     |
     +-- [4] DMARC 보고서 발송: rua(집계), ruf(포렌식) 주소로 보고서 전송</code></pre>
+    `,
+  },
+  {
+    subject: 'application',
+    subjectLabel: '어플리케이션보안',
+    chapter: 'ftp-security',
+    chapterLabel: 'FTP 보안',
+    keywords: ['FTP', 'Active 모드', 'Passive 모드', '20번', '21번', 'anonymous', '익명 FTP', 'FTP Bounce', 'TFTP', 'SFTP', 'FTPS', 'vsftpd', 'ftpusers', 'chroot', 'xferlog'],
+    content: `
+<h3>FTP 동작 방식</h3>
+<ul>
+  <li>제어 연결(명령)은 서버 <strong>TCP 21번</strong>, 데이터 연결(파일 전송)은 별도로 맺는다</li>
+  <li><strong>Active 모드</strong>: 클라이언트가 PORT 명령으로 자신의 포트를 알려 주면 서버가 <strong>20번 포트</strong>에서 클라이언트로 데이터 연결을 맺는다. 클라이언트 쪽 방화벽에 막히기 쉽다</li>
+  <li><strong>Passive 모드</strong>: 클라이언트가 PASV 명령을 보내면 서버가 1024 이상 임의 포트를 열어 알려 주고, 클라이언트가 그 포트로 접속한다</li>
+  <li>아이디·비밀번호와 데이터가 <strong>평문</strong>으로 전송되어 스니핑에 취약하다</li>
+</ul>
+
+<h3>FTP 공격 유형</h3>
+<table>
+  <thead><tr><th>공격</th><th>내용</th></tr></thead>
+  <tbody>
+    <tr><td>FTP Bounce 공격</td><td>PORT 명령의 목적지를 제3의 호스트로 지정해 FTP 서버를 경유한 포트 스캔·공격을 한다</td></tr>
+    <tr><td>익명 FTP 악용</td><td>anonymous 계정으로 접속해 쓰기 가능한 디렉터리에 악성 파일을 올리거나 정보를 빼낸다</td></tr>
+    <tr><td>TFTP 악용</td><td>UDP 69번, 인증 기능이 없어 설정 파일 등을 그대로 내려받을 수 있다</td></tr>
+    <tr><td>무차별 대입·스니핑</td><td>계정 비밀번호 반복 시도, 평문 계정 정보 도청</td></tr>
+  </tbody>
+</table>
+
+<h3>FTP 보안 대책</h3>
+<ul>
+  <li>암호화 전송 사용: <strong>SFTP</strong>(SSH 위에서 동작, 22번) 또는 <strong>FTPS</strong>(FTP + SSL/TLS)</li>
+  <li>익명 FTP 비활성화(vsftpd의 anonymous_enable=NO), 불필요하면 TFTP 중지</li>
+  <li>/etc/ftpusers 등에 root 등 시스템 계정 접속 차단</li>
+  <li>chroot로 사용자를 홈 디렉터리에 가두기(vsftpd의 chroot_local_user=YES)</li>
+  <li>PORT 명령의 목적지 IP 검증(Bounce 공격 대응), 전송 기록(xferlog) 점검</li>
+</ul>
+    `,
+  },
+  {
+    subject: 'application',
+    subjectLabel: '어플리케이션보안',
+    chapter: 'dns-security',
+    chapterLabel: 'DNS 서비스 보안',
+    keywords: ['DNS', 'BIND', 'named.conf', '영역 전송', 'Zone Transfer', 'AXFR', 'IXFR', 'allow-transfer', 'allow-recursion', '재귀', 'SOA', 'MX', 'PTR', 'CNAME', 'DNSSEC', 'RRSIG', 'DNSKEY', 'DS 레코드', 'DNS 터널링', '싱크홀', '파밍', 'hosts'],
+    content: `
+<h3>DNS 서비스 구성</h3>
+<ul>
+  <li>질의는 주로 <strong>UDP 53</strong>, 영역 전송과 큰 응답은 <strong>TCP 53</strong></li>
+  <li><strong>재귀(캐시) 서버</strong>: 사용자 대신 다른 서버에 차례로 물어 답을 찾고 캐시한다</li>
+  <li><strong>권한(Authoritative) 서버</strong>: 자기 도메인 영역의 원본 레코드를 가진 서버</li>
+  <li>리눅스 대표 DNS 서버 프로그램은 BIND이고 설정 파일은 named.conf, 레코드는 영역(zone) 파일에 둔다</li>
+</ul>
+
+<h3>주요 레코드</h3>
+<table>
+  <thead><tr><th>레코드</th><th>의미</th></tr></thead>
+  <tbody>
+    <tr><td>SOA</td><td>영역의 권한 정보(주 서버, 관리자, 일련번호, 갱신 주기)</td></tr>
+    <tr><td>NS</td><td>영역을 맡은 네임서버</td></tr>
+    <tr><td>A / AAAA</td><td>도메인 → IPv4 / IPv6 주소</td></tr>
+    <tr><td>CNAME</td><td>별칭 → 정식 도메인</td></tr>
+    <tr><td>MX</td><td>메일 서버(우선순위 포함)</td></tr>
+    <tr><td>PTR</td><td>IP → 도메인(역방향 조회)</td></tr>
+    <tr><td>TXT</td><td>텍스트 정보. SPF·DKIM·DMARC 설정에 사용</td></tr>
+  </tbody>
+</table>
+
+<h3>DNS 공격 유형</h3>
+<table>
+  <thead><tr><th>공격</th><th>내용</th></tr></thead>
+  <tbody>
+    <tr><td>영역 전송 정보 유출</td><td>allow-transfer 제한이 없으면 누구나 AXFR 요청으로 영역 전체 레코드(내부 서버 목록)를 받아 간다</td></tr>
+    <tr><td>캐시 포이즈닝(DNS 스푸핑)</td><td>위조 응답을 캐시 서버에 먼저 넣어 사용자를 가짜 사이트로 유도</td></tr>
+    <tr><td>파밍</td><td>DNS나 PC의 hosts 파일을 변조해 정상 주소를 입력해도 가짜 사이트로 접속시킨다</td></tr>
+    <tr><td>DNS 증폭(DRDoS)</td><td>출발지를 피해자로 위조해 개방된 재귀 서버에 큰 응답을 유도</td></tr>
+    <tr><td>DNS 터널링</td><td>DNS 질의·응답에 데이터를 숨겨 방화벽을 우회한 정보 유출·C&amp;C 통신</td></tr>
+  </tbody>
+</table>
+
+<h3>DNS 보안 대책</h3>
+<ul>
+  <li>영역 전송은 보조 네임서버 IP만 허용(allow-transfer), 재귀 질의는 내부 사용자만 허용(allow-recursion)</li>
+  <li>BIND 버전 정보 숨기기, 최신 패치 적용</li>
+  <li><strong>DNSSEC</strong>: 응답에 전자서명을 붙여 출처와 무결성을 검증한다. DNSKEY(공개키), RRSIG(레코드 서명), DS(상위 영역에 등록하는 키 해시), NSEC/NSEC3(존재하지 않음 증명). 기밀성(암호화)은 제공하지 않는다</li>
+  <li>DoT(DNS over TLS, 853)·DoH(DNS over HTTPS, 443): 질의 내용을 암호화해 도청을 막는다</li>
+  <li>DNS 싱크홀: 악성 도메인 질의를 안전한 주소로 돌려 좀비 PC와 C&amp;C 서버 통신을 끊는다</li>
+</ul>
     `,
   },
   {
@@ -2281,7 +2595,7 @@ OI = 주문 정보 (상품·금액)    →  상점만 확인
     subjectLabel: '어플리케이션보안',
     chapter: 'owasp-secure-coding',
     chapterLabel: 'OWASP·시큐어 코딩',
-    keywords: ['OWASP', 'OWASP Top 10', '시큐어 코딩', 'Secure Coding', '입력값 검증', '출력값 인코딩', '오류 처리', '로깅', '암호화', '취약한 의존성', 'SAST', 'DAST', 'SCA', 'DevSecOps', 'SDL'],
+    keywords: ['OWASP', 'OWASP Top 10', '시큐어 코딩', 'Secure Coding', '입력값 검증', '출력값 인코딩', '오류 처리', '로깅', '암호화', '취약한 의존성', 'SAST', 'DAST', 'SCA', 'DevSecOps', 'SDL', '보안약점', '입력데이터 검증', '보안기능', '시간 및 상태', '에러처리', '코드오류', '캡슐화', 'API 오용', 'SBOM', '개발보안'],
     content: `
 
 <h3>OWASP Top 10 (2021)</h3>
@@ -2347,6 +2661,21 @@ OI = 주문 정보 (상품·금액)    →  상점만 확인
   <li>스테이징 배포 → DAST 자동 실행</li>
   <li>운영 → 런타임 모니터링·RASP</li>
 </ul>
+
+<h3>소프트웨어 보안약점 7가지 유형 (행정안전부 소프트웨어 개발보안 가이드)</h3>
+<table>
+  <thead><tr><th>유형</th><th>대표 보안약점</th></tr></thead>
+  <tbody>
+    <tr><td>입력데이터 검증 및 표현</td><td>SQL 삽입, 운영체제 명령어 삽입, 크로스사이트 스크립트, 경로 조작, 위험한 형식 파일 업로드, 크로스사이트 요청 위조</td></tr>
+    <tr><td>보안기능</td><td>적절한 인증 없는 중요 기능 허용, 부적절한 인가, 취약한 암호화 알고리즘, 하드코딩된 중요 정보</td></tr>
+    <tr><td>시간 및 상태</td><td>경쟁 조건(TOCTOU), 종료되지 않는 반복문·재귀</td></tr>
+    <tr><td>에러처리</td><td>오류 메시지를 통한 정보 노출, 오류 상황 대응 부재</td></tr>
+    <tr><td>코드오류</td><td>널 포인터 역참조, 부적절한 자원 해제, 신뢰할 수 없는 데이터의 역직렬화</td></tr>
+    <tr><td>캡슐화</td><td>잘못된 세션에 의한 정보 노출, 제거되지 않은 디버그 코드</td></tr>
+    <tr><td>API 오용</td><td>DNS lookup에 의존한 보안 결정, 취약한 API 사용</td></tr>
+  </tbody>
+</table>
+<p>개발 보안 도구는 위 표의 SAST(소스코드), DAST(실행 중 앱), IAST, SCA(오픈소스 구성요소)로 나눈다. SCA는 사용 중인 라이브러리 목록인 SBOM(소프트웨어 자재 명세서)을 만들어 알려진 취약점을 추적하는 데 쓴다.</p>
     `,
   },
   {
@@ -2437,7 +2766,7 @@ OI = 주문 정보 (상품·금액)    →  상점만 확인
     subjectLabel: '정보보안일반',
     chapter: 'auth-sso',
     chapterLabel: '인증·SSO·접근통제',
-    keywords: ['SSO', 'Single Sign-On', 'SAML', 'OAuth', 'OpenID Connect', 'Kerberos', 'RADIUS', 'LDAP', 'Active Directory', '커버로스', '티켓', 'TGT', '2FA', 'MFA', 'FIDO', 'WebAuthn'],
+    keywords: ['SSO', 'Single Sign-On', 'SAML', 'OAuth', 'OpenID Connect', 'Kerberos', 'RADIUS', 'LDAP', 'Active Directory', '커버로스', '티켓', 'TGT', '2FA', 'MFA', 'FIDO', 'WebAuthn', '디바이스 인증', '기기 인증', 'TPM', 'PUF', 'mTLS', '802.1X'],
     content: `
 
 <h3>SSO (Single Sign-On)</h3>
@@ -2512,6 +2841,15 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   </tbody>
 </table>
 <p><strong>원리</strong>: 등록 시 공개키를 서버에 저장, 개인키는 장치에 보관. 인증 시 장치가 개인키로 서명 → 서버가 공개키로 검증.</p>
+
+<h3>디바이스 인증</h3>
+<ul>
+  <li><strong>기기 인증서 기반</strong>: 기기마다 X.509 인증서와 개인키를 넣어 상호 인증(mTLS). IoT 기기 인증의 기본 방식</li>
+  <li><strong>하드웨어 보안 모듈</strong>: TPM·보안 요소(SE)·HSM 안에 개인키를 저장해 추출을 막는다</li>
+  <li><strong>PUF</strong>(물리적 복제 방지 기능): 칩 제조 과정의 미세한 차이로 기기마다 고유한 값을 만들어 복제할 수 없는 식별자로 쓴다</li>
+  <li><strong>MAC 주소·IP 기반 인증</strong>: 구현은 쉽지만 위조(스푸핑)가 쉬워 단독으로는 약하다</li>
+  <li>네트워크 접속 단계의 기기 인증: IEEE 802.1X + RADIUS, NAC</li>
+</ul>
     `,
   },
   {
@@ -2816,6 +3154,37 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   {
     subject: 'general',
     subjectLabel: '정보보안일반',
+    chapter: 'key-distribution',
+    chapterLabel: '키 분배 프로토콜',
+    keywords: ['키 분배', '키 관리', 'KDC', 'Needham-Schroeder', '니덤-슈로더', '재전송 공격', 'Diffie-Hellman', '키 교환', '키 합의', '중간자 공격', '세션키', 'n(n-1)/2'],
+    content: `
+<h3>왜 키 분배가 문제인가</h3>
+<ul>
+  <li>대칭키 암호는 통신 상대마다 비밀키를 미리 나눠 가져야 한다. 사용자 n명이 서로 1:1로 통신하면 키가 <strong>n(n-1)/2</strong>개 필요하다</li>
+  <li>공개키 암호는 사용자마다 키 쌍 하나씩, 전체 <strong>2n</strong>개면 된다</li>
+</ul>
+
+<h3>대칭키 기반 키 분배: KDC</h3>
+<ul>
+  <li><strong>KDC</strong>(키 분배 센터)가 각 사용자와 마스터키를 하나씩 공유하고, 통신할 때마다 세션키를 만들어 나눠 준다. 키 개수가 n개로 줄지만 KDC가 단일 실패 지점이자 공격 대상이 된다</li>
+  <li><strong>Needham-Schroeder 프로토콜</strong>: KDC를 이용한 대표적인 대칭키 분배 프로토콜. 예전 세션키가 노출되면 그 메시지를 다시 보내는 <strong>재전송 공격</strong>에 취약하다 → 타임스탬프를 넣어 보완한 것이 Kerberos다</li>
+</ul>
+
+<h3>공개키 기반 키 분배</h3>
+<table>
+  <thead><tr><th>방식</th><th>원리</th><th>주의점</th></tr></thead>
+  <tbody>
+    <tr><td>키 전송(RSA 등)</td><td>한쪽이 세션키를 만들어 상대의 공개키로 암호화해 보낸다</td><td>개인키가 나중에 노출되면 과거 세션키도 풀린다(전방 비밀성 없음)</td></tr>
+    <tr><td>키 합의(Diffie-Hellman)</td><td>양쪽이 공개 값만 주고받고 각자 같은 비밀값을 계산한다. 이산대수 문제의 어려움에 기반</td><td>인증 기능이 없어 <strong>중간자 공격</strong>에 취약 → 인증서·전자서명과 함께 쓴다</td></tr>
+    <tr><td>임시 DH(DHE·ECDHE)</td><td>세션마다 새 키 쌍 사용</td><td>전방 비밀성(PFS) 제공. TLS 1.3 기본</td></tr>
+  </tbody>
+</table>
+<p>공개키 자체를 믿을 수 있게 하는 장치가 인증서와 PKI다. 공개키가 진짜 그 사람의 것인지 확인하지 않으면 공격자가 자기 공개키를 끼워 넣을 수 있다.</p>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
     chapter: 'hash-mac',
     chapterLabel: '해시·메시지 인증',
     keywords: ['MD5', 'SHA-1', 'SHA-256', 'SHA-3', 'HMAC', 'HAS-160', '충돌', '역상', '솔트', '레인보우테이블', 'bcrypt', 'PBKDF2'],
@@ -2881,6 +3250,42 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td><strong>Argon2</strong></td><td>메모리 집약적. 2015년 Password Hashing Competition 우승.</td><td>권장</td></tr>
   </tbody>
 </table>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
+    chapter: 'blockchain',
+    chapterLabel: '블록체인',
+    keywords: ['블록체인', '작업증명', 'PoW', 'PoS', 'PBFT', '머클 트리', '머클 루트', '논스', 'nonce', '이중 지불', '51% 공격', '스마트 컨트랙트', '재진입', '합의 알고리즘', '퍼블릭 블록체인', '프라이빗 블록체인'],
+    content: `
+<h3>블록체인 구조</h3>
+<ul>
+  <li>거래 기록을 묶은 블록을 해시로 사슬처럼 연결한 분산 원장. 참여자들이 같은 원장을 나눠 가진다</li>
+  <li><strong>블록 헤더</strong>: 이전 블록의 해시, 머클 루트, 타임스탬프, 난이도 목표, 논스(nonce)</li>
+  <li><strong>머클 트리</strong>: 거래들의 해시를 두 개씩 묶어 다시 해시하기를 반복해 하나의 머클 루트를 만든다. 거래 하나만 바뀌어도 루트가 바뀌고, 특정 거래가 블록에 있는지 일부 해시만으로 검증할 수 있다</li>
+  <li>앞 블록을 고치면 그 뒤 모든 블록의 해시가 달라지므로 위·변조가 어렵다(무결성). 해시함수의 충돌 저항성이 핵심이다</li>
+</ul>
+
+<h3>합의 알고리즘</h3>
+<table>
+  <thead><tr><th>방식</th><th>원리</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td><strong>작업증명(PoW)</strong></td><td>블록 헤더 해시가 목표값보다 작아지는 논스를 찾는 계산 경쟁(비트코인은 SHA-256 두 번)</td><td>보안성 높지만 전력 소모가 크다</td></tr>
+    <tr><td>지분증명(PoS)</td><td>보유 지분에 비례해 블록 생성권을 준다</td><td>에너지 효율적</td></tr>
+    <tr><td>DPoS</td><td>투표로 뽑은 대표만 블록 생성</td><td>빠르지만 중앙화 우려</td></tr>
+    <tr><td>PBFT</td><td>참여 노드 투표로 합의. 전체의 3분의 1 미만이 악의적이어도 동작</td><td>허가형(프라이빗·컨소시엄) 블록체인에 적합</td></tr>
+  </tbody>
+</table>
+
+<h3>유형과 위협</h3>
+<ul>
+  <li>유형: 퍼블릭(누구나 참여), 프라이빗(한 기관이 관리), 컨소시엄(여러 기관이 공동 관리)</li>
+  <li><strong>51% 공격</strong>: 전체 연산력(또는 지분)의 과반을 장악해 거래 기록을 바꾸고 이중 지불을 한다</li>
+  <li><strong>이중 지불</strong>: 같은 자산을 두 번 사용하는 것. 블록 확정을 충분히 기다려 방지한다</li>
+  <li><strong>스마트 컨트랙트 취약점</strong>: 재진입(Reentrancy) 공격 등 코드 결함으로 자산 탈취(2016년 The DAO 사건)</li>
+  <li>개인키 탈취: 키를 잃으면 자산 회복 불가 → 하드웨어 지갑, 다중 서명</li>
+</ul>
     `,
   },
   {
@@ -2965,6 +3370,56 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li>공인인증기관 5개: 금융결제원, KOSCOM, 한국정보인증, 이니텍, 한국전자인증</li>
   <li><strong>2020년 전자서명법 개정</strong>: 공인인증서(구 공인인증기관) 독점 지위 폐지. 사설 인증서와 동등 지위.</li>
 </ul>
+    `,
+  },
+  {
+    subject: 'general',
+    subjectLabel: '정보보안일반',
+    chapter: 'latest-trends',
+    chapterLabel: '최신 보안 동향 (양자내성암호·딥페이크 AI)',
+    keywords: ['양자내성암호', 'PQC', '양자컴퓨터', '쇼어', 'Shor', '그로버', 'Grover', 'ML-KEM', 'ML-DSA', 'SLH-DSA', 'Kyber', 'Dilithium', 'SPHINCS+', 'Falcon', 'HQC', '격자', 'KpqC', 'HNDL', '딥페이크', '생성형 AI', '프롬프트 인젝션', '데이터 포이즈닝', '적대적 공격', '모델 추출', '동형암호', '경량암호', 'Ascon', 'LEA', '인공지능 기본법'],
+    content: `
+<h3>양자컴퓨터가 암호에 주는 영향</h3>
+<table>
+  <thead><tr><th>알고리즘</th><th>영향을 받는 암호</th><th>대응</th></tr></thead>
+  <tbody>
+    <tr><td><strong>쇼어(Shor)</strong> 알고리즘</td><td>인수분해·이산대수 기반 공개키(RSA, ECC, DH)를 사실상 무력화</td><td>양자내성암호로 교체</td></tr>
+    <tr><td><strong>그로버(Grover)</strong> 알고리즘</td><td>대칭키·해시의 전수조사를 제곱근 수준으로 단축</td><td>키 길이를 2배로(예: AES-256)</td></tr>
+  </tbody>
+</table>
+<p><strong>HNDL</strong>(Harvest Now, Decrypt Later): 지금 암호문을 모아 두었다가 양자컴퓨터가 나오면 해독하는 공격. 오래 보호해야 하는 정보일수록 전환을 서둘러야 하는 이유다.</p>
+
+<h3>양자내성암호(PQC)</h3>
+<ul>
+  <li>양자컴퓨터로도 풀기 어려운 수학 문제에 기반한, 기존 컴퓨터에서 동작하는 공개키 암호. 양자역학 장비로 키를 나누는 양자키분배(QKD)와는 다른 개념이다</li>
+  <li>계열: <strong>격자 기반</strong>(가장 주목받음), 해시 기반 서명, 코드 기반, 다변수 기반, 아이소제니 기반</li>
+  <li>미국 NIST 표준(2024년 8월): <strong>FIPS 203 ML-KEM</strong>(Kyber, 키 캡슐화), <strong>FIPS 204 ML-DSA</strong>(Dilithium, 서명), <strong>FIPS 205 SLH-DSA</strong>(SPHINCS+, 해시 기반 서명). 2025년에는 코드 기반 HQC를 추가 키 캡슐화 알고리즘으로 선정했고, Falcon 기반 서명(FN-DSA)도 표준화가 진행 중이다</li>
+  <li>국내 양자내성암호 공모전(KpqC)은 2025년 1월 서명 HAETAE·AIMer, 키 캡슐화 SMAUG-T·NTRU+를 최종 선정했다</li>
+</ul>
+
+<h3>딥페이크와 AI 보안</h3>
+<ul>
+  <li><strong>딥페이크</strong>: 생성형 AI로 실제 인물의 얼굴·음성을 합성한 위조 영상·음성. 보이스피싱, 경영진 사칭 송금 사기, 허위정보 유포, 성범죄에 악용된다</li>
+  <li>대응: 딥페이크 탐지 모델, 생성물에 워터마크·출처 정보 표시(콘텐츠 출처 표준 C2PA 등), 생체 인증의 라이브니스(실제 사람 여부) 검사, 송금 요청은 다른 채널로 재확인</li>
+  <li>AI 모델 자체를 노리는 공격
+    <ul>
+      <li>프롬프트 인젝션: 입력에 악의적 지시를 숨겨 모델이 원래 지침을 무시하게 만든다</li>
+      <li>데이터 포이즈닝: 학습 데이터에 오염된 데이터를 섞어 모델을 오작동시킨다</li>
+      <li>적대적 예제(회피 공격): 사람 눈에는 같아 보이는 미세한 변형으로 오분류를 유도한다</li>
+      <li>모델 추출·멤버십 추론: 질의 결과로 모델을 복제하거나 학습 데이터 포함 여부를 알아낸다</li>
+    </ul>
+  </li>
+  <li>국내 「인공지능 발전과 신뢰 기반 조성 등에 관한 기본법」(인공지능 기본법)은 2026년 1월 22일 시행됐으며, 생성형 AI 결과물임을 알리는 표시 의무 등을 담고 있다</li>
+</ul>
+
+<h3>그 밖의 최신 암호 기술</h3>
+<table>
+  <thead><tr><th>기술</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td><strong>동형암호</strong></td><td>데이터를 암호화한 상태 그대로 연산할 수 있어, 클라우드에 원본을 드러내지 않고 분석을 맡길 수 있다. 연산 비용이 크다</td></tr>
+    <tr><td><strong>경량암호</strong></td><td>IoT 센서처럼 연산·전력이 제한된 기기용 암호. 국산 LEA, NIST가 2023년 표준으로 선정한 Ascon 등</td></tr>
+  </tbody>
+</table>
     `,
   },
 
@@ -3812,7 +4267,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <thead><tr><th>구분</th><th>ISMS</th><th>ISMS-P</th></tr></thead>
   <tbody>
     <tr><td><strong>인증 범위</strong></td><td>정보보호 관리체계</td><td>정보보호 + 개인정보보호 통합 관리체계</td></tr>
-    <tr><td><strong>의무대상</strong></td><td>정보통신서비스 제공자, ISP, IDC 등</td><td>개인정보를 대규모로 처리하는 경우 (선택 가능)</td></tr>
+    <tr><td><strong>의무 여부</strong></td><td>법정 의무 대상(ISP, IDC, 매출·이용자 기준 충족자 등)은 반드시 받아야 함</td><td>법정 의무는 아니며 선택. ISMS 의무 대상자가 ISMS-P를 받으면 ISMS 의무를 이행한 것으로 본다</td></tr>
     <tr><td><strong>인증 영역 수</strong></td><td>2개 영역, 80개 통제항목</td><td>3개 영역, 102개 통제항목</td></tr>
     <tr><td><strong>심사 기관</strong></td><td>KISA 또는 지정 심사기관</td><td>KISA 또는 지정 심사기관</td></tr>
     <tr><td><strong>유효 기간</strong></td><td>3년 (매년 사후심사)</td><td>3년 (매년 사후심사)</td></tr>
@@ -3828,11 +4283,13 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 
 <h3>ISMS 의무 인증 대상</h3>
 <ul>
-  <li><strong>ISP</strong>: 기간통신사업자 (매출액 100억 이상)</li>
-  <li><strong>정보통신서비스 제공자</strong>: 매출액 100억 이상 또는 일평균 이용자 100만 이상</li>
-  <li><strong>병원</strong>: 일평균 이용자 100만 이상</li>
-  <li><strong>학교</strong>: 재학생 1만 명 이상 대학</li>
+  <li><strong>ISP</strong>: 주요정보통신서비스 제공자(전국 단위 회선설비 기간통신사업자)</li>
+  <li><strong>IDC</strong>: 집적정보통신시설 사업자</li>
+  <li><strong>정보통신서비스 부문</strong> 전년도 매출액 100억원 이상</li>
+  <li>전년도 일일평균 이용자 수 <strong>100만명 이상</strong></li>
+  <li>연간 매출액 또는 세입 <strong>1,500억원 이상</strong>인 상급종합병원, 재학생 1만명 이상 대학(시행령)</li>
 </ul>
+<p>근거: 정보통신망법 제47조제2항. 인증 유효기간은 3년이다.</p>
 
 <h3>인증 절차</h3>
 <ol>
@@ -3857,9 +4314,48 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 <h3>결함 분류</h3>
 <ul>
   <li><strong>결함</strong>: 인증 기준을 충족하지 못하는 사항 — 시정 후 인증 가능</li>
-  <li><strong>중결함</strong>: 보안에 심각한 위협이 되는 결함 — 즉시 시정 필요</li>
-  <li>결함 시정 기간: 통상 90일 이내</li>
+  <li>결함은 보완조치 계획을 세워 정해진 기간(고시 기준 40일, 재조치 요구 시 추가 60일) 안에 이행하고 확인받아야 인증된다</li>
 </ul>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'certification',
+    chapterLabel: '정보보호 제품인증·클라우드 보안인증',
+    keywords: ['CC 인증', 'CC인증', 'Common Criteria', '공통평가기준', 'EAL', '보호프로파일', 'PP', '보안목표명세서', 'ST', 'TOE', '보안기능 확인서', 'KCMVP', '검증필 암호모듈', 'CSAP', '클라우드 보안인증', '보안인증'],
+    content: `
+<h3>정보보호 인증제도 한눈에 보기</h3>
+<table>
+  <thead><tr><th>인증</th><th>대상</th><th>핵심</th></tr></thead>
+  <tbody>
+    <tr><td>ISMS / ISMS-P</td><td>조직의 관리체계</td><td>정보통신망법 제47조. 유효기간 3년 (ISMS·ISMS-P 챕터 참고)</td></tr>
+    <tr><td>CC 인증</td><td>정보보호 제품</td><td>국제 공통평가기준(ISO/IEC 15408)에 따라 보안 기능과 보증 수준 평가</td></tr>
+    <tr><td>보안기능 확인서</td><td>국가·공공기관에 도입하는 정보보호 제품</td><td>시험기관이 보안 기능 요구사항 충족 여부를 시험해 발급</td></tr>
+    <tr><td>KCMVP(암호모듈 검증)</td><td>암호 모듈(SW·HW)</td><td>공공기관에서 쓰는 암호모듈의 안전성·구현 적합성 검증. 검증필 암호모듈</td></tr>
+    <tr><td>CSAP(클라우드 보안인증)</td><td>클라우드 서비스</td><td>공공기관이 이용할 클라우드 서비스의 보안 수준 인증</td></tr>
+  </tbody>
+</table>
+
+<h3>CC (Common Criteria) 인증</h3>
+<ul>
+  <li><strong>TOE</strong>(평가대상): 평가받는 제품·시스템</li>
+  <li><strong>PP</strong>(보호프로파일): 제품 유형별로 필요한 보안 요구사항을 구현과 무관하게 정리한 문서(사용자·정부 관점)</li>
+  <li><strong>ST</strong>(보안목표명세서): 특정 제품이 PP를 바탕으로 무엇을 어떻게 구현하는지 기술한 문서(개발자 관점)</li>
+  <li><strong>EAL</strong>(평가보증등급): EAL1~EAL7. 숫자가 클수록 개발·시험 과정을 더 엄격하게 검증한다(보안 기능이 더 많다는 뜻은 아니다)</li>
+  <li>CCRA(국제상호인정협정) 가입국끼리 일정 등급까지 인증을 상호 인정한다</li>
+</ul>
+
+<h3>클라우드 보안인증 (CSAP)</h3>
+<ul>
+  <li>근거: 클라우드컴퓨팅법 제23조의2. 과학기술정보통신부장관이 보안인증기준에 맞는 클라우드 서비스를 인증하고, 한국인터넷진흥원 등이 인증기관 업무를 맡는다</li>
+  <li>유효기간: 서비스 유형을 고려해 대통령령으로 정하는 <strong>5년 이내</strong>, 연장하려면 갱신 신청</li>
+  <li>인증받지 않은 서비스에 인증 표시나 유사 표시 금지. 거짓·부정한 방법으로 받은 인증은 반드시 취소, 취소 전 청문</li>
+  <li>공공기관 데이터의 중요도에 따라 등급(상·중·하)을 나눠 요구 수준을 달리한다</li>
+</ul>
+
+<h3>주요정보통신기반시설 보호제도</h3>
+<p>국가 안전·경제에 중대한 영향을 주는 시설을 지정해 취약점 분석·평가와 보호대책을 의무화하는 제도. 세부 내용은 주요정보통신기반시설 보호 챕터에 정리했다.</p>
     `,
   },
   {
@@ -3887,8 +4383,9 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 <table>
   <thead><tr><th>의무사항</th><th>주기</th><th>담당</th></tr></thead>
   <tbody>
-    <tr><td><strong>보호계획 수립</strong></td><td>매년</td><td>운영기관 → 관계중앙행정기관 제출</td></tr>
-    <tr><td><strong>취약점 분석·평가</strong></td><td>2년마다 의무</td><td>국가정보원 또는 지정 전문기관</td></tr>
+    <tr><td><strong>보호대책 수립</strong></td><td>매년</td><td>관리기관이 취약점 분석·평가 결과를 반영해 수립 → 관계중앙행정기관에 제출</td></tr>
+    <tr><td><strong>보호계획 수립</strong></td><td>매년(10월 31일까지 위원회 제출)</td><td>관계중앙행정기관이 소관 보호대책을 종합해 수립</td></tr>
+    <tr><td><strong>취약점 분석·평가</strong></td><td>지정 후 6개월 이내 최초, 이후 매년</td><td>관리기관(전담반 자체 수행 또는 KISA·정보공유분석센터·지정 전문기관 등에 위탁)</td></tr>
     <tr><td><strong>보호대책 이행여부 확인</strong></td><td>매년</td><td>관계중앙행정기관</td></tr>
     <tr><td><strong>침해사고 신고</strong></td><td>즉시</td><td>운영기관 → 관계중앙행정기관·국정원·KISA</td></tr>
   </tbody>
@@ -3896,8 +4393,9 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 
 <h3>취약점 분석·평가</h3>
 <ul>
-  <li>2년마다 의무 실시 (자체 또는 지정 전문기관)</li>
-  <li>평가 결과 보호계획에 반영</li>
+  <li>지정된 뒤 6개월 이내(특별한 사유가 있으면 승인받아 9개월 이내)에 최초 실시, 이후 <strong>매년</strong> 실시(정보통신기반 보호법 시행령 제17조, 2013년부터 2년 → 1년으로 단축)</li>
+  <li>중대한 변화가 있으면 1년이 안 되어도 실시할 수 있고, 중앙행정기관 명령을 받으면 6개월 이내 실시</li>
+  <li>평가 결과는 관리기관의 보호대책에 반영</li>
   <li>국가정보원: 취약점 분석 기술 지원, 지침 제공</li>
 </ul>
 
@@ -4076,7 +4574,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 
 <h3>정보보호 예산</h3>
 <ul>
-  <li>전체 IT 예산 대비 <strong>7% 이상</strong> 권고 (정보보호산업법 가이드라인)</li>
+  <li>정보보호 공시 대상 기업은 IT 투자 대비 정보보호 투자 비율, IT 인력 대비 정보보호 전담인력 비율을 매년 공시한다(정보보호산업법 제13조)</li>
   <li>ROI (Return on Investment) 산정: 예상 손실 감소액 대비 보안 투자 비용</li>
   <li>ALE (Annual Loss Expectancy) = SLE × ARO (단일 손실 기댓값 × 연간 발생률)</li>
 </ul>
@@ -4115,9 +4613,9 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <thead><tr><th>법률명</th><th>소관부처</th><th>주요 규율 대상</th><th>핵심 내용</th></tr></thead>
   <tbody>
     <tr><td><strong>개인정보 보호법</strong></td><td>개인정보보호위원회</td><td>개인정보 처리 전반</td><td>개인정보 수집·이용·제공·파기, 정보주체 권리, 안전조치 의무</td></tr>
-    <tr><td><strong>정보통신망 이용촉진 및 정보보호 등에 관한 법률</strong></td><td>과기부·방통위</td><td>정보통신서비스 제공자</td><td>스팸 규제, 해킹·악성프로그램 금지, ISMS 의무, 침해사고 신고</td></tr>
+    <tr><td><strong>정보통신망 이용촉진 및 정보보호 등에 관한 법률</strong></td><td>과학기술정보통신부·방송미디어통신위원회·개인정보보호위원회(분야별)</td><td>정보통신서비스 제공자</td><td>스팸 규제, 해킹·악성프로그램 금지, ISMS 의무, 침해사고 신고</td></tr>
     <tr><td><strong>정보통신기반 보호법</strong></td><td>과기부</td><td>주요정보통신기반시설</td><td>보호계획 수립, 취약점 분석·평가, 침해사고 신고</td></tr>
-    <tr><td><strong>전자서명법</strong></td><td>과기부</td><td>전자서명·공인인증</td><td>전자서명 법적 효력, 전자서명인증사업자 평가·인정</td></tr>
+    <tr><td><strong>전자서명법</strong></td><td>과기부</td><td>전자서명·전자서명인증사업자</td><td>전자서명 법적 효력, 전자서명인증사업자 평가·인정</td></tr>
     <tr><td><strong>전자금융거래법</strong></td><td>금융위</td><td>전자금융</td><td>금융 분야 전자거래 보안 기준, 금융사고 신고 의무</td></tr>
     <tr><td><strong>클라우드컴퓨팅법</strong></td><td>과기부</td><td>클라우드 보안</td><td>클라우드서비스 보안인증, 공공기관 이용 기준</td></tr>
   </tbody>
@@ -4160,7 +4658,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 <table>
   <thead><tr><th>함정</th><th>정리</th></tr></thead>
   <tbody>
-    <tr><td>과태료와 과징금 혼동</td><td>과징금은 위반행위 관련 매출액 기준, 과태료는 신고·공개 등 의무 위반에 자주 출제</td></tr>
+    <tr><td>과태료와 과징금 혼동</td><td>개인정보 보호법 과징금은 전체 매출액 기준(위반과 관련 없는 매출 제외) 3% 이하, 과태료는 신고·공개 등 의무 위반에 자주 출제</td></tr>
     <tr><td>신고 대상 기관 혼동</td><td>개인정보 유출 신고는 개인정보보호위원회 또는 KISA, 정보통신서비스 제공자의 침해사고 신고는 과학기술정보통신부장관 또는 KISA가 대상이다. 주요정보통신기반시설은 관계 행정기관, 수사기관 또는 KISA에 통지한다.</td></tr>
     <tr><td>법률 적용 대상 혼동</td><td>개인정보 보호법은 일반 개인정보 처리, 기반보호법은 주요정보통신기반시설 중심</td></tr>
   </tbody>
@@ -4172,13 +4670,13 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안관리및법규',
     chapter: 'network-act',
     chapterLabel: '정보통신망법·전자서명법',
-    keywords: ['정보통신망법', '정보통신서비스', '청소년 보호', '스팸', '해킹', '악성프로그램', '개인정보', 'ISMS', '침해사고', '전자서명법', '공인전자서명', '공동인증서', '타임스탬프', '전자문서'],
+    keywords: ['정보통신망법', '정보통신서비스', '청소년 보호', '스팸', '해킹', '악성프로그램', '개인정보', 'ISMS', '침해사고', '전자서명법', '공인전자서명', '공동인증서', '타임스탬프', '전자문서', '특례'],
     content: `
 <h3>정보통신망법 주요 내용</h3>
 
 <h4>정보통신서비스 제공자 의무</h4>
 <ul>
-  <li>개인정보 보호 (수집·이용·제공·파기)</li>
+  <li>침해사고 발생 시 24시간 이내 신고, 정보보호 최고책임자(CISO) 지정·신고</li>
   <li>청소년 유해 정보 차단</li>
   <li>광고성 정보 규제 준수</li>
   <li>침해사고 신고 의무</li>
@@ -4205,10 +4703,11 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 
 <h4>ISMS 의무 인증 대상 (정보통신망법 기준)</h4>
 <ul>
-  <li>ISP: 기간통신사업자 (KT, SKT, LGU+ 등)</li>
-  <li>IDC: 인터넷데이터센터</li>
-  <li>정보통신서비스 제공자: 연간 매출액 <strong>100억 원 이상</strong> 또는 일일평균 이용자 수 <strong>100만 명 이상</strong></li>
-  <li>병원: 일일평균 이용자 수 100만 명 이상</li>
+  <li><strong>ISP</strong>: 주요정보통신서비스 제공자(전국 단위 회선설비 기간통신사업자)</li>
+  <li><strong>IDC</strong>: 집적정보통신시설 사업자</li>
+  <li><strong>정보통신서비스 부문</strong> 전년도 매출액 100억원 이상</li>
+  <li>전년도 일일평균 이용자 수 <strong>100만명 이상</strong></li>
+  <li>연간 매출액 또는 세입 <strong>1,500억원 이상</strong>인 상급종합병원, 재학생 1만명 이상 대학(시행령)</li>
 </ul>
 
 <h3>전자서명법</h3>
@@ -4256,6 +4755,107 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td>스팸 규제 요건 누락</td><td>동의, 표시, 수신거부, 야간 전송 제한을 묶어서 확인한다</td></tr>
   </tbody>
 </table>
+
+<h3>개인정보 규정의 이동</h3>
+<p>예전 정보통신망법의 정보통신서비스 제공자 개인정보 보호 규정은 2020년 8월 개인정보 보호법으로 옮겨졌고(특례 규정), 2023년 개정으로 특례가 일반 규정에 통합됐다. 지금은 개인정보 처리 문제는 개인정보 보호법으로, 망 침해·침해사고·스팸·ISMS·CISO는 정보통신망법으로 구분해 본다.</p>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'cyber-laws',
+    chapterLabel: '정보보호산업법·클라우드컴퓨팅법',
+    keywords: ['정보보호산업법', '정보보호산업의 진흥에 관한 법률', '정보보호 공시', '공시', '3,000억', '정보보호 준비도', '클라우드컴퓨팅법', '클라우드컴퓨팅 발전 및 이용자 보호', '이용자 정보', '클라우드컴퓨팅서비스 제공자', '반환', '임치', '저장되는 국가', 'CISO', '정보보호 최고책임자'],
+    content: `
+<h3>정보보호산업법 — 정보보호 공시 (제13조, 시행령 제8조)</h3>
+<ul>
+  <li>정보통신서비스 제공자는 정보보호 투자·인력 현황, 인증 등 정보보호 현황을 자율적으로 공개할 수 있다. 자율 공시하면 ISMS 인증 수수료 30% 할인</li>
+  <li><strong>의무 공시 대상</strong>
+    <ul>
+      <li>회선설비를 보유한 기간통신사업자, 집적정보통신시설(IDC) 사업자, 상급종합병원, 클라우드(IaaS) 서비스 제공자</li>
+      <li>CISO 지정·신고 의무가 있는 상장법인 중 직전 사업연도 매출액 <strong>3,000억원 이상</strong></li>
+      <li>정보통신서비스 일일평균 이용자 <strong>100만명 이상</strong></li>
+      <li>제외: 공공기관, (일부 유형의) 소기업, 금융회사 등</li>
+    </ul>
+  </li>
+  <li>공시 내용: IT 투자 대비 정보보호 투자, IT 인력 대비 정보보호 전담인력, 정보보호 인증·평가·점검, 이용자 보호 활동</li>
+  <li>CISO가 주관하고 최고경영자 확인을 거쳐 <strong>매년 6월 30일까지</strong> 전자공시시스템에 입력. 과학기술정보통신부장관이 내용을 검증하고 수정을 요청할 수 있다</li>
+</ul>
+
+<h3>정보통신망법 — 정보보호 최고책임자(CISO, 제45조의3)</h3>
+<ul>
+  <li>정보통신서비스 제공자는 대통령령 기준의 임원을 CISO로 지정하고 과학기술정보통신부장관에게 신고(일정 규모 이하는 신고 면제)</li>
+  <li>일정 규모 이상은 CISO가 다른 업무를 겸직할 수 없다</li>
+  <li>업무: 정보보호 계획 수립·시행, 실태 감사, 위험 식별·대책, 교육·모의훈련, 인력·예산, 이사회 보고 등</li>
+</ul>
+
+<h3>클라우드컴퓨팅법 (클라우드컴퓨팅 발전 및 이용자 보호에 관한 법률)</h3>
+<table>
+  <thead><tr><th>조문</th><th>내용</th></tr></thead>
+  <tbody>
+    <tr><td>제2조 정의</td><td>클라우드컴퓨팅: 집적·공유된 정보통신자원을 이용자 요구에 따라 정보통신망으로 신축적으로 이용하게 하는 정보처리체계. 이용자 정보: 이용자가 제공자의 자원에 저장한, 이용자가 소유·관리하는 정보</td></tr>
+    <tr><td>제4조 관계</td><td>다른 법률보다 우선 적용하되, 개인정보 보호는 개인정보 보호법·정보통신망법에 따른다</td></tr>
+    <tr><td>제23조의2 보안인증</td><td>CSAP. 유효기간 5년 이내</td></tr>
+    <tr><td>제25조 침해사고 통지</td><td>침해사고 발생, 이용자 정보 유출, 사전 예고 없는 일정 기간 이상 서비스 중단 시 지체 없이 이용자에게 통지. 유출은 즉시 과학기술정보통신부장관에게도 통지</td></tr>
+    <tr><td>제26조 정보 공개</td><td>이용자는 이용자 정보가 <strong>저장되는 국가의 명칭</strong>을 알려 달라고 요구할 수 있다</td></tr>
+    <tr><td>제27조 이용자 정보 보호</td><td>법원 제출명령·영장 없이는 이용자 동의 없이 제3자 제공·목적 외 이용 금지. 계약 종료·사업 종료 시 이용자 정보를 <strong>반환하고 파기</strong>(계약으로 달리 정하면 그에 따름)</td></tr>
+    <tr><td>제28조 임치</td><td>제공자와 이용자가 합의해 이용자 정보를 전문기관(수치인)에 맡길 수 있다</td></tr>
+    <tr><td>제29조 손해배상</td><td>제공자가 고의·과실이 없음을 입증하지 못하면 책임(입증책임 전환)</td></tr>
+  </tbody>
+</table>
+    `,
+  },
+  {
+    subject: 'law',
+    subjectLabel: '정보보안관리및법규',
+    chapter: 'cyber-ethics',
+    chapterLabel: '사이버 윤리·정보통신망 침해행위',
+    keywords: ['사이버 윤리', '정보윤리', '저작권', 'DRM', '워터마킹', '핑거프린팅', '불법정보', '명예훼손', '사이버 폭력', '사이버 사기', '침해행위', '제48조', '제49조', '악성프로그램', '정당한 접근권한', '비밀 침해', '개인정보취급자', '금지행위', '제59조', '속이는 행위'],
+    content: `
+<h3>사이버 윤리와 사이버 범죄</h3>
+<ul>
+  <li>사이버 윤리: 정보통신망을 이용할 때 지켜야 할 책임·존중·정의·해악 금지의 원칙</li>
+  <li><strong>정보통신망 침해범죄</strong>: 해킹(무단 침입), 서비스 거부, 악성프로그램 유포 — 시스템 자체를 공격</li>
+  <li><strong>정보통신망 이용범죄</strong>: 사이버 사기, 사이버 금융범죄(피싱·스미싱·파밍), 개인정보 침해, 사이버 저작권 침해</li>
+  <li><strong>불법 콘텐츠 범죄</strong>: 음란물, 사이버 도박, 사이버 명예훼손·모욕, 사이버 스토킹</li>
+</ul>
+
+<h3>디지털 저작권 보호기술</h3>
+<table>
+  <thead><tr><th>기술</th><th>원리</th></tr></thead>
+  <tbody>
+    <tr><td>DRM</td><td>콘텐츠를 암호화하고 라이선스로 이용 권한(열람·복사·인쇄·기간)을 통제</td></tr>
+    <tr><td>워터마킹</td><td>콘텐츠에 저작권자 정보를 숨겨 넣어 소유권 증명</td></tr>
+    <tr><td>핑거프린팅</td><td>구매자마다 다른 정보를 숨겨 넣어 불법 유포자를 추적</td></tr>
+  </tbody>
+</table>
+
+<h3>정보통신망법의 침해행위 금지 (제48조, 제49조)</h3>
+<table>
+  <thead><tr><th>금지 행위</th><th>벌칙</th></tr></thead>
+  <tbody>
+    <tr><td>정당한 접근권한 없이 또는 허용 범위를 넘어 정보통신망에 침입 (제48조①)</td><td>5년 이하 징역 또는 5천만원 이하 벌금, <strong>미수범도 처벌</strong></td></tr>
+    <tr><td>악성프로그램 전달·유포 (제48조②)</td><td>7년 이하 징역 또는 7천만원 이하 벌금</td></tr>
+    <tr><td>대량 신호·데이터 전송 등으로 정보통신망 장애 유발 (제48조③, DoS)</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td></tr>
+    <tr><td>보호·인증 절차를 우회하는 프로그램·장치 설치·유포 (제48조④, 백도어)</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td></tr>
+    <tr><td>타인의 정보 훼손, 타인의 비밀 침해·도용·누설 (제49조)</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td></tr>
+    <tr><td>속이는 행위로 타인의 정보 수집 (제49조의2, 피싱)</td><td>3년 이하 징역 또는 3천만원 이하 벌금</td></tr>
+  </tbody>
+</table>
+
+<h3>불법정보 유통 금지 (제44조의7)와 명예훼손</h3>
+<ul>
+  <li>불법정보: 음란물, 비방 목적의 거짓 사실 명예훼손, 혐오·차별 선동, 공포심·불안감을 주는 반복 도달, 정보통신시스템 운용 방해 정보 등</li>
+  <li>정보통신망을 통한 비방 목적 명예훼손: 사실 적시 3년 이하 징역 또는 3천만원 이하 벌금, 거짓 사실 7년 이하 징역·10년 이하 자격정지 또는 7천만원 이하 벌금. 피해자 의사에 반해 공소 제기 불가(반의사불벌)</li>
+</ul>
+
+<h3>개인정보취급자 등의 금지행위 (개인정보 보호법 제59조)</h3>
+<ol>
+  <li>거짓이나 부정한 수단·방법으로 개인정보를 취득하거나 처리 동의를 받는 행위</li>
+  <li>업무상 알게 된 개인정보를 누설하거나 권한 없이 다른 사람이 이용하도록 제공하는 행위</li>
+  <li>정당한 권한 없이 또는 허용된 권한을 넘어 다른 사람의 개인정보를 이용·훼손·멸실·변경·위조·유출하는 행위</li>
+</ol>
+<p>①은 3년 이하 징역 또는 3천만원 이하 벌금, ②③은 5년 이하 징역 또는 5천만원 이하 벌금이다.</p>
     `,
   },
   {
@@ -4263,141 +4863,167 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안관리및법규',
     chapter: 'privacy-law',
     chapterLabel: '개인정보 보호법',
-    keywords: ['개인정보', '개인정보보호법', '정보주체', '개인정보처리자', '수집', '이용', '제공', '파기', '동의', '열람', '정정', '삭제', '처리정지', '개인정보보호위원회', '고유식별정보', '민감정보'],
+    keywords: ['개인정보', '개인정보보호법', '개인정보 보호법', '정보주체', '개인정보처리자', '수집', '이용', '제3자 제공', '파기', '동의', '열람', '정정', '삭제', '처리정지', '전송 요구', '자동화된 결정', '개인정보 보호위원회', '고유식별정보', '민감정보', '주민등록번호', '14세 미만', '법정대리인', '처리방침', '과징금', '정당한 이익'],
     content: `
-<h3>개인정보 정의</h3>
-<p>살아있는 개인에 관한 정보로서 성명·주민등록번호·영상 등을 통해 개인을 알아볼 수 있는 정보. <strong>다른 정보와 쉽게 결합하여 알아볼 수 있는 정보도 포함.</strong></p>
+<p>기준: 개인정보 보호법(2026. 9. 11. 시행본). 2023년 전면 개정으로 정보통신서비스 제공자 특례가 일반 규정으로 통합됐고, 이후 전송요구권·자동화된 결정 대응권이 시행됐다.</p>
 
-<h3>개인정보 처리 8대 원칙</h3>
+<h3>개인정보의 정의 (제2조)</h3>
+<ul>
+  <li>살아 있는 개인에 관한 정보로서 다음 중 하나
+    <ul>
+      <li>성명, 주민등록번호, 영상 등을 통하여 개인을 알아볼 수 있는 정보</li>
+      <li>그 정보만으로는 알아볼 수 없더라도 다른 정보와 <strong>쉽게 결합</strong>하여 알아볼 수 있는 정보(결합 가능성은 입수 가능성, 시간·비용·기술을 합리적으로 고려)</li>
+      <li><strong>가명정보</strong>: 가명처리해 추가 정보 없이는 특정 개인을 알아볼 수 없게 한 정보</li>
+    </ul>
+  </li>
+  <li>사망자·법인 정보는 개인정보가 아니다. 익명정보에는 법이 적용되지 않는다</li>
+</ul>
+
+<h3>개인정보 보호 원칙 (제3조)</h3>
 <ol>
-  <li>목적 명확화 — 처리 목적을 명확히 하여야 함</li>
-  <li>최소 수집 — 목적에 필요한 최소한의 정보만 수집</li>
-  <li>목적 외 이용 금지 — 명시한 목적 범위 내에서만 처리</li>
-  <li>처리의 적법성·정당성</li>
-  <li>정확성·최신성 보장</li>
-  <li>안전한 관리 — 안전성 확보 조치</li>
-  <li>비밀 보장</li>
-  <li>투명성 — 처리 현황 공개</li>
+  <li>처리 목적을 명확히 하고 필요한 최소한의 개인정보만 적법·정당하게 수집</li>
+  <li>목적 범위에서 적합하게 처리하고 목적 외 용도로 활용 금지</li>
+  <li>정확성·완전성·최신성 보장</li>
+  <li>권리 침해 가능성과 위험 정도를 고려해 안전하게 관리</li>
+  <li>개인정보 처리방침 등 처리 사항 공개, 열람청구권 등 정보주체 권리 보장</li>
+  <li>사생활 침해를 최소화하는 방법으로 처리</li>
+  <li>익명처리로 목적을 달성할 수 있으면 익명, 안 되면 가명으로 처리</li>
+  <li>책임과 의무를 준수·실천해 정보주체의 신뢰 확보</li>
 </ol>
 
-<h3>정보주체 권리</h3>
+<h3>정보주체의 권리 (제4조)</h3>
+<ul>
+  <li>처리에 관한 정보를 제공받을 권리</li>
+  <li>동의 여부·동의 범위를 선택하고 결정할 권리</li>
+  <li>처리 여부 확인, 열람(사본 발급 포함) 및 <strong>전송을 요구</strong>할 권리</li>
+  <li>처리 정지, 정정·삭제 및 파기를 요구할 권리</li>
+  <li>피해를 신속·공정하게 구제받을 권리</li>
+  <li><strong>완전히 자동화된 처리에 따른 결정</strong>을 거부하거나 설명 등을 요구할 권리</li>
+</ul>
 <table>
-  <thead><tr><th>권리</th><th>내용</th><th>행사 방법</th></tr></thead>
+  <thead><tr><th>권리 행사</th><th>핵심</th></tr></thead>
   <tbody>
-    <tr><td><strong>열람권</strong></td><td>자신의 개인정보 처리 여부·내용 확인</td><td>서면·전자문서 등으로 개인정보처리자에게 청구</td></tr>
-    <tr><td><strong>정정권</strong></td><td>부정확한 정보 정정 요청</td><td>정정 완료 전까지 이용·제공 정지 가능</td></tr>
-    <tr><td><strong>삭제권</strong></td><td>불필요한 정보 삭제 요청</td><td>법령 의무 보존 정보는 삭제 제한</td></tr>
-    <tr><td><strong>처리정지권</strong></td><td>개인정보 처리 일시 정지 요청</td><td>정당한 사유 없으면 10일 이내 조치</td></tr>
-    <tr><td><strong>이동권</strong></td><td>본인 개인정보를 다른 기관으로 이전 요청</td><td>정보이동권(개정 추진 중)</td></tr>
-    <tr><td><strong>자동화 의사결정 거부권</strong></td><td>프로파일링·자동화 처리 결과에 이의 제기</td><td>설명 요구 및 거부 가능</td></tr>
+    <tr><td>열람 (제35조)</td><td>요구받은 날부터 10일 이내 열람 허용(시행령)</td></tr>
+    <tr><td>전송 요구 (제35조의2)</td><td>동의·계약에 따라 처리되는 본인 정보를 본인 또는 개인정보관리 전문기관 등에 컴퓨터로 처리 가능한 형태로 전송 요구. 처리자가 분석·가공해 별도로 생성한 정보는 대상이 아니다</td></tr>
+    <tr><td>자동화된 결정 (제37조의2)</td><td>AI 등 완전히 자동화된 시스템의 결정이 권리·의무에 중대한 영향을 주면 거부 가능(동의·법령·계약에 따른 경우 제외), 설명 요구 가능. 처리자는 결정 기준과 절차를 공개</td></tr>
   </tbody>
 </table>
 
-<h3>수집·이용 법적 근거</h3>
+<h3>수집·이용 (제15조)과 제3자 제공 (제17조)</h3>
 <ul>
-  <li>정보주체의 <strong>동의</strong></li>
-  <li><strong>계약 이행</strong>에 필요한 경우</li>
-  <li><strong>법령 의무</strong> 준수</li>
-  <li>공공기관의 <strong>법령 직무</strong> 수행</li>
-  <li>개인정보처리자의 <strong>정당한 이익</strong> (정보주체 권리보다 명백히 우선하는 경우)</li>
+  <li>수집·이용 근거 7가지: ① 동의 ② 법률 특별 규정·법령상 의무 ③ 공공기관 소관 업무 ④ 계약 체결·이행 ⑤ 급박한 생명·신체·재산 이익 ⑥ 처리자의 정당한 이익(정보주체 권리보다 명백히 우선) ⑦ 공중위생 등 공공 안전을 위한 긴급한 필요</li>
+  <li>동의받을 때 알릴 4가지: 수집·이용 목적, 수집 항목, 보유·이용 기간, 동의 거부권과 거부 시 불이익</li>
+  <li>제3자 제공은 동의 또는 제15조의 ②③⑤⑥⑦ 근거 범위에서. 동의받을 때는 제공받는 자, 그의 이용 목적, 제공 항목, 그의 보유·이용 기간, 동의 거부권을 알린다</li>
+  <li>당초 목적과 합리적으로 관련된 범위에서는 동의 없이 추가 이용·제공 가능(제15조③, 제17조④)</li>
+  <li>만 14세 미만 아동의 개인정보는 <strong>법정대리인 동의</strong>를 받고 동의 여부를 확인해야 한다(제22조의2)</li>
 </ul>
 
-<h3>민감정보·고유식별정보</h3>
-<p><strong>민감정보</strong> (별도 동의 필요): 사상·신념, 노동조합 가입·탈퇴, 정치적 견해, 건강·성생활, 유전정보, 범죄경력, 생체인식정보(지문·홍채·얼굴)</p>
-<p><strong>고유식별정보</strong> (법령 근거 또는 별도 동의 필요): 주민등록번호, 여권번호, 운전면허번호, 외국인등록번호. 주민등록번호는 법적 의무 없으면 처리 금지.</p>
+<h3>처리 제한 정보</h3>
+<table>
+  <thead><tr><th>구분</th><th>대상</th><th>처리 요건</th></tr></thead>
+  <tbody>
+    <tr><td>민감정보 (제23조)</td><td>사상·신념, 노동조합·정당 가입·탈퇴, 정치적 견해, 건강, 성생활 + 시행령: 유전정보, 범죄경력, 특정 개인을 알아보려고 만든 생체인식 특징정보, 인종·민족 정보</td><td>다른 동의와 <strong>별도 동의</strong> 또는 법령이 요구·허용</td></tr>
+    <tr><td>고유식별정보 (제24조)</td><td>주민등록번호, 여권번호, 운전면허번호, 외국인등록번호</td><td>별도 동의 또는 법령이 구체적으로 요구·허용, 암호화 등 안전조치</td></tr>
+    <tr><td>주민등록번호 (제24조의2)</td><td>주민등록번호</td><td>법률·대통령령 등에서 구체적으로 요구·허용, 급박한 이익, 보호위원회 고시의 경우에만. <strong>동의만으로는 처리 불가</strong>. 반드시 암호화, 회원가입 시 주민번호 없이 가입하는 방법 제공</td></tr>
+  </tbody>
+</table>
 
-<h3>개인정보 처리방침 의무 공개 사항</h3>
+<h3>개인정보 처리방침 (제30조)</h3>
+<p>처리 목적, 처리·보유 기간, 제3자 제공, 파기 절차·방법, 민감정보 공개 가능성, 위탁, 가명정보 처리, 정보주체 권리·행사 방법, 개인정보 보호책임자 연락처, 쿠키 등 자동 수집 장치 운영·거부 방법. 처리방침과 계약 내용이 다르면 <strong>정보주체에게 유리한 것</strong>을 적용한다.</p>
+
+<h3>과징금 (제64조의2)</h3>
 <ul>
-  <li>개인정보의 처리 목적</li>
-  <li>처리하는 개인정보의 항목</li>
-  <li>개인정보의 처리 및 보유 기간</li>
-  <li>개인정보의 제3자 제공 현황</li>
-  <li>개인정보 처리 위탁 현황</li>
-  <li>정보주체 권리·의무 및 행사 방법</li>
-  <li>개인정보 보호책임자 정보</li>
+  <li>위법 처리, 아동·민감·고유식별·주민번호 위반, 국외이전 위반, 유출(안전조치를 다한 경우 제외) 등: <strong>전체 매출액의 3% 이하</strong>. 단, 위반행위와 관련 없는 매출액은 빼고 산정한다. 매출액이 없거나 산정이 곤란하면 20억원 이하</li>
+  <li>2026년 개정으로 가중: 3년 안의 고의·중과실 재위반, 고의·중과실로 피해자 1천만명 이상, 시정명령 불이행으로 유출된 경우 <strong>전체 매출액의 10% 이하</strong>(매출 산정 곤란 시 50억원 이하)</li>
 </ul>
-
-<h3>파기 의무</h3>
-<p>보유 목적 달성 후 <strong>지체없이 파기</strong> (복구 불가능한 방법). 전자파일은 덮어쓰기·디가우징·파쇄, 출력물은 파쇄·소각.</p>
 
 <h3>주요 벌칙</h3>
 <table>
-  <thead><tr><th>위반 유형</th><th>형사처벌</th><th>과태료</th></tr></thead>
+  <thead><tr><th>벌칙</th><th>대상 행위</th></tr></thead>
   <tbody>
-    <tr><td>개인정보 불법 수집·제공·누설</td><td>5년 이하 징역 또는 5천만원 이하 벌금</td><td>—</td></tr>
-    <tr><td>안전조치 의무 위반으로 유출</td><td>—</td><td>3천만원 이하</td></tr>
-    <tr><td>주민등록번호 암호화 미적용</td><td>—</td><td>3천만원 이하</td></tr>
-    <tr><td>처리방침 미공개</td><td>—</td><td>1천만원 이하</td></tr>
-    <tr><td>과징금</td><td colspan="2">위반행위 관련 매출액의 3% 이하</td></tr>
+    <tr><td>5년 이하 징역 또는 5천만원 이하 벌금 (제71조)</td><td>동의 없는 제3자 제공과 그 사정을 알고 제공받은 자, 목적 외 이용·제공, 법정대리인 동의 없는 아동 정보 처리, 민감정보·고유식별정보 위법 처리, 재식별 목적 가명정보 처리, 업무상 알게 된 개인정보 누설·무단 제공, 타인 개인정보 훼손·위조·유출</td></tr>
+    <tr><td>3년 이하 징역 또는 3천만원 이하 벌금 (제72조)</td><td>거짓이나 부정한 수단으로 개인정보 취득·동의 획득, 영상정보처리기기 임의 조작·녹음, 직무상 비밀 누설</td></tr>
+    <tr><td>2년 이하 징역 또는 2천만원 이하 벌금 (제73조)</td><td>정정·삭제나 처리정지를 하지 않고 계속 이용·제공</td></tr>
   </tbody>
 </table>
+
+<h3>파기 (제21조)</h3>
+<p>보유기간이 지나거나 처리 목적을 달성해 불필요해지면 지체 없이 파기한다. 다른 법령에 따라 보존해야 하면 다른 개인정보와 분리해 보관한다. 전자파일은 복구할 수 없는 방법(완전 삭제, 디가우징, 물리적 파괴), 출력물은 파쇄·소각.</p>
     `,
   },
   {
     subject: 'law',
     subjectLabel: '정보보안관리및법규',
     chapter: 'privacy-advanced',
-    chapterLabel: '개인정보 보호 심화',
-    keywords: ['개인정보 영향평가', 'PIA', '가명처리', '익명처리', '개인정보 보호책임자', 'CPO', 'DPO', '국외이전', '개인정보 유출통지', '72시간', '개인정보 안전성 확보조치', '개인정보 암호화', '개인정보 접근권한', '개인정보 접속기록'],
+    chapterLabel: '개인정보 보호 심화 (안전조치·유출·국외이전)',
+    keywords: ['안전성 확보조치', '내부 관리계획', '접속기록', '개인정보처리시스템', '인터넷망 차단', '개인정보 영향평가', '영향평가', '가명처리', '가명정보', '익명처리', '결합전문기관', '개인정보 보호책임자', 'CPO', '국외 이전', '국외이전', '유출 통지', '유출 신고', '72시간', '1천명', '위탁', '수탁자'],
     content: `
-<h3>개인정보 안전성 확보조치 기준</h3>
+<h3>안전성 확보조치 (제29조, 시행령 제30조)</h3>
 <table>
-  <thead><tr><th>조치 항목</th><th>의무 내용</th></tr></thead>
+  <thead><tr><th>조치</th><th>핵심 내용</th></tr></thead>
   <tbody>
-    <tr><td><strong>내부 관리계획</strong></td><td>수립·시행, 개인정보 보호책임자(CPO) 지정, 연 1회 이상 교육</td></tr>
-    <tr><td><strong>접근통제</strong></td><td>권한 없는 자의 접근 차단, 외부 접속 시 VPN 등 안전한 인증</td></tr>
-    <tr><td><strong>접근권한 관리</strong></td><td>최소 권한 부여, 퇴직자 즉시 권한 회수, 권한 부여·변경 기록 보관</td></tr>
-    <tr><td><strong>암호화</strong></td><td>고유식별정보·비밀번호·바이오정보 암호화 필수, 전송 시 SSL/TLS</td></tr>
-    <tr><td><strong>접속기록 보관</strong></td><td>최소 6개월 보관, 5만 명 이상 또는 민감정보 처리 시 2년</td></tr>
-    <tr><td><strong>접속기록 위변조 방지</strong></td><td>접속기록의 무결성 보장, 별도 저장·관리</td></tr>
-    <tr><td><strong>보안프로그램</strong></td><td>악성프로그램 방지 소프트웨어 설치·운영, 자동 업데이트</td></tr>
-    <tr><td><strong>물리보안</strong></td><td>출입 통제, 잠금장치, 개인정보 처리 구역 접근 제한</td></tr>
+    <tr><td>내부 관리계획</td><td>수립·시행·점검. 개인정보취급자 관리·감독·교육, 보호책임자 지정 등 조직 구성</td></tr>
+    <tr><td>접근 권한 제한</td><td>개인정보처리시스템 권한의 부여·변경·말소 기준, 정당한 권한자 확인을 위한 인증수단</td></tr>
+    <tr><td>접근 통제</td><td>침입 탐지·차단. 일일평균 이용자 100만명 이상 처리자는 개인정보 처리 PC 등의 인터넷망 차단</td></tr>
+    <tr><td>암호화</td><td>비밀번호 등 인증정보는 일방향 암호화, 주민등록번호 등 고시 정보는 암호화 저장, 정보통신망 송수신 시 암호화</td></tr>
+    <tr><td>접속기록</td><td>접속일시·처리내역 저장·점검과 위조·변조 방지. 고시 기준 1년 이상 보관, 5만명 이상 처리·고유식별정보·민감정보 처리 시스템 등은 2년 이상, 월 1회 이상 점검</td></tr>
+    <tr><td>악성프로그램 방지</td><td>백신 등 설치·운영과 주기적 갱신·점검</td></tr>
+    <tr><td>물리적 조치</td><td>보관시설 마련, 잠금장치 설치</td></tr>
   </tbody>
 </table>
 
-<h3>개인정보 영향평가(PIA)</h3>
+<h3>개인정보 보호책임자 (제31조)</h3>
 <ul>
-  <li><strong>대상</strong>: 공공기관이 대규모 개인정보 파일 구축·운용·변경 시 의무</li>
-  <li><strong>절차</strong>: 사전 계획 → 전문기관 평가 → 개인정보보호위원회 제출</li>
-  <li><strong>전문기관</strong>: KISA 등 개인정보보호위원회 지정 기관</li>
-  <li>민간기업은 의무 아니나 권고</li>
+  <li>모든 개인정보처리자가 지정해야 한다. 소상공인은 지정하지 않을 수 있고, 이때는 사업주·대표자가 보호책임자가 된다</li>
+  <li>민간: 사업주·대표자 또는 임원(임원이 없으면 관련 부서장)</li>
+  <li>대규모 처리자(연 매출 1,800억원 초과이면서 5만명 이상 민감·고유식별정보 또는 100만명 이상 개인정보 처리, 재학생 2만명 이상 대학, 상급종합병원, 공공시스템운영기관)는 자격요건을 갖춘 사람을 지정하고, 지정·변경·해제 때 이사회 의결과 보호위원회 신고를 해야 한다</li>
+  <li>업무: 보호 계획 수립·시행, 실태 조사·개선, 불만 처리·피해 구제, 유출·오남용 방지 내부통제, 교육, 개인정보파일 관리, 대표자·이사회 보고. 업무상 불이익을 주어서는 안 되고 독립성을 보장해야 한다</li>
 </ul>
 
-<h3>가명처리 vs 익명처리 비교</h3>
+<h3>개인정보 영향평가 (제33조)</h3>
+<ul>
+  <li><strong>공공기관</strong>이 대통령령 기준에 해당하는 개인정보파일을 운용해 침해가 우려되면 의무. 보호위원회가 지정한 평가기관에 의뢰하고 결과를 보호위원회에 제출</li>
+  <li>고려 사항: 처리하는 개인정보의 수, 제3자 제공 여부, 권리 침해 가능성과 위험 정도</li>
+  <li>공공기관 외 처리자는 노력 의무</li>
+</ul>
+
+<h3>가명정보</h3>
 <table>
-  <thead><tr><th>구분</th><th>가명처리</th><th>익명처리</th></tr></thead>
+  <thead><tr><th>구분</th><th>가명정보</th><th>익명정보</th></tr></thead>
   <tbody>
-    <tr><td><strong>정의</strong></td><td>추가 정보 없이 개인 식별 불가하게 처리 (추가 정보 결합 시 재식별 가능)</td><td>모든 식별 가능 정보 제거, 재식별 불가</td></tr>
-    <tr><td><strong>활용 범위</strong></td><td>통계 작성, 과학적 연구, 공익적 기록 보존 — 동의 없이 활용 가능</td><td>개인정보 보호법 미적용, 자유롭게 활용</td></tr>
-    <tr><td><strong>재식별 위험</strong></td><td>추가 정보 결합 시 재식별 가능 — 안전조치 및 결합제한기관 이용 의무</td><td>재식별 불가 (사실상 불가능한 수준)</td></tr>
-    <tr><td><strong>법적 지위</strong></td><td>개인정보 보호법 일부 적용 (가명정보 특례)</td><td>개인정보 아님 — 법 미적용</td></tr>
+    <tr><td>성격</td><td>추가 정보와 결합하면 재식별 가능 → 개인정보</td><td>더 이상 개인을 알아볼 수 없음 → 법 적용 제외</td></tr>
+    <tr><td>동의</td><td>통계작성, 과학적 연구, 공익적 기록보존 목적이면 동의 없이 처리 가능(제28조의2)</td><td>해당 없음</td></tr>
+    <tr><td>결합</td><td>서로 다른 처리자의 가명정보 결합은 지정된 결합전문기관에서만(제28조의3)</td><td>-</td></tr>
+    <tr><td>금지</td><td>특정 개인을 알아보기 위한 처리 금지 → 5년 이하 징역·과징금</td><td>-</td></tr>
   </tbody>
 </table>
 
-<h3>개인정보 보호책임자(CPO)</h3>
-<ul>
-  <li><strong>지정 의무</strong>: 개인정보를 처리하는 사업자는 CPO 지정 의무</li>
-  <li><strong>역할</strong>: 내부 관리계획 수립, 접근권한 관리, 직원 교육, 개인정보 파기 확인, 처리방침 점검</li>
-</ul>
+<h3>국외 이전 (제28조의8)</h3>
+<p>국외 제공(조회 포함)·처리위탁·보관은 원칙적으로 금지하고, 다음 중 하나면 허용한다.</p>
+<ol>
+  <li>국외 이전에 대한 <strong>별도 동의</strong> (이전 항목, 국가·시기·방법, 이전받는 자, 이용목적·보유기간, 거부 방법을 미리 알림)</li>
+  <li>법률·조약 등에 특별한 규정</li>
+  <li>계약 체결·이행을 위한 처리위탁·보관으로서 처리방침 공개 또는 개별 통지</li>
+  <li>이전받는 자가 보호위원회가 고시한 개인정보 보호 인증을 받고 필요한 조치를 한 경우</li>
+  <li>이전받는 국가의 보호 수준이 실질적으로 동등하다고 보호위원회가 인정한 경우(적정성 결정)</li>
+</ol>
 
-<h3>국외이전</h3>
-<ul>
-  <li>정보주체 동의 또는 법적 근거 필요</li>
-  <li>이전 받는 국가·기관의 안전성 확보 조치 의무</li>
-  <li>계약서에 보호 조치 명시</li>
-</ul>
+<h3>유출 통지·신고 (제34조, 시행령 제39조·제40조)</h3>
+<table>
+  <thead><tr><th>구분</th><th>기한·기준</th></tr></thead>
+  <tbody>
+    <tr><td>정보주체 통지</td><td>유출등을 알게 된 때부터 <strong>72시간 이내</strong>. 항목, 시점·경위, 피해 최소화 방법, 대응조치·구제절차, 담당부서 연락처, 손해배상 등 법적 권리. 연락처를 모르면 홈페이지에 30일 이상 게시로 갈음</td></tr>
+    <tr><td>유출 가능성 통지 (2026 신설)</td><td>불법 접근으로 유출이 의심되지만 대상자를 특정하기 어려운 경우 등에도 72시간 이내에 가능성 있는 모든 정보주체에게 알림</td></tr>
+    <tr><td>보호위원회·KISA 신고</td><td>① 1천명 이상 ② 민감정보·고유식별정보 ③ 외부 불법 접근에 의한 유출 중 하나면 72시간 이내 신고</td></tr>
+  </tbody>
+</table>
+<p>세부 내용을 확인하지 못했으면 확인된 사실부터 먼저 통지·신고하고, 추가 확인되는 대로 즉시 보완한다. 정보통신망법상 <strong>침해사고</strong>(해킹 등) 신고는 알게 된 때부터 24시간 이내로 별개다.</p>
 
-<h3>개인정보 유출 통지·신고</h3>
+<h3>처리 위탁 (제26조)</h3>
 <ul>
-  <li><strong>정보주체 통지</strong>: 유출 인지 후 <strong>72시간 이내</strong> (통지 내용: 유출 항목, 시점, 경위, 조치사항, 담당자)</li>
-  <li><strong>개인정보보호위원회 신고</strong>: 1천 명 이상 유출 시 즉시 신고</li>
-</ul>
-
-<h3>개인정보 처리 위탁</h3>
-<ul>
-  <li>수탁자 선정 기준 마련, 정기적 관리·감독 의무</li>
-  <li>위탁 계약서 필수 항목: 위탁 업무 목적·범위, 재위탁 제한, 안전조치 의무, 비밀유지, 손해배상</li>
-  <li>수탁자의 개인정보 침해 시 위탁자도 책임</li>
+  <li>문서로 위탁: 목적 외 처리 금지, 기술적·관리적 보호조치, 위탁 업무 목적·범위, 재위탁 제한, 안전성 확보조치, 관리·감독, 손해배상 책임</li>
+  <li>위탁 사실은 처리방침 등으로 공개(마케팅 업무 위탁은 정보주체에게 알림). 재위탁은 위탁자 동의 필요</li>
+  <li>수탁자가 법을 위반해 발생한 손해는 수탁자를 처리자의 소속 직원으로 보아 위탁자에게도 책임</li>
 </ul>
     `,
   },
