@@ -6,7 +6,7 @@
   "passScore": 60,
   "subjectPassScore": 40,
   "examSummary": "5과목 · 각 20문제 · 객관식 100문항 · 2시간 30분 · 평균 60점 이상, 과목별 40점 이상 합격",
-  "subjectHeading": "과목별 개념 학습",
+  "subjectHeading": "요점 정리",
   "subjects": [
     { "slug": "system", "label": "시스템보안", "desc": "리눅스·윈도우 보안과 로그, 시스템 공격·악성코드, 클라우드·컨테이너 보안, 점검 도구(Nmap·Trivy·ScoutSuite)", "questions": 20 },
     { "slug": "network", "label": "네트워크보안", "desc": "네트워크 기초·도구, DoS·스캐닝·스니핑, 방화벽·IDS·VPN, SDN·SASE·ZTNA·XDR, TLS, 무선", "questions": 20 },
@@ -14,6 +14,7 @@
     { "slug": "general", "label": "정보보안일반", "desc": "인증·접근통제·보안 모델, 대칭·공개키 암호, 키 분배, 해시·전자서명·PKI, 블록체인, 최신 보안 동향", "questions": 20 },
     { "slug": "law", "label": "정보보안관리및법규", "desc": "보안 관리·위험관리·BCP·포렌식, ISMS-P·보안 인증, 개인정보 보호법·정보통신망법 등 법규, 사이버 윤리", "questions": 20 }
   ],
+  "hideWritten": true,
   "writtenHeading": "회차별 기출 시험 (2020~2023)",
   "writtenNote": "시험 당시 법령 기준 문제입니다. 개정된 법규 문항은 예상문제에서 현행 기준으로 바로잡았습니다.",
   "predictedNote": "2027~2029 출제기준과 2020~2023 기출 경향을 바탕으로 구성한 예상문제입니다. 기출 중 현행 기준에 맞는 문항은 정정해 포함했고, 법규 문항은 2026년 11월 현행 법령 기준입니다."

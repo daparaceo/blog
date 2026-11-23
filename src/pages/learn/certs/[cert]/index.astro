@@ -8,7 +8,7 @@ export function getStaticPaths() {
 
 const { config } = Astro.props as { config: CertConfig };
 const chapters = getChapters(config.slug);
-const examSlugs = listExamSlugs(config.slug).reverse();
+const examSlugs = config.hideWritten ? [] : listExamSlugs(config.slug).reverse();
 const predictedSlugs = listExamSlugs(config.slug, 'predicted');
 const syllabus = getSyllabus(config.slug);
 const totalQuestions = config.subjects.reduce((sum, s) => sum + s.questions, 0);

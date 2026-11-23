@@ -17,7 +17,7 @@ export function getStaticPaths() {
 
 const { config, chapter } = Astro.props as { config: CertConfig; chapter: CertChapter };
 const subject = config.subjects.find(s => s.slug === chapter.subject)!;
-const relatedQuestions = getRelatedQuestions(config, chapter, loadAllQuestions(config.slug));
+const relatedQuestions = getRelatedQuestions(config, chapter, loadAllQuestions(config.slug).filter(q => !(config.hideWritten && q.examKind === 'written')));
 ---
 
 <BaseLayout

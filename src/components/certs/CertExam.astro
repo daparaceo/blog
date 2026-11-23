@@ -13,9 +13,10 @@ interface Props {
   title: string;
   crumb: string;
   note?: string;
+  searchable?: boolean;  // false면 사이트 검색(pagefind) 색인에서 뺀다
 }
 
-const { config, questions, title, crumb, note } = Astro.props;
+const { config, questions, title, crumb, note, searchable = true } = Astro.props;
 const chapters = getChapters(config.slug);
 
 // 과목 순서: config에 있는 과목 먼저, 그 밖의 과목(구 출제기준 기출 등)은 문항에 나온 순서대로
@@ -33,7 +34,7 @@ function relatedLinks(q: Question) {
 }
 ---
 
-<div class="space-y-8" data-pagefind-body>
+<div class="space-y-8" data-pagefind-body={searchable ? '' : undefined}>
 
   <div class="border-b border-gray-200 pb-4">
     <div class="text-xs text-gray-400 mb-1">

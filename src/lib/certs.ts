@@ -20,6 +20,7 @@ export type CertConfig = {
   writtenHeading?: string;      // 학습 홈 기출 섹션 제목
   writtenNote?: string;         // 학습 홈 기출 섹션 안내
   predictedNote?: string;       // 예상문제 페이지·섹션 안내
+  hideWritten?: boolean;        // 기출 회차 미노출: 학습 홈·관련 문제·sitemap·검색에서 빼고, 회차 페이지는 noindex로만 남긴다
 };
 export type CertChapter = {
   subject: string;

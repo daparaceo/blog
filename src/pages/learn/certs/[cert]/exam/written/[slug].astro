@@ -17,6 +17,7 @@ const title = `${examTitle('written', slug)} ${config.shortName}`;
 <BaseLayout
   title={`${title} 필기 기출문제`}
   description={`${config.name} ${examTitle('written', slug)} 기출문제 ${questions.length}문제 — 문항별 해설, 개별 채점과 전체 채점 지원`}
+  noindex={config.hideWritten}
 >
-  <CertExam config={config} questions={questions} title={title} crumb="기출문제 (필기)" note={config.sourceNote} />
+  <CertExam config={config} questions={questions} title={title} crumb="기출문제 (필기)" note={config.sourceNote} searchable={!config.hideWritten} />
 </BaseLayout>

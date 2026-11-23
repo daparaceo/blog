@@ -31,7 +31,8 @@ export async function GET() {
 
   // 보안기사 섹션 (새 URL)
   const questionsDir = path.resolve(process.cwd(), 'src/data/certs/security/questions');
-  const examSlugs = fs.readdirSync(questionsDir)
+  const securityConfig = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'src/data/certs/security/config.json'), 'utf-8'));
+  const examSlugs = securityConfig.hideWritten ? [] : fs.readdirSync(questionsDir)
     .filter((f: string) => f.endsWith('.json'))
     .map((f: string) => f.replace('.json', ''));
 
