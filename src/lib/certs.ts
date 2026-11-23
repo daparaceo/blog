@@ -1,6 +1,5 @@
 // 자격증 기출 공통 로더
 // src/data/certs/{cert}/config.json 이 있는 시험만 /learn/certs/[cert]/ 공통 페이지로 생성된다.
-// (security 는 전용 페이지를 쓰므로 config.json 을 두지 않는다)
 
 import fs from 'node:fs';
 import path from 'node:path';

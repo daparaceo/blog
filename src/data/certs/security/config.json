@@ -1,0 +1,18 @@
+{
+  "slug": "security",
+  "name": "정보보안기사 필기",
+  "shortName": "정보보안기사",
+  "description": "정보보안기사 필기 준비 — 과목별 개념 정리와 기출문제 풀이",
+  "passScore": 60,
+  "subjectPassScore": 40,
+  "examSummary": "5과목 · 각 20문제 · 객관식 100문항 · 2시간 30분 · 평균 60점 이상, 과목별 40점 이상 합격",
+  "subjectHeading": "과목별 개념 학습",
+  "subjects": [
+    { "slug": "system", "label": "시스템보안", "desc": "운영체제(유닉스·리눅스·윈도우) 보안, 접근통제, 암호, 악성코드, 시스템 공격", "questions": 20 },
+    { "slug": "network", "label": "네트워크보안", "desc": "네트워크 기초, 프로토콜 취약점, DoS·스캐닝·스니핑, 방화벽·IDS·VPN, TLS, 무선", "questions": 20 },
+    { "slug": "application", "label": "어플리케이션보안", "desc": "웹 취약점, 시큐어 코딩, DB·전자상거래·인증, 클라우드·모바일 보안", "questions": 20 },
+    { "slug": "general", "label": "정보보안일반", "desc": "보안 개념, 위험관리, BCP·DRP, 물리 보안, 감사, 포렌식, 거버넌스", "questions": 20 },
+    { "slug": "law", "label": "정보보안관리및법규", "desc": "개인정보 보호법, 정보통신망법, 전자서명법, ISMS-P, 기반시설 보호, 국제 표준", "questions": 20 }
+  ],
+  "writtenHeading": "회차별 기출 시험"
+}
