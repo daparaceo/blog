@@ -41,6 +41,7 @@ export type CertQuestion = {
   answers?: number[];
   explanation?: string;
   hasImage?: boolean;
+  imageOf?: string;           // 그림 파일을 다른 문항 id로 찾을 때 (예상문제가 기출 그림을 재사용)
   imageMissing?: boolean;
   tags?: string[];
   examSlug: string;
@@ -118,7 +119,7 @@ export function questionLabel(q: CertQuestion): string {
   return `${examTitle(q.examKind, q.examSlug)} ${q.number}번`;
 }
 
-// 파일명 = 문제 id 규칙으로 이미지를 찾는다 ({id}, {id}_2, {id}-{k})
+// 파일명 = 문제 id(또는 imageOf) 규칙으로 이미지를 찾는다 ({id}, {id}_2, {id}-{k})
 export function createImageResolver(cert: string) {
   const dir = path.join(IMAGE_ROOT, cert, 'questions');
   const byStem = new Map<string, { file: string; priority: number }>();
@@ -143,8 +144,8 @@ export function createImageResolver(cert: string) {
   }
 
   return {
-    question: (q: CertQuestion) => series(q.id),
-    option: (q: CertQuestion, optionNumber: number) => series(`${q.id}-${optionNumber}`),
+    question: (q: CertQuestion) => series(q.imageOf ?? q.id),
+    option: (q: CertQuestion, optionNumber: number) => series(`${q.imageOf ?? q.id}-${optionNumber}`),
   };
 }
 

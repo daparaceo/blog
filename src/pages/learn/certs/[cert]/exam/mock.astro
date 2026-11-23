@@ -28,7 +28,9 @@ const totalQuestions = config.subjects.reduce((sum, s) => sum + s.questions, 0);
 const normalize = (s: string) => s.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
 const seen = new Set<string>();
 const subjectLabels = config.subjects.map(s => s.label);
-const pool = loadAllQuestions(config.slug).filter(q => subjectLabels.includes(q.subject)).filter(q => {
+const inSubjects = loadAllQuestions(config.slug).filter(q => subjectLabels.includes(q.subject));
+// 예상문제가 있으면 예상문제만 쓴다 (예상문제는 기출 중 현행 기준에 맞는 문항을 정정해 다시 담은 것이라 기출을 섞으면 옛 정답이 나온다)
+const pool = (inSubjects.some(q => q.examKind === 'predicted') ? inSubjects.filter(q => q.examKind === 'predicted') : inSubjects).filter(q => {
   const key = `${normalize(q.question)}|${q.options.map(normalize).sort().join('|')}`;
   if (seen.has(key)) return false;
   seen.add(key);
