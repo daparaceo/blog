@@ -5,7 +5,7 @@
   "description": "미용사(일반) 필기 준비 — 현행 출제기준 항목별 요점 정리와 예상문제 10회분, 실전 모의고사",
   "passScore": 60,
   "examSummary": "필기 1과목(헤어스타일 연출 및 두피·모발 관리) · 객관식 60문항 · 1시간 · 60점 이상 합격",
-  "subjectHeading": "출제기준 항목별 요점 정리",
+  "subjectHeading": "요점 정리",
   "subjects": [
     {
       "slug": "safety",
