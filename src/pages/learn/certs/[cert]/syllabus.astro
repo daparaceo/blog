@@ -11,6 +11,12 @@ export function getStaticPaths() {
 
 const { config, syllabus } = Astro.props as { config: CertConfig; syllabus: CertSyllabus };
 const subjectLabel = (slug?: string) => config.subjects.find(s => s.slug === slug)?.label;
+// 과목(group)이 있으면 과목마다 주요항목 번호를 1부터 다시 매긴다
+const itemNumber = (i: number) => {
+  const group = syllabus.items[i].group;
+  if (!group) return i + 1;
+  return syllabus.items.slice(0, i + 1).filter(item => item.group === group).length;
+};
 ---
 
 <BaseLayout
@@ -36,7 +42,7 @@ const subjectLabel = (slug?: string) => config.subjects.find(s => s.slug === slu
           <a href={v.url} target="_blank" rel="noopener noreferrer" class="block p-4 border border-gray-200 rounded-lg hover:border-sky-300 hover:bg-sky-50 transition-colors group">
             <span class="text-xs font-medium text-sky-700 bg-sky-50 px-2 py-0.5 rounded">{v.label}</span>
             <span class="block font-medium text-gray-900 mt-2">{v.period}</span>
-            <span class="block text-xs text-gray-400 mt-1 group-hover:text-sky-600">Q-net 원문 보기 ↗</span>
+            <span class="block text-xs text-gray-400 mt-1 group-hover:text-sky-600">{syllabus.sourceName ?? 'Q-net'} 원문 보기 ↗</span>
           </a>
         ))}
       </div>
@@ -55,13 +61,26 @@ const subjectLabel = (slug?: string) => config.subjects.find(s => s.slug === slu
       {syllabus.duty && <p class="text-sm text-gray-500 mt-3 leading-relaxed">직무내용: {syllabus.duty}</p>}
     </section>
 
+    {syllabus.changes && syllabus.changes.length > 0 && (
+      <section>
+        <h2 class="text-base font-semibold text-gray-700 mb-3">{syllabus.changesTitle ?? '달라진 점'}</h2>
+        <ul class="list-disc pl-5 space-y-1.5 text-sm text-gray-600 leading-relaxed">
+          {syllabus.changes.map(c => <li>{c}</li>)}
+        </ul>
+      </section>
+    )}
+
     <section>
-      <h2 class="text-base font-semibold text-gray-700 mb-3">주요항목 · 세부항목 · 세세항목</h2>
+      <h2 class="text-base font-semibold text-gray-700 mb-3">{syllabus.itemsTitle ?? '주요항목 · 세부항목 · 세세항목'}</h2>
       <div class="space-y-3">
         {syllabus.items.map((item, i) => (
+          <>
+          {item.group && item.group !== syllabus.items[i - 1]?.group && (
+            <h3 class="text-sm font-semibold text-sky-700 pt-3">{item.group}</h3>
+          )}
           <div class="border border-gray-200 rounded-lg overflow-hidden">
             <div class="flex items-center justify-between gap-3 px-4 py-2.5 bg-gray-50 border-b border-gray-100">
-              <h3 class="font-semibold text-gray-900 text-sm">{i + 1}. {item.title}</h3>
+              <h4 class="font-semibold text-gray-900 text-sm">{itemNumber(i)}. {item.title}</h4>
               {subjectLabel(item.subject) && (
                 <a href={`/learn/certs/${config.slug}/${item.subject}/`} class="text-xs text-sky-600 hover:text-sky-700 shrink-0">요점 정리 →</a>
               )}
@@ -75,11 +94,12 @@ const subjectLabel = (slug?: string) => config.subjects.find(s => s.slug === slu
               ))}
             </ul>
           </div>
+          </>
         ))}
       </div>
     </section>
 
-    <p class="text-xs text-gray-400">출처: 한국산업인력공단 Q-net 종목별 출제기준 (확인일 {syllabus.checkedAt}). 실기 출제기준은 포함하지 않았습니다.</p>
+    <p class="text-xs text-gray-400">출처: {syllabus.source ?? '한국산업인력공단 Q-net 종목별 출제기준'} (확인일 {syllabus.checkedAt}). 실기 출제기준은 포함하지 않았습니다.</p>
 
     <div class="pt-2 border-t border-gray-200">
       <a href={`/learn/certs/${config.slug}/`} class="text-sm text-gray-500 hover:text-sky-600 transition-colors">← {config.shortName} 학습 홈으로</a>

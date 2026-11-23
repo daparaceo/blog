@@ -65,10 +65,15 @@ export type CertSyllabus = {
   title: string;
   versions: { label: string; period: string; url: string }[];
   sameNote?: string;
+  itemsTitle?: string;          // 항목 표 제목 (기본: 주요항목 · 세부항목 · 세세항목)
+  changesTitle?: string;
+  changes?: string[];           // 기준 간 달라진 점
   checkedAt: string;
+  sourceName?: string;          // 원문 링크 표시명 (기본: Q-net)
+  source?: string;              // 페이지 하단 출처 문구
   summary: [string, string][];
   duty?: string;
-  items: { title: string; subject?: string; details: [string, string[]][] }[];
+  items: { title: string; group?: string; subject?: string; details: [string, string[]][] }[];  // group: 과목명(과목이 여러 개인 시험)
 };
 
 export function getSyllabus(cert: string): CertSyllabus | null {
