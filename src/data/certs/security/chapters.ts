@@ -19,7 +19,7 @@ export const CHAPTERS: Chapter[] = [
     subjectLabel: '시스템보안',
     chapter: 'linux-security',
     chapterLabel: '유닉스·리눅스 보안',
-    keywords: ['umask', '파일 권한', 'setuid', 'setgid', 'sticky bit', '/etc/passwd', '/etc/shadow', 'RUID', 'EUID', 'TCP Wrapper', 'sudoers', 'PAM', '/etc/securetty'],
+    keywords: ['umask', '파일 권한', 'setuid', 'setgid', 'sticky bit', '/etc/passwd', '/etc/shadow', 'RUID', 'EUID', 'TCP Wrapper', 'sudoers', 'PAM', '/etc/securetty', 'pam_faillock', 'pam_tally2', 'pam_wheel', 'wheel', 'chattr', 'lsattr', 'PermitRootLogin', 'cron.allow', 'cron.deny', '.rhosts', 'hosts.equiv'],
     content: `
 <h3>파일 권한 (rwx)</h3>
 <p>리눅스 파일 권한은 소유자(User)/그룹(Group)/기타(Other) 3계층, 각각 읽기(r=4)/쓰기(w=2)/실행(x=1) 3비트로 표현합니다.</p>
@@ -146,6 +146,38 @@ sshd: 192.168.1.0/24
 
 # /etc/hosts.deny (나머지 차단)
 ALL: ALL</code></pre>
+<h3>PAM (Pluggable Authentication Modules)</h3>
+<p>인증 방식을 프로그램과 분리해 /etc/pam.d/ 설정 파일로 모듈을 조합한다. 모듈 유형은 auth(인증), account(계정 유효성), password(패스워드 변경), session(세션 처리) 4가지.</p>
+<table>
+  <thead><tr><th>모듈</th><th>용도</th></tr></thead>
+  <tbody>
+    <tr><td>pam_faillock (구 pam_tally2)</td><td>로그인 실패 횟수 초과 시 계정 잠금. 예: deny=5 unlock_time=600</td></tr>
+    <tr><td>pam_pwquality</td><td>패스워드 복잡도(길이, 문자 종류) 강제</td></tr>
+    <tr><td>pam_wheel</td><td>wheel 그룹 사용자만 su 사용 허용</td></tr>
+    <tr><td>pam_securetty</td><td>/etc/securetty에 있는 터미널에서만 root 로그인 허용</td></tr>
+  </tbody>
+</table>
+
+<h3>자주 출제되는 계정·접근 보안 설정</h3>
+<table>
+  <thead><tr><th>점검 항목</th><th>설정 방법</th></tr></thead>
+  <tbody>
+    <tr><td>root 원격 접속 제한</td><td>telnet: /etc/securetty에서 pts 항목 제거 / SSH: sshd_config에 <code>PermitRootLogin no</code></td></tr>
+    <tr><td>su 명령 사용 제한</td><td><code>chgrp wheel /usr/bin/su; chmod 4750 /usr/bin/su</code> 또는 /etc/pam.d/su에 pam_wheel.so 설정</td></tr>
+    <tr><td>UID 0 계정 점검</td><td>root 외에 UID가 0인 계정이 있으면 백도어 계정일 수 있다</td></tr>
+    <tr><td>r-계열 서비스 신뢰 관계</td><td>$HOME/.rhosts, /etc/hosts.equiv에 "+ +"가 있으면 누구나 패스워드 없이 접속 → 파일 제거 또는 사용 중지</td></tr>
+    <tr><td>cron 사용 제한</td><td>/etc/cron.allow에 있는 사용자만 허용(없으면 cron.deny에 없는 사용자 허용). 파일 소유자 root, 권한 640 이하</td></tr>
+    <tr><td>세션 타임아웃</td><td>/etc/profile에 <code>TMOUT=600</code> (초 단위)</td></tr>
+    <tr><td>World Writable 파일 점검</td><td><code>find / -type f -perm -2</code>로 누구나 쓸 수 있는 파일 찾아 권한 수정</td></tr>
+  </tbody>
+</table>
+
+<h3>파일 속성 (chattr / lsattr)</h3>
+<ul>
+  <li><code>chattr +i 파일</code>: 변경 불가(immutable). root도 수정·삭제·이름 변경 불가 → 중요 설정 파일 보호</li>
+  <li><code>chattr +a 파일</code>: 내용 추가(append)만 가능 → 로그 파일 변조 방지</li>
+  <li><code>lsattr</code>로 확인. 침입자가 +i 속성을 걸어 악성 파일 삭제를 방해하기도 한다</li>
+</ul>
     `,
   },
   {
@@ -153,7 +185,7 @@ ALL: ALL</code></pre>
     subjectLabel: '시스템보안',
     chapter: 'system-logs',
     chapterLabel: '시스템 정보·로그',
-    keywords: ['utmp', 'wtmp', 'btmp', 'lastlog', 'lastb', 'last', 'xferlog', 'syslog', 'rsyslog', '/var/log', 'secure', 'messages', 'pacct', 'lastcomm', 'CloudTrail', '감사 로그', '메타데이터', 'IMDS', '169.254.169.254'],
+    keywords: ['utmp', 'wtmp', 'btmp', 'lastlog', 'lastb', 'last', 'xferlog', 'syslog', 'rsyslog', '/var/log', 'secure', 'messages', 'pacct', 'lastcomm', 'CloudTrail', '감사 로그', '메타데이터', 'IMDS', '169.254.169.254', 'journalctl', 'logrotate', 'auditd', 'auditctl', 'ausearch', 'access_log', 'error_log', '.bash_history', 'evtx', 'Combined Log Format'],
     content: `
 <h3>리눅스 주요 로그 파일</h3>
 <table>
@@ -204,6 +236,32 @@ ALL: ALL</code></pre>
   <li>위협: 웹 애플리케이션의 SSRF 취약점으로 메타데이터 주소를 요청하게 해 임시 자격증명을 탈취한다</li>
   <li>대응: AWS IMDSv2처럼 PUT 요청으로 받은 세션 토큰이 있어야 조회되게 강제하고, 응답 홉 수를 제한한다. user-data에 비밀번호·키를 넣지 않는다</li>
 </ul>
+<h3>그 밖의 리눅스 로그 도구</h3>
+<table>
+  <thead><tr><th>도구</th><th>내용</th></tr></thead>
+  <tbody>
+    <tr><td>journalctl</td><td>systemd 저널(바이너리 로그) 조회. 예: <code>journalctl -u sshd</code>(서비스별), <code>-f</code>(실시간)</td></tr>
+    <tr><td>logrotate</td><td>로그를 주기적으로 회전·압축·삭제해 디스크가 차는 것을 막는다. 보관 주기는 법적 보존 기간을 고려해 정한다</td></tr>
+    <tr><td>auditd</td><td>커널 수준 감사. <code>auditctl -w /etc/passwd -p wa -k passwd_change</code>로 파일 쓰기·속성 변경 감시, <code>ausearch</code>·<code>aureport</code>로 조회</td></tr>
+    <tr><td>.bash_history</td><td>사용자별 셸 명령 기록. 침입자가 삭제하거나 HISTFILE을 /dev/null로 바꿔 흔적을 지우기도 한다</td></tr>
+  </tbody>
+</table>
+
+<h3>웹 서버 로그</h3>
+<pre><code>192.168.0.10 - - [23/Nov/2026:10:15:32 +0900] "GET /index.php?id=1' HTTP/1.1" 500 512 "-" "sqlmap/1.8"
+  ①접속 IP   ②③   ④요청 시각                   ⑤요청 라인(메서드·URI·프로토콜)  ⑥상태 코드 ⑦전송 바이트 ⑧Referer ⑨User-Agent</code></pre>
+<ul>
+  <li>Apache의 access_log(접속 기록)·error_log(오류 기록). 위 형식은 Combined Log Format</li>
+  <li>분석 포인트: 짧은 시간 대량 요청(스캐닝·무차별 대입), URI의 작은따옴표·UNION·../ 같은 공격 문자열, 404·500 응답 급증, 자동화 도구 User-Agent</li>
+  <li>POST 요청의 본문은 기본 로그에 남지 않으므로 웹 방화벽 로그와 함께 분석한다</li>
+</ul>
+
+<h3>윈도우 로그 보충</h3>
+<ul>
+  <li>로그 파일 위치: <code>%SystemRoot%\\System32\\winevt\\Logs\\</code> 아래 .evtx 파일(Security.evtx 등)</li>
+  <li>보안 로그는 감사 정책(로컬 보안 정책 → 감사 정책)을 켜야 기록된다. 계정 로그온, 개체 액세스, 정책 변경, 권한 사용 등을 성공·실패별로 설정</li>
+  <li>로그 최대 크기와 "필요한 경우 이벤트 덮어쓰기" 설정을 점검해 중요한 기록이 사라지지 않게 한다</li>
+</ul>
     `,
   },
   {
@@ -211,7 +269,7 @@ ALL: ALL</code></pre>
     subjectLabel: '시스템보안',
     chapter: 'windows-security',
     chapterLabel: '윈도우 보안',
-    keywords: ['SAM', '레지스트리', 'NTFS', 'DACL', 'SACL', '이벤트 로그', 'UAC', '계정 잠금', 'BitLocker', 'NTLM'],
+    keywords: ['SAM', '레지스트리', 'NTFS', 'DACL', 'SACL', '이벤트 로그', 'UAC', '계정 잠금', 'BitLocker', 'NTLM', 'LSA', 'SRM', 'SID', 'RID', '500', '액세스 토큰', 'C$', 'ADMIN$', 'IPC$', '널 세션', 'EFS', 'Kerberos', 'NTLMv2', 'LM'],
     content: `
 <h3>SAM 데이터베이스</h3>
 <p>SAM(Security Account Manager)은 로컬 계정의 인증 정보를 저장하는 윈도우 데이터베이스입니다.</p>
@@ -302,6 +360,43 @@ ALL: ALL</code></pre>
     <tr><td>BitLocker</td><td>제어판 &gt; BitLocker</td><td>드라이브 전체 암호화 (TPM 활용)</td></tr>
   </tbody>
 </table>
+<h3>윈도우 인증 구성 요소</h3>
+<table>
+  <thead><tr><th>구성 요소</th><th>역할</th></tr></thead>
+  <tbody>
+    <tr><td><strong>LSA</strong>(Local Security Authority)</td><td>모든 계정의 로그인 검증, 시스템 자원 접근 권한 검사, 계정 이름과 SID 매칭, SRM이 만든 감사 로그 기록. 프로세스는 lsass.exe</td></tr>
+    <tr><td><strong>SAM</strong></td><td>사용자·그룹 계정 정보와 패스워드 해시 데이터베이스. LSA의 요청을 받아 인증 수행</td></tr>
+    <tr><td><strong>SRM</strong>(Security Reference Monitor)</td><td>인증된 사용자에게 SID를 담은 액세스 토큰 부여, 객체 접근 허용 여부 결정, 감사 메시지 생성</td></tr>
+  </tbody>
+</table>
+<p>로그온 흐름: Winlogon이 자격 증명을 받아 LSA에 전달 → 로컬 계정은 SAM, 도메인 계정은 도메인 컨트롤러(Kerberos)로 검증 → 성공하면 액세스 토큰이 만들어지고 이후 프로세스가 이 토큰으로 자원에 접근한다.</p>
+
+<h3>SID (보안 식별자)</h3>
+<pre><code>S-1-5-21-1234567890-1234567890-1234567890-500
+         └──────── 도메인(컴퓨터) 식별자 ────────┘ └RID┘</code></pre>
+<ul>
+  <li>RID <strong>500</strong>: Administrator / <strong>501</strong>: Guest / 1000 이상: 일반 사용자</li>
+  <li>계정 이름을 바꿔도 SID는 그대로이므로 Administrator 이름 변경만으로는 공격자의 식별을 완전히 막지 못한다</li>
+</ul>
+
+<h3>공유 폴더와 널 세션</h3>
+<ul>
+  <li>기본 관리 공유: <strong>C$, D$</strong>(드라이브), <strong>ADMIN$</strong>(시스템 폴더), <strong>IPC$</strong>(프로세스 간 통신). <code>net share</code>로 확인</li>
+  <li><strong>널 세션</strong>: IPC$에 계정·패스워드 없이 연결해 계정 목록 등을 수집하는 공격. RestrictAnonymous 레지스트리 값으로 익명 접근 제한</li>
+  <li>불필요한 기본 공유는 AutoShareServer / AutoShareWks 레지스트리 값을 0으로 해 재부팅 후에도 생성되지 않게 한다. 일반 공유 폴더에서는 Everyone 권한을 제거한다</li>
+</ul>
+
+<h3>윈도우 인증 프로토콜</h3>
+<table>
+  <thead><tr><th>프로토콜</th><th>특징</th></tr></thead>
+  <tbody>
+    <tr><td>LM</td><td>패스워드를 대문자로 바꿔 7자씩 나눠 DES로 해시. 매우 취약해 사용 금지</td></tr>
+    <tr><td>NTLM(v1)</td><td>MD4 해시 기반 시도-응답. 취약</td></tr>
+    <tr><td>NTLMv2</td><td>클라이언트 난수·타임스탬프를 넣어 강화. 워크그룹 환경에서 사용</td></tr>
+    <tr><td>Kerberos</td><td>도메인(Active Directory) 환경의 기본 인증</td></tr>
+  </tbody>
+</table>
+<p>파일 암호화: <strong>EFS</strong>는 NTFS의 파일·폴더 단위 암호화(사용자 인증서 기반), <strong>BitLocker</strong>는 볼륨 전체 암호화(TPM 연동). FAT32에는 NTFS 권한과 EFS가 없다.</p>
     `,
   },
   {
@@ -309,7 +404,7 @@ ALL: ALL</code></pre>
     subjectLabel: '시스템보안',
     chapter: 'system-attack',
     chapterLabel: '시스템 공격 기법',
-    keywords: ['버퍼오버플로', '포맷스트링', '레이스컨디션', 'TOCTOU', '권한상승', '루트킷', '패스워드크래킹', 'Pass the Hash', 'NOP sled', '스택'],
+    keywords: ['버퍼오버플로', '포맷스트링', '레이스컨디션', 'TOCTOU', '권한상승', '루트킷', '패스워드크래킹', 'Pass the Hash', 'NOP sled', '스택', 'RTL', 'Return-to-libc', 'ROP', '가젯', 'strcpy', 'gets', 'sprintf', '메모리 구조', 'BSS', '힙 스프레이', 'Use-After-Free'],
     content: `
 <h3>버퍼 오버플로 (Buffer Overflow)</h3>
 <p>입력 데이터가 버퍼 크기를 초과해 인접 메모리를 덮어쓰는 공격. 스택의 리턴 주소를 공격자 코드로 덮어씁니다.</p>
@@ -401,6 +496,39 @@ ALL: ALL</code></pre>
     <tr><td>Pass the Hash</td><td>Kerberos 강제, Credential Guard, 관리자 계정 분리</td></tr>
   </tbody>
 </table>
+<h3>프로세스 메모리 구조</h3>
+<table>
+  <thead><tr><th>영역</th><th>저장 내용</th></tr></thead>
+  <tbody>
+    <tr><td>코드(text)</td><td>실행할 기계어 코드. 읽기 전용</td></tr>
+    <tr><td>데이터(data) / BSS</td><td>초기화된 전역·정적 변수 / 초기화되지 않은 전역·정적 변수</td></tr>
+    <tr><td>힙(heap)</td><td>malloc·new로 동적 할당. 낮은 주소에서 높은 주소로 자란다</td></tr>
+    <tr><td>스택(stack)</td><td>지역 변수, 함수 인자, 리턴 주소, 이전 프레임 포인터(SFP). 높은 주소에서 낮은 주소로 자란다</td></tr>
+  </tbody>
+</table>
+<p>스택에서 지역 변수 버퍼 → SFP → 리턴 주소 순으로 놓이므로, 버퍼를 넘치게 쓰면 리턴 주소까지 덮어쓸 수 있다.</p>
+
+<h3>경계 검사를 하지 않는 위험 함수</h3>
+<table>
+  <thead><tr><th>위험 함수</th><th>대체 함수</th></tr></thead>
+  <tbody>
+    <tr><td>strcpy, strcat</td><td>strncpy, strncat (또는 strlcpy, strlcat)</td></tr>
+    <tr><td>gets</td><td>fgets</td></tr>
+    <tr><td>sprintf, vsprintf</td><td>snprintf, vsnprintf</td></tr>
+    <tr><td>scanf("%s")</td><td>폭 지정 scanf("%99s") 또는 fgets</td></tr>
+  </tbody>
+</table>
+
+<h3>방어 기법 우회 공격</h3>
+<table>
+  <thead><tr><th>공격</th><th>원리</th><th>우회 대상</th></tr></thead>
+  <tbody>
+    <tr><td>RTL(Return-to-libc)</td><td>셸코드 대신 이미 메모리에 있는 라이브러리 함수(system 등)로 리턴</td><td>DEP/NX(스택 실행 금지)</td></tr>
+    <tr><td>ROP(Return-Oriented Programming)</td><td>ret로 끝나는 짧은 코드 조각(가젯)을 이어 붙여 원하는 동작 수행</td><td>DEP/NX, 일부 ASLR</td></tr>
+    <tr><td>힙 스프레이</td><td>힙 여러 곳에 NOP+셸코드를 대량 배치해 점프 성공률을 높임</td><td>ASLR</td></tr>
+    <tr><td>Use-After-Free</td><td>해제된 메모리를 다시 참조하는 결함을 이용해 조작된 객체를 실행</td><td>(힙 취약점)</td></tr>
+  </tbody>
+</table>
     `,
   },
   {
@@ -408,7 +536,7 @@ ALL: ALL</code></pre>
     subjectLabel: '시스템보안',
     chapter: 'malware',
     chapterLabel: '악성코드·APT',
-    keywords: ['바이러스', '웜', '트로이목마', '랜섬웨어', '루트킷', '스파이웨어', '봇넷', '키로거', '백도어', 'APT', '드라이브바이다운로드', '워터링홀', '스피어피싱', '공급망'],
+    keywords: ['바이러스', '웜', '트로이목마', '랜섬웨어', '루트킷', '스파이웨어', '봇넷', '키로거', '백도어', 'APT', '드라이브바이다운로드', '워터링홀', '스피어피싱', '공급망', '파일리스', 'Fileless', '정적 분석', '동적 분석', '패커', 'UPX', '난독화', 'RaaS', '이중 갈취', 'IoC', 'YARA'],
     content: `
 
 <h3>악성코드 유형 분류</h3>
@@ -473,7 +601,7 @@ ALL: ALL</code></pre>
   <li><strong>스피어피싱(Spear Phishing)</strong>: 특정 대상 맞춤형 피싱 이메일. 실제 관련자 사칭. 일반 피싱보다 성공률 높음.</li>
   <li><strong>공급망 공격(Supply Chain Attack)</strong>: 소프트웨어 공급망을 통해 신뢰된 업데이트에 악성코드 삽입. SolarWinds 사례.</li>
   <li><strong>Living off the Land(LotL)</strong>: 시스템 정상 도구(PowerShell, WMI) 악용 → 탐지 회피.</li>
-  <li><strong>필리싱(Vishing/Smishing)</strong>: 전화/SMS를 이용한 피싱.</li>
+  <li><strong>비싱·스미싱(Vishing/Smishing)</strong>: 전화/SMS를 이용한 피싱.</li>
 </ul>
 
 <h3>랜섬웨어 특징 및 대응</h3>
@@ -485,17 +613,33 @@ ALL: ALL</code></pre>
   <li>EDR(Endpoint Detection and Response) 도입</li>
 </ul>
 
-<h3>악성코드 탐지 기법</h3>
+<h3>파일리스(Fileless) 악성코드</h3>
+<ul>
+  <li>실행 파일을 디스크에 남기지 않고 메모리에서만 동작하거나 레지스트리·WMI에 코드를 숨긴다</li>
+  <li>PowerShell, WMI, mshta 같은 정상 시스템 도구를 이용(LotL)해 시그니처 기반 백신을 우회한다</li>
+  <li>대응: 행위 기반 EDR, PowerShell 스크립트 블록 로깅, 불필요한 스크립트 실행 제한(실행 정책·애플리케이션 통제)</li>
+</ul>
+
+<h3>악성코드 분석 방법</h3>
 <table>
-  <thead><tr><th>기법</th><th>원리</th><th>장점</th><th>단점</th></tr></thead>
+  <thead><tr><th>구분</th><th>방법</th><th>도구 예</th></tr></thead>
   <tbody>
-    <tr><td><strong>시그니처 기반</strong></td><td>알려진 패턴 DB와 비교</td><td>정확도 높음, 빠름</td><td>신종·변종 탐지 불가</td></tr>
-    <tr><td><strong>행위 기반(휴리스틱)</strong></td><td>의심 행동 패턴 탐지</td><td>신종 탐지 가능</td><td>오탐률 높음</td></tr>
-    <tr><td><strong>무결성 검사</strong></td><td>파일 해시값 비교</td><td>변조 정확히 탐지</td><td>초기 해시 DB 필요</td></tr>
-    <tr><td><strong>샌드박스</strong></td><td>격리 환경 실행 관찰</td><td>행위 직접 확인</td><td>느림, 우회 가능</td></tr>
-    <tr><td><strong>평판 기반</strong></td><td>클라우드 집단 지성</td><td>빠른 신종 대응</td><td>인터넷 연결 필요</td></tr>
+    <tr><td>정적 분석</td><td>실행하지 않고 파일 해시·문자열·PE 헤더·임포트 함수 확인, 디스어셈블</td><td>strings, PEview, IDA, Ghidra</td></tr>
+    <tr><td>동적 분석</td><td>가상 환경에서 실행하며 프로세스·레지스트리·파일·네트워크 변화 관찰</td><td>Process Monitor, Wireshark, 샌드박스</td></tr>
   </tbody>
 </table>
+<ul>
+  <li><strong>패킹</strong>: 실행 파일을 압축·암호화해 분석과 시그니처 탐지를 어렵게 한다(UPX 등). 정적 분석 전에 언패킹이 필요하다</li>
+  <li><strong>난독화</strong>: 코드 의미를 알아보기 어렵게 변형. 안티 디버깅·가상머신 탐지로 분석 환경에서는 동작하지 않기도 한다</li>
+  <li><strong>IoC</strong>(침해 지표): 악성 파일 해시, C&C 도메인·IP 등 침해 흔적. <strong>YARA</strong> 규칙으로 악성코드 특징 패턴을 정의해 탐지한다</li>
+</ul>
+
+<h3>최근 랜섬웨어 동향</h3>
+<ul>
+  <li><strong>RaaS</strong>(Ransomware as a Service): 개발자가 랜섬웨어를 만들어 공격자(제휴자)에게 빌려주고 수익을 나눈다</li>
+  <li><strong>이중 갈취</strong>: 파일을 암호화하는 동시에 데이터를 빼내 공개하겠다고 협박. 백업만으로는 피해를 막을 수 없게 됐다</li>
+  <li>침투 경로: 취약한 원격 접속(RDP·VPN), 피싱 메일, 패치되지 않은 서버 취약점</li>
+</ul>
     `,
   },
   {
@@ -503,7 +647,7 @@ ALL: ALL</code></pre>
     subjectLabel: '시스템보안',
     chapter: 'social-engineering',
     chapterLabel: '사회공학',
-    keywords: ['사회공학', '피싱', '스피어피싱', '보이스피싱', '비싱', '스미싱', '프리텍스팅', '베이팅', '테일게이팅', '큐 프로 쿼', '심리적 조작', '보안 인식 교육'],
+    keywords: ['사회공학', '피싱', '스피어피싱', '보이스피싱', '비싱', '스미싱', '프리텍스팅', '베이팅', '테일게이팅', '큐 프로 쿼', '심리적 조작', '보안 인식 교육', '숄더 서핑', '덤스터 다이빙', 'BEC', '큐싱', '파밍', '메모리 해킹', '이메일 무역 사기'],
     content: `
 <h3>사회공학 공격 유형</h3>
 <table>
@@ -599,6 +743,27 @@ ALL: ALL</code></pre>
   <li><strong>이메일 보안</strong>: SPF·DKIM·DMARC 적용으로 발신자 위조 방지</li>
   <li><strong>USB 정책</strong>: 허가되지 않은 USB 사용 금지, AutoRun 비활성화</li>
 </ul>
+<h3>그 밖의 사회공학 기법</h3>
+<table>
+  <thead><tr><th>기법</th><th>설명</th></tr></thead>
+  <tbody>
+    <tr><td><strong>큐 프로 쿼(Quid Pro Quo)</strong></td><td>"대가로 무엇을 주겠다"며 정보를 얻는 방식. 기술 지원 직원을 사칭해 문제 해결을 해 주겠다며 계정 정보를 요구</td></tr>
+    <tr><td><strong>숄더 서핑</strong></td><td>어깨 너머로 화면이나 키 입력을 훔쳐봄 → 화면 보호 필름, 입력 가림</td></tr>
+    <tr><td><strong>덤스터 다이빙</strong></td><td>쓰레기통에서 버려진 문서·저장매체를 뒤져 정보 수집 → 문서 파쇄, 매체 완전 삭제</td></tr>
+    <tr><td><strong>BEC</strong>(비즈니스 이메일 침해, 이메일 무역 사기)</td><td>거래처·임원 메일 계정을 탈취하거나 유사 도메인으로 사칭해 송금 계좌 변경을 요청</td></tr>
+    <tr><td><strong>파밍(Pharming)</strong></td><td>hosts 파일이나 DNS를 변조해 정상 주소를 입력해도 가짜 사이트로 접속하게 함</td></tr>
+    <tr><td><strong>큐싱(Qshing)</strong></td><td>QR 코드에 악성 URL을 넣어 접속 유도. 주차 단속·택배 안내 등으로 위장</td></tr>
+    <tr><td><strong>메모리 해킹</strong></td><td>PC 메모리의 이체 정보를 조작해 받는 계좌·금액을 바꿈(금융 보안 영역)</td></tr>
+  </tbody>
+</table>
+
+<h3>사회공학 공격 단계</h3>
+<ol>
+  <li><strong>정보 수집</strong>: 홈페이지, SNS, 채용 공고, 쓰레기 등에서 조직·인물 정보 수집</li>
+  <li><strong>관계 형성</strong>: 신뢰를 얻을 수 있는 신분과 상황을 꾸며 접근</li>
+  <li><strong>공격(이용)</strong>: 신뢰를 이용해 정보 제공·클릭·송금을 유도</li>
+  <li><strong>실행·흔적 제거</strong>: 얻은 정보로 목적을 달성하고 의심받지 않게 물러남</li>
+</ol>
     `,
   },
   {
@@ -2767,7 +2932,7 @@ OI = 주문 정보 (상품·금액)    →  상점만 확인
     subjectLabel: '정보보안일반',
     chapter: 'auth-sso',
     chapterLabel: '인증·SSO·접근통제',
-    keywords: ['SSO', 'Single Sign-On', 'SAML', 'OAuth', 'OpenID Connect', 'Kerberos', 'RADIUS', 'LDAP', 'Active Directory', '커버로스', '티켓', 'TGT', '2FA', 'MFA', 'FIDO', 'WebAuthn', '디바이스 인증', '기기 인증', 'TPM', 'PUF', 'mTLS', '802.1X'],
+    keywords: ['SSO', 'Single Sign-On', 'SAML', 'OAuth', 'OpenID Connect', 'Kerberos', 'RADIUS', 'LDAP', 'Active Directory', '커버로스', '티켓', 'TGT', '2FA', 'MFA', 'FIDO', 'WebAuthn', '디바이스 인증', '기기 인증', 'TPM', 'PUF', 'mTLS', '802.1X', 'PAP', 'CHAP', 'EAP', 'EAP-TLS', 'PEAP', 'TACACS+', 'JWT', 'Refresh Token'],
     content: `
 
 <h3>SSO (Single Sign-On)</h3>
@@ -2851,6 +3016,26 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li><strong>MAC 주소·IP 기반 인증</strong>: 구현은 쉽지만 위조(스푸핑)가 쉬워 단독으로는 약하다</li>
   <li>네트워크 접속 단계의 기기 인증: IEEE 802.1X + RADIUS, NAC</li>
 </ul>
+<h3>원격 접속 인증 프로토콜</h3>
+<table>
+  <thead><tr><th>프로토콜</th><th>방식</th><th>보안성</th></tr></thead>
+  <tbody>
+    <tr><td>PAP</td><td>ID·패스워드를 평문으로 전송(2-way)</td><td>도청에 취약</td></tr>
+    <tr><td>CHAP</td><td>서버가 보낸 시도값과 비밀값을 해시(MD5)해 응답(3-way). 연결 중에도 주기적으로 재인증</td><td>패스워드가 전송되지 않음</td></tr>
+    <tr><td>EAP</td><td>인증 방식을 골라 쓰는 확장 프레임워크. EAP-TLS(양쪽 인증서), PEAP·EAP-TTLS(TLS 터널 안에서 패스워드 인증)</td><td>802.1X·무선랜 기업 인증에 사용</td></tr>
+    <tr><td>TACACS+</td><td>TCP 49번 사용, 패킷 전체 암호화, 인증·인가·계정관리(AAA) 분리</td><td>RADIUS(UDP, 패스워드만 암호화)보다 강함. 네트워크 장비 관리자 인증</td></tr>
+  </tbody>
+</table>
+
+<h3>JWT (JSON Web Token)</h3>
+<pre><code>xxxxx.yyyyy.zzzzz
+헤더(알고리즘·타입) . 페이로드(클레임: 사용자 ID, 만료 시각 exp 등) . 서명</code></pre>
+<ul>
+  <li>각 부분은 Base64URL 인코딩일 뿐 암호화가 아니다 → 페이로드에 비밀번호·개인정보를 넣지 않는다</li>
+  <li>서명으로 위·변조를 검증한다. HS256(HMAC, 공유 비밀키) 또는 RS256·ES256(개인키 서명, 공개키 검증)</li>
+  <li>취약점: 헤더의 alg를 none으로 바꿔 서명 검증을 피하는 공격, 약한 HMAC 키 무차별 대입, 만료 시간 미검증 → 서버가 허용 알고리즘을 고정하고 exp를 반드시 확인한다</li>
+  <li>서버에 세션을 저장하지 않는 방식이라 탈취된 토큰을 즉시 무효화하기 어렵다 → 짧은 만료 시간과 갱신 토큰(Refresh Token) 사용</li>
+</ul>
     `,
   },
   {
@@ -2858,7 +3043,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안일반',
     chapter: 'access-control',
     chapterLabel: '접근통제',
-    keywords: ['DAC', 'MAC', 'RBAC', 'ABAC', '식별', '인증', '인가', 'MFA', '지식기반', '소지기반', '특성기반', 'SSO', '최소권한', '직무분리'],
+    keywords: ['DAC', 'MAC', 'RBAC', 'ABAC', '식별', '인증', '인가', 'MFA', '지식기반', '소지기반', '특성기반', 'SSO', '최소권한', '직무분리', 'FAR', 'FRR', 'CER', 'EER', '오수락률', '오거부율', 'OTP', 'HOTP', 'TOTP', 'S/Key', '시도-응답'],
     content: `
 <h3>접근통제 3단계</h3>
 <table>
@@ -2939,6 +3124,28 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td>SAML</td><td>인증+인가</td><td>XML 기반. IdP ↔ SP. 엔터프라이즈 SSO</td></tr>
     <tr><td>OAuth 2.0</td><td>인가(Authorization)</td><td>액세스 토큰 발급. API 위임 접근</td></tr>
     <tr><td>OpenID Connect</td><td>인증</td><td>OAuth 2.0 기반 + ID 토큰(JWT)</td></tr>
+  </tbody>
+</table>
+<h3>생체 인증 성능 지표</h3>
+<table>
+  <thead><tr><th>지표</th><th>의미</th><th>관점</th></tr></thead>
+  <tbody>
+    <tr><td><strong>FAR</strong>(오수락률, Type II)</td><td>등록되지 않은 사람을 본인으로 잘못 받아들인 비율</td><td>낮을수록 보안성이 높다</td></tr>
+    <tr><td><strong>FRR</strong>(오거부율, Type I)</td><td>본인을 잘못 거부한 비율</td><td>낮을수록 편의성이 높다</td></tr>
+    <tr><td><strong>CER / EER</strong>(교차 오류율)</td><td>FAR과 FRR이 같아지는 지점</td><td>낮을수록 정확한 시스템. 서로 다른 제품 비교 기준</td></tr>
+  </tbody>
+</table>
+<p>임계값을 엄격하게 하면 FAR은 내려가고 FRR은 올라간다(반비례). 보안이 중요한 곳은 FAR을 우선 낮춘다.</p>
+<p>생체 정보의 요건: 보편성, 유일성, 영속성, 획득성(정량화 가능성). 생체 정보는 바꿀 수 없으므로 유출되면 피해가 영구적이라는 단점이 있다.</p>
+
+<h3>OTP 생성 방식</h3>
+<table>
+  <thead><tr><th>방식</th><th>원리</th></tr></thead>
+  <tbody>
+    <tr><td>시도-응답(Challenge-Response)</td><td>서버가 보낸 난수(시도)를 사용자가 비밀키로 계산해 응답. 동기화 불필요</td></tr>
+    <tr><td>이벤트 동기(HOTP)</td><td>인증할 때마다 늘어나는 카운터 값과 비밀키로 생성(RFC 4226). 카운터 어긋남에 대비해 허용 범위를 둔다</td></tr>
+    <tr><td>시간 동기(TOTP)</td><td>현재 시각(보통 30초 단위)과 비밀키로 생성(RFC 6238). 서버와 단말의 시간 동기화 필요. 모바일 인증 앱의 방식</td></tr>
+    <tr><td>S/Key</td><td>해시를 n번 반복한 체인을 만들어 거꾸로 하나씩 사용. 서버는 이전 값만 저장하면 된다</td></tr>
   </tbody>
 </table>
     `,
@@ -3030,7 +3237,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안일반',
     chapter: 'symmetric-crypto',
     chapterLabel: '대칭키 암호화',
-    keywords: ['DES', 'AES', 'ARIA', 'SEED', 'LEA', '3DES', 'ECB', 'CBC', 'CTR', 'GCM', 'RC4', 'AEAD', '블록암호', '스트림암호'],
+    keywords: ['DES', 'AES', 'ARIA', 'SEED', 'LEA', '3DES', 'ECB', 'CBC', 'CTR', 'GCM', 'RC4', 'AEAD', '블록암호', '스트림암호', 'Feistel', 'SPN', 'S-box', 'HIGHT', '혼돈', '확산', '케르크호프스', '라운드', 'MixColumns', 'SubBytes', '기지 평문', '선택 평문', '차분 공격', '선형 공격', '중간 일치 공격', '오류 전파', '패딩 오라클'],
     content: `
 <h3>암호화 유형 간단 비교</h3>
 <table>
@@ -3083,6 +3290,62 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 <h3>AEAD 및 스트림 암호</h3>
 <p><strong>AEAD (Authenticated Encryption with Associated Data)</strong>: 암호화 + 인증을 동시 제공. GCM, CCM, ChaCha20-Poly1305.</p>
 <p><strong>RC4</strong>: SSL/WEP에 사용됐으나 편향성 취약점 발견. 현재 사용 금지.</p>
+<h3>암호 설계 기본 원리</h3>
+<ul>
+  <li><strong>케르크호프스 원리</strong>: 암호 알고리즘은 공개되어도 되고, 안전성은 오직 키의 비밀에 달려 있어야 한다</li>
+  <li><strong>혼돈(Confusion)</strong>: 키와 암호문의 관계를 복잡하게 만든다. 주로 치환(S-box)으로 구현</li>
+  <li><strong>확산(Diffusion)</strong>: 평문 한 비트의 변화가 암호문 전체에 퍼지게 한다. 주로 전치·선형 변환으로 구현</li>
+  <li>섀넌(Shannon)이 제시한 개념이며, 치환과 전치를 여러 라운드 반복하는 것이 현대 블록 암호의 기본 구조다</li>
+</ul>
+
+<h3>Feistel 구조 vs SPN 구조</h3>
+<table>
+  <thead><tr><th>구분</th><th>Feistel 구조</th><th>SPN 구조</th></tr></thead>
+  <tbody>
+    <tr><td>원리</td><td>블록을 좌우 반으로 나눠 한쪽에 라운드 함수를 적용하고 XOR 후 좌우 교환</td><td>블록 전체에 치환(S-box)과 순열(P-box)을 번갈아 적용</td></tr>
+    <tr><td>복호화</td><td>라운드 키 순서만 바꾸면 암호화 회로를 그대로 사용. 라운드 함수가 역함수일 필요 없음</td><td>각 단계의 역연산이 필요(역 S-box 등)</td></tr>
+    <tr><td>특징</td><td>구현이 간단, 라운드 수가 많이 필요</td><td>병렬 처리에 유리해 빠름</td></tr>
+    <tr><td>대표</td><td>DES, SEED, Blowfish, Camellia, HIGHT(일반화 Feistel)</td><td>AES, ARIA</td></tr>
+  </tbody>
+</table>
+
+<h3>알고리즘별 구조 요점</h3>
+<table>
+  <thead><tr><th>알고리즘</th><th>구조</th><th>라운드</th><th>기억할 점</th></tr></thead>
+  <tbody>
+    <tr><td>DES</td><td>Feistel</td><td>16</td><td>키 64비트 중 8비트는 패리티(실효 56비트). 라운드 키 48비트. 비선형 요소는 S-box 8개뿐</td></tr>
+    <tr><td>AES</td><td>SPN</td><td>10/12/14 (키 128/192/256)</td><td>라운드 연산: SubBytes(치환) → ShiftRows(행 이동) → MixColumns(열 혼합) → AddRoundKey(키 XOR). 마지막 라운드에는 MixColumns가 없다</td></tr>
+    <tr><td>SEED</td><td>Feistel</td><td>16 (SEED-256은 24)</td><td>1999년 KISA 개발. 전자상거래·금융에서 널리 사용</td></tr>
+    <tr><td>ARIA</td><td>SPN (Involution 구조)</td><td>12/14/16</td><td>2004년 국가보안기술연구소 개발. 암·복호화 과정이 같은 형태라 하드웨어 구현에 유리</td></tr>
+    <tr><td>LEA</td><td>ARX</td><td>24/28/32</td><td>덧셈(Addition)·순환 이동(Rotation)·XOR만 사용하는 경량 고속 암호</td></tr>
+    <tr><td>HIGHT</td><td>일반화 Feistel, ARX</td><td>32</td><td>블록 64비트·키 128비트. RFID·센서 등 저전력 환경용 국산 경량 암호</td></tr>
+  </tbody>
+</table>
+<p><strong>이중 DES가 쓰이지 않는 이유</strong>: 키를 두 개(112비트) 써도 <strong>중간 일치 공격(Meet-in-the-Middle)</strong>으로 약 2<sup>57</sup>번 연산이면 풀려 단일 DES보다 크게 나아지지 않는다. 그래서 3DES(EDE)를 사용했다.</p>
+
+<h3>운용 모드별 오류 전파</h3>
+<table>
+  <thead><tr><th>모드</th><th>암호문 1비트 오류 시 복호화 영향</th><th>IV</th></tr></thead>
+  <tbody>
+    <tr><td>ECB</td><td>해당 블록만 손상</td><td>불필요</td></tr>
+    <tr><td>CBC</td><td>해당 블록 전체 + 다음 블록의 같은 위치 1비트</td><td>필요(예측 불가해야 함)</td></tr>
+    <tr><td>CFB</td><td>해당 비트 + 이후 블록(시프트 레지스터를 빠져나갈 때까지)</td><td>필요</td></tr>
+    <tr><td>OFB · CTR</td><td>해당 비트만 손상(오류 전파 없음)</td><td>필요(같은 IV·카운터 재사용 금지)</td></tr>
+  </tbody>
+</table>
+<p><strong>패딩 오라클 공격</strong>: CBC 모드에서 서버가 "패딩 오류"와 "복호화 실패"를 구분해 응답하면 이를 이용해 키 없이 평문을 알아낼 수 있다. 오류 메시지를 통일하고 AEAD(GCM 등)를 사용해 막는다.</p>
+
+<h3>암호 해독 공격 유형</h3>
+<table>
+  <thead><tr><th>공격</th><th>공격자가 가진 정보</th></tr></thead>
+  <tbody>
+    <tr><td>암호문 단독 공격(COA)</td><td>암호문만 가지고 평문·키를 추정. 가장 불리한 조건</td></tr>
+    <tr><td>기지 평문 공격(KPA)</td><td>일부 평문과 그에 대응하는 암호문 쌍을 알고 있음. 선형 공격이 대표적</td></tr>
+    <tr><td>선택 평문 공격(CPA)</td><td>원하는 평문을 골라 암호문을 얻을 수 있음. 차분 공격이 대표적</td></tr>
+    <tr><td>선택 암호문 공격(CCA)</td><td>원하는 암호문을 골라 복호화 결과를 얻을 수 있음</td></tr>
+  </tbody>
+</table>
+<p>차분 공격(Differential, 비헴·샤미르)은 평문 차이가 암호문 차이에 어떻게 전달되는지를, 선형 공격(Linear, 마츠이)은 평문·암호문·키 비트 사이의 선형 근사식을 이용한다.</p>
     `,
   },
   {
@@ -3090,7 +3353,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안일반',
     chapter: 'asymmetric-crypto',
     chapterLabel: '비대칭키 암호화',
-    keywords: ['RSA', 'ECC', 'Diffie-Hellman', 'ElGamal', 'DSA', '소인수분해', '이산로그', '타원곡선', '하이브리드', '공개키', '개인키'],
+    keywords: ['RSA', 'ECC', 'Diffie-Hellman', 'ElGamal', 'DSA', '소인수분해', '이산로그', '타원곡선', '하이브리드', '공개키', '개인키', '오일러', 'φ(n)', 'e×d', 'OAEP', 'KCDSA', 'EC-KCDSA', 'ECDSA', 'EdDSA', '모듈러', '원시근'],
     content: `
 <h3>비대칭키 기본 원리</h3>
 <ul>
@@ -3150,6 +3413,40 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td>비대칭키 (공개키+개인키 쌍)</td><td>2n</td></tr>
   </tbody>
 </table>
+<h3>RSA 키 생성과 계산 예</h3>
+<pre><code>1. 두 소수 선택          p = 3, q = 11
+2. n = p × q             n = 33
+3. φ(n) = (p-1)(q-1)     φ(n) = 2 × 10 = 20
+4. 공개 지수 e 선택       1 &lt; e &lt; φ(n), gcd(e, φ(n)) = 1 → e = 3
+5. 개인 지수 d 계산       e × d ≡ 1 (mod φ(n)) → 3 × 7 = 21 ≡ 1 → d = 7
+   공개키 (e, n) = (3, 33) / 개인키 (d, n) = (7, 33)
+
+암호화  C = M^e mod n    M = 4 → 4^3 = 64 mod 33 = 31
+복호화  M = C^d mod n    31^7 mod 33 = 4</code></pre>
+<ul>
+  <li>n은 공개되지만 p, q를 모르면 φ(n)을 구할 수 없어 d를 계산할 수 없다</li>
+  <li>교과서 RSA는 같은 평문이 항상 같은 암호문이 되므로 실제로는 <strong>OAEP</strong> 패딩(암호화), <strong>PSS</strong> 패딩(서명)과 함께 쓴다</li>
+</ul>
+
+<h3>Diffie-Hellman 계산 예</h3>
+<pre><code>공개 값: 소수 p = 23, 원시근 g = 5
+A의 비밀 a = 6  → A = 5^6 mod 23 = 8   (B에게 전송)
+B의 비밀 b = 15 → B = 5^15 mod 23 = 19 (A에게 전송)
+A 계산: 19^6 mod 23 = 2
+B 계산: 8^15 mod 23 = 2   → 공유 비밀키 K = 2</code></pre>
+<p>도청자는 p, g, 8, 19를 모두 보지만 a나 b를 구하려면 이산대수 문제를 풀어야 한다.</p>
+
+<h3>전자서명 알고리즘 정리</h3>
+<table>
+  <thead><tr><th>알고리즘</th><th>기반</th><th>비고</th></tr></thead>
+  <tbody>
+    <tr><td>RSA-PSS</td><td>소인수분해</td><td>확률적 패딩을 쓰는 RSA 서명</td></tr>
+    <tr><td>DSA / ECDSA</td><td>이산대수 / 타원곡선 이산대수</td><td>미국 표준(DSS). ECDSA는 비트코인·TLS에서 사용</td></tr>
+    <tr><td>EdDSA(Ed25519)</td><td>타원곡선(에드워즈 곡선)</td><td>서명마다 난수가 필요 없는 결정적 서명으로 난수 재사용 사고를 막는다</td></tr>
+    <tr><td>KCDSA / EC-KCDSA</td><td>이산대수 / 타원곡선</td><td>국내 표준 전자서명(TTA)</td></tr>
+  </tbody>
+</table>
+<p>ElGamal 암호는 같은 평문도 매번 다른 암호문이 나오지만(확률적 암호), 암호문 길이가 평문의 2배가 된다.</p>
     `,
   },
   {
@@ -3157,7 +3454,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안일반',
     chapter: 'key-distribution',
     chapterLabel: '키 분배 프로토콜',
-    keywords: ['키 분배', '키 관리', 'KDC', 'Needham-Schroeder', '니덤-슈로더', '재전송 공격', 'Diffie-Hellman', '키 교환', '키 합의', '중간자 공격', '세션키', 'n(n-1)/2'],
+    keywords: ['키 분배', '키 관리', 'KDC', 'Needham-Schroeder', '니덤-슈로더', '재전송 공격', 'Diffie-Hellman', '키 교환', '키 합의', '중간자 공격', '세션키', 'n(n-1)/2', 'Denning-Sacco', '키 생명주기', 'KMS', 'HSM', '키 에스크로', '비밀 분산', 'Shamir', 'KDF', '논스'],
     content: `
 <h3>왜 키 분배가 문제인가</h3>
 <ul>
@@ -3181,6 +3478,43 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   </tbody>
 </table>
 <p>공개키 자체를 믿을 수 있게 하는 장치가 인증서와 PKI다. 공개키가 진짜 그 사람의 것인지 확인하지 않으면 공격자가 자기 공개키를 끼워 넣을 수 있다.</p>
+<h3>Needham-Schroeder 대칭키 프로토콜 흐름</h3>
+<pre><code>1. A → KDC : ID_A, ID_B, N1                       (N1: A가 만든 논스)
+2. KDC → A : E(Ka, [Ks, ID_B, N1, E(Kb, [Ks, ID_A])])
+3. A → B   : E(Kb, [Ks, ID_A])                     (B에게 줄 티켓)
+4. B → A   : E(Ks, N2)
+5. A → B   : E(Ks, f(N2))                          (Ks를 가졌음을 증명)</code></pre>
+<ul>
+  <li>논스(nonce)는 한 번만 쓰는 값으로, 응답이 이번 요청에 대한 것임을 확인해 재전송을 막는다</li>
+  <li>약점(Denning-Sacco 공격): 예전 세션키 Ks가 노출되면 공격자가 3번 메시지를 재전송해 B를 속일 수 있다. 3번 메시지에 시간 정보가 없기 때문이며, 타임스탬프를 추가해 보완했다(Kerberos)</li>
+</ul>
+
+<h3>Kerberos 보충</h3>
+<ul>
+  <li>패스워드에서 유도한 키로 첫 응답을 암호화하므로 약한 패스워드는 오프라인 추측 공격에 노출된다</li>
+  <li>타임스탬프를 쓰므로 서버 간 시간 동기화가 필요하고, KDC가 멈추면 전체 인증이 멈춘다(단일 실패 지점)</li>
+  <li>Kerberos v5는 v4의 DES 고정을 없애 다양한 암호 알고리즘을 쓰고, 티켓 유효기간 확장·위임 기능을 추가했다</li>
+</ul>
+
+<h3>키 관리 생명주기</h3>
+<table>
+  <thead><tr><th>단계</th><th>보안 요구사항</th></tr></thead>
+  <tbody>
+    <tr><td>생성</td><td>안전한 난수 발생기 사용, 충분한 길이</td></tr>
+    <tr><td>분배</td><td>암호화된 채널, 키 암호화 키(KEK)로 감싸서 전달</td></tr>
+    <tr><td>저장</td><td>HSM·KMS 등 보호된 장치에 보관, 평문 저장 금지</td></tr>
+    <tr><td>사용</td><td>용도별 키 분리(암호화 키와 서명 키를 따로), 접근 통제</td></tr>
+    <tr><td>갱신·교체</td><td>정해진 유효기간(암호 사용 기간)마다 교체</td></tr>
+    <tr><td>폐기</td><td>모든 사본을 복구할 수 없게 파기, 폐기 기록 유지</td></tr>
+  </tbody>
+</table>
+<ul>
+  <li><strong>HSM</strong>(하드웨어 보안 모듈): 키 생성·저장·연산을 장치 안에서 처리해 키가 밖으로 나오지 않게 한다. 물리적 변조 시 키를 지우는 기능을 갖춘다</li>
+  <li><strong>KMS</strong>: 클라우드에서 키를 중앙 관리하는 서비스. 데이터 키를 마스터 키로 다시 암호화하는 봉투 암호화(Envelope Encryption)를 쓴다</li>
+  <li><strong>키 에스크로·키 복구</strong>: 키를 잃어버렸을 때나 법적 요구에 대비해 신뢰 기관에 키(또는 일부)를 맡겨 두는 방식</li>
+  <li><strong>비밀 분산(Shamir)</strong>: 비밀을 n개 조각으로 나눠 t개 이상 모이면 복원, t-1개 이하로는 아무것도 알 수 없게 한다((t, n) 임계 방식). 다항식 보간을 이용</li>
+  <li><strong>KDF</strong>(키 유도 함수): 공유 비밀이나 패스워드에서 실제 사용할 키를 만들어 낸다(HKDF, PBKDF2)</li>
+</ul>
     `,
   },
   {
@@ -3188,7 +3522,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안일반',
     chapter: 'hash-mac',
     chapterLabel: '해시·메시지 인증',
-    keywords: ['MD5', 'SHA-1', 'SHA-256', 'SHA-3', 'HMAC', 'HAS-160', '충돌', '역상', '솔트', '레인보우테이블', 'bcrypt', 'PBKDF2'],
+    keywords: ['MD5', 'SHA-1', 'SHA-256', 'SHA-3', 'HMAC', 'HAS-160', '충돌', '역상', '솔트', '레인보우테이블', 'bcrypt', 'PBKDF2', '생일 공격', '생일 역설', '머클-담고르', 'Merkle-Damgård', '스펀지', '길이 확장 공격', 'CMAC', 'CBC-MAC', 'GMAC'],
     content: `
 <h3>해시 함수 4가지 특성</h3>
 <table>
@@ -3251,6 +3585,42 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     <tr><td><strong>Argon2</strong></td><td>메모리 집약적. 2015년 Password Hashing Competition 우승.</td><td>권장</td></tr>
   </tbody>
 </table>
+<h3>생일 공격</h3>
+<ul>
+  <li>23명만 모여도 생일이 같은 사람이 있을 확률이 50%를 넘는다는 생일 역설을 이용한 충돌 공격</li>
+  <li>출력이 n비트인 해시에서 충돌 쌍은 약 <strong>2<sup>n/2</sup></strong>번 시도로 찾을 수 있다. 역상을 찾는 데는 약 2<sup>n</sup>번이 필요하다</li>
+  <li>예: 128비트 MD5의 충돌 안전성은 2<sup>64</sup> 수준에 불과 → 충돌 저항성을 128비트로 맞추려면 256비트 해시(SHA-256)가 필요하다</li>
+</ul>
+
+<h3>해시 함수 구조</h3>
+<table>
+  <thead><tr><th>구조</th><th>원리</th><th>해당 알고리즘</th></tr></thead>
+  <tbody>
+    <tr><td>머클-담고르(Merkle-Damgård)</td><td>메시지를 블록으로 나눠 압축 함수에 차례로 넣고 이전 출력을 다음 입력으로 연결</td><td>MD5, SHA-1, SHA-2</td></tr>
+    <tr><td>스펀지(Sponge)</td><td>내부 상태에 입력을 흡수(absorb)한 뒤 필요한 길이만큼 짜내는(squeeze) 방식</td><td>SHA-3(Keccak), SHAKE</td></tr>
+  </tbody>
+</table>
+<p><strong>길이 확장 공격</strong>: 머클-담고르 구조에서 H(비밀‖메시지) 값만 알면 비밀을 몰라도 H(비밀‖메시지‖추가 데이터)를 만들 수 있다. 그래서 MAC은 단순히 키를 앞에 붙인 해시가 아니라 HMAC을 써야 한다. SHA-3와 HMAC은 이 공격에 안전하다.</p>
+
+<h3>MAC의 종류</h3>
+<table>
+  <thead><tr><th>종류</th><th>원리</th></tr></thead>
+  <tbody>
+    <tr><td>HMAC</td><td>해시 함수 기반(위 공식)</td></tr>
+    <tr><td>CBC-MAC / CMAC</td><td>블록 암호를 CBC 모드로 돌려 마지막 블록을 MAC으로 사용. CBC-MAC은 가변 길이 메시지에 취약해 이를 보완한 것이 CMAC</td></tr>
+    <tr><td>GMAC</td><td>GCM 모드의 인증 부분(GHASH)만 사용</td></tr>
+  </tbody>
+</table>
+
+<h3>해시·MAC·전자서명이 제공하는 기능</h3>
+<table>
+  <thead><tr><th>기법</th><th>무결성</th><th>메시지 인증(출처 확인)</th><th>부인방지</th><th>키</th></tr></thead>
+  <tbody>
+    <tr><td>해시</td><td>O (단, 해시값을 안전하게 전달해야 함)</td><td>X</td><td>X</td><td>없음</td></tr>
+    <tr><td>MAC</td><td>O</td><td>O</td><td>X (송수신자가 같은 키 공유)</td><td>대칭키</td></tr>
+    <tr><td>전자서명</td><td>O</td><td>O</td><td>O</td><td>개인키·공개키</td></tr>
+  </tbody>
+</table>
     `,
   },
   {
@@ -3258,7 +3628,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안일반',
     chapter: 'blockchain',
     chapterLabel: '블록체인',
-    keywords: ['블록체인', '작업증명', 'PoW', 'PoS', 'PBFT', '머클 트리', '머클 루트', '논스', 'nonce', '이중 지불', '51% 공격', '스마트 컨트랙트', '재진입', '합의 알고리즘', '퍼블릭 블록체인', '프라이빗 블록체인'],
+    keywords: ['블록체인', '작업증명', 'PoW', 'PoS', 'PBFT', '머클 트리', '머클 루트', '논스', 'nonce', '이중 지불', '51% 공격', '스마트 컨트랙트', '재진입', '합의 알고리즘', '퍼블릭 블록체인', '프라이빗 블록체인', '해시 포인터', '지갑 주소', 'secp256k1', 'The Merge', '하드포크', '오라클 문제'],
     content: `
 <h3>블록체인 구조</h3>
 <ul>
@@ -3287,6 +3657,23 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
   <li><strong>스마트 컨트랙트 취약점</strong>: 재진입(Reentrancy) 공격 등 코드 결함으로 자산 탈취(2016년 The DAO 사건)</li>
   <li>개인키 탈취: 키를 잃으면 자산 회복 불가 → 하드웨어 지갑, 다중 서명</li>
 </ul>
+<h3>블록체인에 쓰이는 암호 기술</h3>
+<table>
+  <thead><tr><th>기술</th><th>쓰임</th></tr></thead>
+  <tbody>
+    <tr><td>해시 함수</td><td>블록 연결(해시 포인터), 머클 루트, 작업증명 퍼즐, 지갑 주소 생성(공개키를 해시해 주소로 사용)</td></tr>
+    <tr><td>전자서명</td><td>거래를 개인키로 서명해 소유권 증명. 비트코인·이더리움은 ECDSA(secp256k1 곡선)를 사용</td></tr>
+    <tr><td>공개키 암호</td><td>공개키(주소)는 공개, 개인키는 지갑이 보관. 개인키를 가진 사람이 곧 자산의 소유자</td></tr>
+  </tbody>
+</table>
+
+<h3>알아 둘 사례와 용어</h3>
+<ul>
+  <li>이더리움은 2022년 9월 <strong>The Merge</strong>로 작업증명에서 지분증명으로 전환했다</li>
+  <li><strong>하드포크</strong>: 이전 규칙과 호환되지 않는 프로토콜 변경으로 체인이 갈라지는 것(예: The DAO 사건 후 이더리움·이더리움 클래식 분리). 소프트포크는 이전 노드와 호환되는 변경</li>
+  <li><strong>오라클 문제</strong>: 스마트 컨트랙트가 블록체인 밖의 데이터(가격 등)를 가져올 때 그 데이터를 믿을 수 있느냐는 문제. 조작된 외부 데이터로 자산을 빼내는 공격으로 이어진다</li>
+  <li>블록체인은 위·변조 방지에는 강하지만 한 번 기록된 데이터를 지우기 어려워 개인정보를 직접 기록하지 않는다(삭제권과 충돌)</li>
+</ul>
     `,
   },
   {
@@ -3294,7 +3681,7 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
     subjectLabel: '정보보안일반',
     chapter: 'pki-signature',
     chapterLabel: 'PKI·디지털 서명',
-    keywords: ['CA', 'RA', 'VA', 'PKI', 'X.509', 'CRL', 'OCSP', '디지털서명', '인증서', '공인인증서', '전자서명법', 'KISA'],
+    keywords: ['CA', 'RA', 'VA', 'PKI', 'X.509', 'CRL', 'OCSP', '디지털서명', '인증서', '공인인증서', '전자서명법', 'KISA', '은닉 서명', '이중 서명', '그룹 서명', '부인방지 서명', '위임 서명', '다중 서명', '전자서명인증사업자', 'basicConstraints', '인증서 폐지'],
     content: `
 <h3>디지털 서명 과정</h3>
 <pre><code>서명(송신자):
@@ -3365,11 +3752,31 @@ KDC = AS(Authentication Service) + TGS(Ticket Granting Service)</code></pre>
 사용자(서버) 인증서</code></pre>
 <p>신뢰 체인(Chain of Trust): Root CA를 신뢰하면 중간 CA와 최종 인증서도 신뢰.</p>
 
-<h3>국내 PKI 체계</h3>
+<h3>국내 전자서명 제도 (2020년 12월 개정 전자서명법)</h3>
 <ul>
-  <li>최상위 인증기관: <strong>KISA (한국인터넷진흥원)</strong></li>
-  <li>공인인증기관 5개: 금융결제원, KOSCOM, 한국정보인증, 이니텍, 한국전자인증</li>
-  <li><strong>2020년 전자서명법 개정</strong>: 공인인증서(구 공인인증기관) 독점 지위 폐지. 사설 인증서와 동등 지위.</li>
+  <li>공인인증서·공인인증기관 제도가 폐지되고 공동인증서(구 공인인증서)와 사설 인증서가 법적으로 동등한 효력을 갖게 됐다</li>
+  <li>대신 <strong>전자서명인증사업자 인정제도</strong>: 과학기술정보통신부 장관이 고시한 전자서명인증업무 운영기준을 지키는지 평가기관이 평가하고, 인정기관(KISA)이 인정한다(자율 신청)</li>
+  <li>KISA는 최상위 인증기관(루트 CA) 역할도 맡는다</li>
+</ul>
+<h3>특수 전자서명</h3>
+<table>
+  <thead><tr><th>서명</th><th>특징</th><th>쓰임</th></tr></thead>
+  <tbody>
+    <tr><td>은닉 서명(Blind)</td><td>서명자가 메시지 내용을 모른 채 서명. 서명자와 메시지를 연결할 수 없음(Chaum 제안)</td><td>전자화폐, 전자투표의 익명성</td></tr>
+    <tr><td>이중 서명(Dual)</td><td>두 메시지의 해시를 묶어 한 번에 서명. 각 수신자는 자기 쪽 정보만 보고도 연결 관계를 검증</td><td>SET(주문 정보는 상점, 결제 정보는 은행만 열람)</td></tr>
+    <tr><td>그룹 서명</td><td>그룹 구성원 누군가가 서명했다는 것만 확인. 분쟁 시 관리자만 서명자를 밝힘</td><td>익명 인증</td></tr>
+    <tr><td>부인방지 서명(Undeniable)</td><td>서명자의 협조가 있어야만 검증 가능</td><td>소프트웨어 배포 등 검증 통제</td></tr>
+    <tr><td>위임 서명(Proxy)</td><td>원 서명자가 대리인에게 서명 권한을 위임</td><td>부재 시 결재</td></tr>
+    <tr><td>다중 서명(Multi)</td><td>여러 명이 같은 메시지에 서명. 일정 수 이상 서명해야 효력(블록체인 다중 서명 지갑)</td><td>공동 결재, 자산 보관</td></tr>
+  </tbody>
+</table>
+
+<h3>인증서 폐지와 확장 필드</h3>
+<ul>
+  <li>폐지 사유: 개인키 노출·분실, 소유자 정보 변경, CA 침해, 소유자 요청, 더 이상 사용하지 않음</li>
+  <li><strong>basicConstraints</strong>: 인증서가 CA 인증서인지(cA=true), 아래로 몇 단계까지 인증서를 발급할 수 있는지 지정</li>
+  <li><strong>keyUsage</strong>: 전자서명, 키 암호화, 인증서 서명 등 공개키 용도 제한</li>
+  <li><strong>SAN</strong>(주체 대체 이름): 인증서 하나로 여러 도메인을 지정. 현재 브라우저는 CN이 아니라 SAN으로 도메인을 확인한다</li>
 </ul>
     `,
   },
